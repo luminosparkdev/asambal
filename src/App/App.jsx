@@ -1,11 +1,7 @@
 
 function App() {
 
-  return (
-    <div>
-      <h1>ONBOARDING ASAMBAL</h1>
-    </div>
-  )
+  return null
 }
 
 export default App
