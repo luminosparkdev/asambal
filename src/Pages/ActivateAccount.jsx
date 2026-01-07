@@ -1,38 +1,47 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { activateAccountService } from "../Services/auth.service";
+import axios from "axios";
 
 function ActivateAccount() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const token = searchParams.get("token"); // token único que viene en el link
+  const email = searchParams.get("email");
+  const token = searchParams.get("token");
 
-  useEffect(() => {
-    const userEmail = searchParams.get("email");
-    if (userEmail) setEmail(userEmail);
-  }, [searchParams]);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await activateAccountService(email, password, token);
-      setMessage("Cuenta activada con éxito. Ya podés iniciar sesión.");
+      await axios.post("http://localhost:3000/api/auth/activate-account", {
+        email,
+        password,
+        token,
+      });
+      
+      setSuccess(true);
+
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Error al activar la cuenta");
     }
   };
 
+  if (!email || !token) {
+    return <p>Link inválido</p>;
+  }
+
   return (
     <div>
       <h1>Activación de cuenta</h1>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success ? (
+        <p style={{ color: "green" }}>Cuenta activada con éxito. Registrando inicio de sesión</p>
+      ) : (    
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label>
@@ -47,8 +56,12 @@ function ActivateAccount() {
             required
           />
         </div>
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <button type="submit">Confirmar</button>
       </form>
+      )}
     </div>
   );
 }

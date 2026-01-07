@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Auth/AuthContext";
+import { loginService } from "../Services/auth.service";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -17,11 +18,12 @@ function Login() {
 
       login(data.user);
 
+      localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
 
       navigate("/perfil");
     } catch (error) {
-      setError(err.response?.data?.message || "Error al iniciar sesión");
+      setError(error.response?.data?.message || "Error al iniciar sesión");
     }
   };
 

@@ -7,16 +7,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // con el login despues chequeamos aca
-    setLoading(false);
+    const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+  setLoading(false);
   }, []);
 
   const login = (userData) => {
+    console.log("LOGIN CONTEXT RECIBE",userData);
     setUser(userData);
   };
 
   const logout = () => {
     setUser(null);
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
   };
 
   const value = {

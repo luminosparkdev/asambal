@@ -3,7 +3,7 @@ import { useAuth } from "../Auth/AuthContext";
 function Profile() {
   const { user } = useAuth();
 
-  if (!user) return null; 
+  if (!user) return null;
 
   const renderContent = () => {
     switch (user.role) {
