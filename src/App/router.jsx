@@ -11,7 +11,9 @@ import Login from "../Pages/Login";
 import ActivateAccount from "../Pages/ActivateAccount";
 import Profile from "../Pages/Profile";
 import Unauthorized from "../Pages/Unauthorized";
-import AdminAsambalDashboard from "../Pages/AdminAsambalDashboard";
+import AdminAsambalDashboard from "../Pages/Asambal/AdminAsambalDashboard";
+import ClubList from "../Pages/Asambal/ClubList";
+import ClubDetails from "../Views/Asambal/ClubDetails";
 import AdminClubDashboard from "../Pages/AdminClubDashboard";
 import ProfesorDashboard from "../Pages/ProfesorDashboard";
 
@@ -23,12 +25,13 @@ export const router = createBrowserRouter([
             //RUTAS PÚBLICAS
             { index: true, element: <Home />, },
             { path: "login", element: <Login />, },
-            { path: "activar-cuenta", element: <ActivateAccount />},
-            { path: "unauthorized", element: <Unauthorized />},
-             
+            { path: "activar-cuenta", element: <ActivateAccount /> },
+            { path: "unauthorized", element: <Unauthorized /> },
+
             //RUTAS PROTEGIDAS SIN ROL ESPECÍFICO
-            { path: "perfil", 
-              element: (
+            {
+                path: "perfil",
+                element: (
                     <ProtectedRoute>
                         <Profile />
                     </ProtectedRoute>
@@ -38,7 +41,8 @@ export const router = createBrowserRouter([
             //RUTAS PROTEGIDAS CON ROL ESPECÍFICO
 
             //ADMIN ASAMBAL
-            {   path: "admin",
+            {
+                path: "admin",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <AdminAsambalDashboard />
@@ -46,8 +50,27 @@ export const router = createBrowserRouter([
                 ),
             },
 
+            {
+                path: "clubs",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL, ROLES.ADMIN_CLUB]}>
+                        <ClubList />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "clubs/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL, ROLES.ADMIN_CLUB]}>
+                        <ClubDetails />
+                    </ProtectedRoute>
+                ),
+            },
+
             //ADMIN CLUB
-            {   path: "admin-club",
+            {
+                path: "admin-club",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <AdminClubDashboard />
@@ -55,7 +78,8 @@ export const router = createBrowserRouter([
                 ),
             },
             //PROFESOR
-            {   path: "profesor",
+            {
+                path: "profesor",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
                         <ProfesorDashboard />
