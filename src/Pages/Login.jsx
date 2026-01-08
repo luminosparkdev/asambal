@@ -10,6 +10,14 @@ function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
+  const roleRedirectMap = {
+    admin_asambal: "/admin",
+    admin_club: "/admin-club",
+    profesor: "/profesor",
+    jugador: "/perfil",
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -21,7 +29,9 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
 
-      navigate("/perfil");
+      const redirectPath = roleRedirectMap[data.user.role] || "/perfil";
+      navigate(redirectPath);
+
     } catch (error) {
       setError(error.response?.data?.message || "Error al iniciar sesión");
     }

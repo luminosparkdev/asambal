@@ -13,6 +13,7 @@ import Profile from "../Pages/Profile";
 import Unauthorized from "../Pages/Unauthorized";
 import AdminAsambalDashboard from "../Pages/AdminAsambalDashboard";
 import AdminClubDashboard from "../Pages/AdminClubDashboard";
+import ProfesorDashboard from "../Pages/ProfesorDashboard";
 
 export const router = createBrowserRouter([
     {
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
             { index: true, element: <Home />, },
             { path: "login", element: <Login />, },
             { path: "activar-cuenta", element: <ActivateAccount />},
-            {path: "unauthorized", element: <Unauthorized />},
+            { path: "unauthorized", element: <Unauthorized />},
              
             //RUTAS PROTEGIDAS SIN ROL ESPECÍFICO
             { path: "perfil", 
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <AdminClubDashboard />
+                    </ProtectedRoute>
+                ),
+            },
+            //PROFESOR
+            {   path: "profesor",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <ProfesorDashboard />
                     </ProtectedRoute>
                 ),
             },
