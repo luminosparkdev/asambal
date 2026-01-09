@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Layout/MainLayout";
 import ProtectedRoute from "../Auth/ProtectedRoute";
-import { ROLES } from "../Utils/roles";
+import { ROLES } from "../Utils/roles";;
 //AGREGAR DASHBOARDS DE PERFILES CUANDO EXISTAN
 
 
@@ -14,8 +14,11 @@ import Unauthorized from "../Pages/Unauthorized";
 import AdminAsambalDashboard from "../Pages/Asambal/AdminAsambalDashboard";
 import ClubList from "../Pages/Asambal/ClubList";
 import ClubDetails from "../Views/Asambal/ClubDetails";
-import AdminClubDashboard from "../Pages/AdminClubDashboard";
+import AdminClubDashboard from "../Pages/Clubes/AdminClubDashboard";
 import ProfesorDashboard from "../Pages/ProfesorDashboard";
+import CoachesList from "../Pages/Clubes/CoachesList";
+import CoachesCreate from "../Pages/Clubes/CoachesCreate";
+import CoachesDetail from "../Pages/Clubes/CoachesDetail";
 
 export const router = createBrowserRouter([
     {
@@ -74,6 +77,32 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <AdminClubDashboard />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "coaches",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CoachesList />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "coaches/nuevo",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CoachesCreate />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "coaches/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CoachesDetail />
                     </ProtectedRoute>
                 ),
             },
