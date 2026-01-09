@@ -10,12 +10,8 @@ function CoachCreate() {
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
-    DNI: "",
     email: "",
-    telefono: "",
-    domicilio: "",
     categoria: "",
-    enea: "",
   });
 
   const handleChange = (e) => {

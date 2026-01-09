@@ -1,7 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import AltaClub from "./CreateClub";
-import ClubList from "./ClubList";
 
 function AdminAsambalDashboard() {
+  const navigate = useNavigate();
   return (
     <>
       <h1>Admin Asambal Dashboard</h1>
@@ -19,9 +20,22 @@ function AdminAsambalDashboard() {
       <section>
         <h2>Gestión institucional</h2>
         <ul>
+          <button onClick={() => navigate("/clubs")}>
+            Gestión de clubes
+          </button>
+          <li>
+            <button onClick={() => navigate("/coaches")}>
+              Gestión de profesores
+            </button>
+          </li>
+          <li>
+            <button onClick={() => navigate("/players")}>
+              Gestión de jugadores
+            </button>
+          </li>
+
           <li>Alta y gestión de clubes</li>
           <AltaClub />
-          <ClubList />
           <li>Alta de administradores de club</li>
           <li>Supervisión de profesores</li>
         </ul>

@@ -1,15 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:3000/api"; 
 
 function CreateClub() {
+  const navigate = useNavigate();
   const [clubName, setClubName] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
-  const [venue, setVenue] = useState("");
-  const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
-  const [manager, setManager] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +17,7 @@ function CreateClub() {
     await axios.post(API_URL + "/clubs", {
       clubName,
       adminEmail,
-      venue,
-      telephone: phone,
       city,
-      manager,
     },
     {
       headers: {
@@ -50,27 +46,9 @@ function CreateClub() {
         />
 
         <input required
-          placeholder="Venue"
-          value={venue}
-          onChange={(e) => setVenue(e.target.value)}
-        />
-
-        <input required
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-
-        <input required
           placeholder="City"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-        />
-
-        <input  
-          placeholder="Manager"
-          value={manager}
-          onChange={(e) => setManager(e.target.value)}
         />
 
         <button type="submit">Crear</button>
