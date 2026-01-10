@@ -3,87 +3,113 @@ import AltaClub from "./CreateClub";
 
 function AdminAsambalDashboard() {
   const navigate = useNavigate();
+
   return (
-    <>
-      <h1>Admin Asambal Dashboard</h1>
+    <div className="min-h-screen px-6 py-8 bg-gray-300">
+      {/* Título principal (h1 no se usa) */}
+      <h2 className="mb-8 text-3xl font-light text-center text-gray-800">
+        Dashboard Administrativo
+      </h2>
 
-      <ul>
-        <li>Gestion de clubes, inscripciones de clubes y membresias</li>
-        <li>Gestion de usuarios</li>
-        <li>Gestion de roles</li>
-        <li>Gestion de pagos</li>
-        <li>Gestion de empadronamientos y liberados</li>
-        <li>Gestion de administradores</li>
-        <li>Gestion de datos</li>
-      </ul>
+      {/* Checklist de desarrollo comentado */}
+      {/*
+        <li>Gestión de clubes, inscripciones de clubes y membresías</li>
+        <li>Gestión de usuarios</li>
+        <li>Gestión de roles</li>
+        <li>Gestión de pagos</li>
+        <li>Gestión de empadronamientos y liberados</li>
+        <li>Gestión de administradores</li>
+        <li>Gestión de datos</li>
+      */}
 
-      <section>
-        <h2>Gestión institucional</h2>
-        <ul>
-          <li>
-          <button onClick={() => navigate("/asambal/pendientes")}>
-            Solicitudes de aprobación
-          </button>
-          </li>
-          <li>
-          <button onClick={() => navigate("/clubs")}>
-            Gestión de clubes
-          </button>
-          </li>
-          <li>
-            <button onClick={() => navigate("/coaches")}>
-              Gestión de profesores
-            </button>
-          </li>
-          <li>
-            <button onClick={() => navigate("/players")}>
-              Gestión de jugadores
-            </button>
-          </li>
+      {/* Grid de secciones */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Gestión Institucional */}
+        <div className="p-6 bg-white shadow rounded-xl">
+          <h3 className="mb-4 text-xl font-semibold">Gestión Institucional</h3>
+          <ul className="space-y-3">
+            <li>
+              <button
+                onClick={() => navigate("/asambal/pendientes")}
+                className="w-full px-4 py-2 text-left text-white transition-colors bg-blue-700 rounded-lg hover:bg-blue-800"
+              >
+                Solicitudes de aprobación
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/clubs")}
+                className="w-full px-4 py-2 text-left text-white transition-colors bg-blue-700 rounded-lg hover:bg-blue-800"
+              >
+                Gestión de clubes
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/coaches")}
+                className="w-full px-4 py-2 text-left text-white transition-colors bg-blue-700 rounded-lg hover:bg-blue-800"
+              >
+                Gestión de profesores
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => navigate("/players")}
+                className="w-full px-4 py-2 text-left text-white transition-colors bg-blue-700 rounded-lg hover:bg-blue-800"
+              >
+                Gestión de jugadores
+              </button>
+            </li>
+            <li>
+              <div className="mt-2">
+                <AltaClub />
+              </div>
+            </li>
+            <li className="text-gray-700">Alta de administradores de club</li>
+            <li className="text-gray-700">Supervisión de profesores</li>
+          </ul>
+        </div>
 
-          <li>Alta y gestión de clubes</li>
-          <AltaClub />
-          <li>Alta de administradores de club</li>
-          <li>Supervisión de profesores</li>
-        </ul>
-      </section>
+        {/* Usuarios */}
+        <div className="p-6 bg-white shadow rounded-xl">
+          <h3 className="mb-4 text-xl font-semibold">Usuarios</h3>
+          <ul className="space-y-3 text-gray-700">
+            <li>Crear usuarios (club / profesor / jugador)</li>
+            <li>Ver usuarios por rol</li>
+            <li>Bloquear / reactivar usuarios</li>
+          </ul>
+        </div>
 
-      <section>
-        <h2>Usuarios</h2>
-        <ul>
-          <li>Crear usuarios (club / profesor / jugador)</li>
+        {/* Jugadores */}
+        <div className="p-6 bg-white shadow rounded-xl">
+          <h3 className="mb-4 text-xl font-semibold">Jugadores</h3>
+          <ul className="space-y-3 text-gray-700">
+            <li>Buscar jugadores globalmente</li>
+            <li>Ver empadronamientos</li>
+            <li>Acciones excepcionales (override)</li>
+          </ul>
+        </div>
 
-          <li>Ver usuarios por rol</li>
-          <li>Bloquear / reactivar usuarios</li>
-        </ul>
-      </section>
+        {/* Viajes y Competencias */}
+        <div className="p-6 bg-white shadow rounded-xl">
+          <h3 className="mb-4 text-xl font-semibold">Viajes y Competencias</h3>
+          <ul className="space-y-3 text-gray-700">
+            <li>Supervisión de viajes</li>
+            <li>Estado de inscripciones</li>
+            <li>Pagos globales</li>
+          </ul>
+        </div>
 
-      <section>
-        <h2>Jugadores</h2>
-        <ul>
-          <li>Buscar jugadores globalmente</li>
-          <li>Ver empadronamientos</li>
-          <li>Acciones excepcionales (override)</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Viajes y competencias</h2>
-        <ul>
-          <li>Supervisión de viajes</li>
-          <li>Estado de inscripciones</li>
-          <li>Pagos globales</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Auditoría</h2>
-        <ul>
-          <li>Historial de acciones</li>
-          <li>Logs críticos</li>
-        </ul>
-      </section>
-    </>
+        {/* Auditoría */}
+        <div className="p-6 bg-white shadow rounded-xl md:col-span-2">
+          <h3 className="mb-4 text-xl font-semibold">Auditoría</h3>
+          <ul className="space-y-3 text-gray-700">
+            <li>Historial de acciones</li>
+            <li>Logs críticos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }
 

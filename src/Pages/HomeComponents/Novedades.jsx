@@ -14,7 +14,7 @@ const novedades = [
         image: hero,
         text: "Se realizó una nueva jornada de capacitación para árbitros federados con disertantes nacionales..."
     },
-        {
+    {
         id: 3,
         title: "Inscripción a viajes",
         image: hero,
@@ -50,9 +50,11 @@ function NovedadCard({ title, image, text }) {
             />
 
             <div className="p-6">
-                <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                <h3 className="flex mb-2 text-lg font-bold h-14 items-top">
+                    {title}
+                </h3>
 
-                <p className={`text-gray-600 text-sm ${!open && "line-clamp-3"}`}>
+                <p className={`text-gray-600 text-sm h-16 ${!open && "line-clamp-3"}`}>
                     {text}
                 </p>
 

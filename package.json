@@ -11,6 +11,7 @@
     "tailwind:watch": "npx tailwindcss -i ./src/index.css -o ./src/tailwind-dev.css --watch"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.13.2",
     "framer-motion": "^12.25.0",
     "react": "^19.2.0",

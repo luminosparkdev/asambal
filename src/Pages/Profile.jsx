@@ -25,10 +25,15 @@ function Profile() {
   };
 
   return (
-    <div>
-      <h1>Perfil de {user.email}</h1>
-      {renderContent()}
-    </div>
+<div className="p-8 mx-auto bg-gray-300 shadow-lg rounded-xl">
+  <h2 className="mb-6 text-2xl font-semibold text-gray-800">
+    Perfil de <span className="text-blue-700">{user.email}</span>
+  </h2>
+
+  <div className="space-y-4">
+    {renderContent()}
+  </div>
+</div>
   );
 }
 

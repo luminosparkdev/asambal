@@ -1,15 +1,11 @@
 import { motion as Motion } from "framer-motion";
 import logo from "../../../src/Assets/Asambal/logo.png"
-import hero from "../../../src/Assets/hero.png";
 
 const clubes = Array(12).fill(logo);
 
 function ClubesCarousel() {
   return (
     <main>
-    <section className="flex flex-col items-center justify-center h-screen bg-center bg-cover" style={{ backgroundImage: `url(${hero})` }} >
-    </section>
-
     <section className="py-16 overflow-hidden">
       <h2 className="mb-8 text-4xl font-bold text-center">
         CLUBES
@@ -35,6 +31,7 @@ function ClubesCarousel() {
               src={logo}
               alt="Club de handball ASAMBAL"
               className="object-contain h-20"
+              draggable="false"
             />
           </div>
         ))}
