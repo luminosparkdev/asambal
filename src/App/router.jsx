@@ -19,7 +19,8 @@ import ProfesorDashboard from "../Pages/ProfesorDashboard";
 import CoachesList from "../Pages/Clubes/CoachesList";
 import CoachesCreate from "../Pages/Clubes/CoachesCreate";
 import CoachesDetail from "../Pages/Clubes/CoachesDetail";
-import PendingUsers from "../Views/PendingUsers";
+import PendingUsers from "../Views/Asambal/PendingUsers";
+import PendingCoaches from "../Views/Club/PendingCoaches";
 
 export const router = createBrowserRouter([
     {
@@ -89,7 +90,16 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+
             {
+                path: "coaches/pending-coaches",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}> 
+                        <PendingCoaches />
+                    </ProtectedRoute>
+                ),
+            }, 
+            {   
                 path: "coaches",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>

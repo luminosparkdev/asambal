@@ -14,6 +14,9 @@ function AdminClubDashboard() {
                         Gestión de jugadores
                     </button>
                 </li>
+                <button onClick={() => navigate("/coaches/pending-coaches")}>
+                    Solicitudes pendientes
+                </button>   
                 <li>Gestion de categorias</li>
                 <li>Gestion de pagos y cuotas</li>
                 <li>Gestion de lesiones</li>
