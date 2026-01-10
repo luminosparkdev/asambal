@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import AdminClubProfileForm from "../Components/Profiles/AdminClubProfileForm";
@@ -10,7 +10,6 @@ function ActivateAccount() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState("PASSWORD");
-  const [role, setRole] = useState(null);
   const [userId, setUserId] = useState(null);
 
   const email = searchParams.get("email");
@@ -20,15 +19,15 @@ function ActivateAccount() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState(null);
 
-  if (!email || !token) {
+  if (!email || !token ) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-red-500">Link inválido o incompleto.</p>
       </div>
     );
   }
-console.log({ email, password, token });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,10 +39,10 @@ console.log({ email, password, token });
         "http://localhost:3000/api/auth/activate-account",
         { email, password, token }
       );
-
       setRole(res.data.role);
       setUserId(res.data.userId);
       setStep("PROFILE");
+      console.log(res.data);
       setSuccess(true);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -100,10 +99,10 @@ console.log({ email, password, token });
             </button>
           </form>
         )}
+        {step === "PROFILE" && role === "admin_club" && (<AdminClubProfileForm userId={userId} />)}
+        {step === "PROFILE" && role === "profesor" && (<ProfesorProfileForm userId={userId} />)}
+        {step === "PROFILE" && role === "jugador" && (<JugadorProfileForm userId={userId} />)}
 
-        {step === "PROFILE" && role === "admin_club" && <AdminClubProfileForm userId={userId} />}
-        {step === "PROFILE" && role === "profesor" && <ProfesorProfileForm userId={userId} />}
-        {step === "PROFILE" && role === "jugador" && <JugadorProfileForm userId={userId} />}
       </div>
     </div>
   );
