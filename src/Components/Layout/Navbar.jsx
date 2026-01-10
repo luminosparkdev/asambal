@@ -1,31 +1,81 @@
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Auth/AuthContext";
 
 function Navbar() {
-  const {isAuthenticated, user, logout} = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
   return (
-    <nav>
-      <ul>
-        <li><Link to="/">Inicio</Link></li>
+    <nav className="text-white bg-blue-900 shadow-md">
+      <div className="px-4 mx-auto max-w-7xl">
+        <div className="flex items-center justify-between h-16">
 
-        {!isAuthenticated && (
-          <li><Link to="/login">Login</Link></li>
-        )}
+          {/* Logo / Nombre */}
+          <Link
+            to="/"
+            className="text-xl font-bold tracking-wide hover:text-blue-200"
+          >
+            <h1 className="text-xl font-bold text-white">AsAmBal </h1>
+          </Link>
 
+          {/* Links */}
+          <ul className="flex items-center space-x-6">
+            <li>
+              <Link
+                to="/"
+                className="transition-colors hover:text-blue-200"
+              >
+                Inicio
+              </Link>
+            </li>
+
+            {!isAuthenticated && (
+              <li>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 transition-colors bg-blue-600 rounded-md hover:bg-blue-700"
+                >
+                  Login
+                </Link>
+              </li>
+            )}
+
+            {isAuthenticated && (
+              <>
+                <li>
+                  <Link
+                    to="/perfil"
+                    className="transition-colors hover:text-blue-200"
+                  >
+                    Perfil
+                  </Link>
+                </li>
+
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 transition-colors bg-red-600 rounded-md hover:bg-red-700"
+                  >
+                    Cerrar sesión
+                  </button>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+
+        {/* Usuario */}
         {isAuthenticated && (
-          <>
-            <li><Link to="/perfil">Perfil</Link></li>
-            <li><button onClick={handleLogout}>Cerrar sesión</button></li>
-          </>
+          <div className="pb-2 text-sm text-blue-200">
+            Bienvenido, <span className="font-medium">{user.email}</span>
+          </div>
         )}
-      </ul>
-      {isAuthenticated && <p>Bienvenido, {user.email}</p>}
+      </div>
     </nav>
   );
 }
