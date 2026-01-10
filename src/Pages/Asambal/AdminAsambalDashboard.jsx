@@ -20,9 +20,16 @@ function AdminAsambalDashboard() {
       <section>
         <h2>Gestión institucional</h2>
         <ul>
+          <li>
+          <button onClick={() => navigate("/asambal/pendientes")}>
+            Solicitudes de aprobación
+          </button>
+          </li>
+          <li>
           <button onClick={() => navigate("/clubs")}>
             Gestión de clubes
           </button>
+          </li>
           <li>
             <button onClick={() => navigate("/coaches")}>
               Gestión de profesores
