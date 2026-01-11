@@ -1,19 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const API_URL = "http://localhost:3000/api";
+import api from "../../Api/Api";
 
 function CoachesList() {
   const [coaches, setCoaches] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${API_URL}/coaches`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
+    api.get(`/coaches`)
     .then(res => setCoaches(res.data))
     .catch(err => console.error(err));
   }, []);
@@ -29,15 +23,7 @@ function CoachesList() {
     );
 
     try {
-      await axios.patch(
-        `${API_URL}/coaches/${coach.id}/toggle`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await api.patch(`/coaches/${coach.id}/toggle`);
     } catch (err) {
       console.error(err);
     }

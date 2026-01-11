@@ -1,28 +1,16 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../Api/Api";
 
 function PendingUsers() {
   const [users, setUsers] = useState([]);
 
   const fetchPending = async () => {
-    const res = await axios.get("http://localhost:3000/api/asambal/pending-users", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const res = await api.get("/asambal/pending-users");
     setUsers(res.data);
   };
 
   const handleAction = async (userId, action) => {
-    await axios.patch(
-      "http://localhost:3000/api/asambal/validate-user",
-      { userId, action },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    await api.patch("/asambal/validate-user", { userId, action });
     fetchPending();
   };
 

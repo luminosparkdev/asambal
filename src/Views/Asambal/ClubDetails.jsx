@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
+import api from "../../Api/Api";
 
 function ClubDetails() {
     const { id } = useParams();
@@ -13,16 +12,8 @@ function ClubDetails() {
     const [form, setForm] = useState({});
     const navigate = useNavigate();
 
-    const API_URL = "http://localhost:3000/api";
-
     useEffect(() => {
-        axios.get(`${API_URL}/clubs/${id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        )
+        api.get(`/clubs/${id}`)
             .then(response => {
                 setClub(response.data);
                 setForm({
@@ -78,13 +69,7 @@ function ClubDetails() {
         }))
 
         try {
-            const response = await axios.put(`${API_URL}/clubs/${id}`, form,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
+            const response = await api.put(`/clubs/${id}`, form);
 
             Swal.fire({
                 title: "Guardado",
@@ -106,15 +91,7 @@ function ClubDetails() {
     };
 
     const handleToggle = async () => {
-        const res = await axios.patch(
-            `${API_URL}/clubs/${id}/toggle`,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            }
-        );
+        const res = await api.patch(`/clubs/${id}/toggle`);
 
         setClub(prev => ({
             ...prev,

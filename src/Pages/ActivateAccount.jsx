@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
 import AdminClubProfileForm from "../Components/Profiles/AdminClubProfileForm";
 import ProfesorProfileForm from "../Components/Profiles/ProfesorProfileForm";
 import JugadorProfileForm from "../Components/Profiles/JugadorProfileForm";
+import api from "../Api/Api";
 
 function ActivateAccount() {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,7 @@ function ActivateAccount() {
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(false);  
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState(null);
   const [clubId, setClubId] = useState(null);
@@ -37,8 +37,8 @@ function ActivateAccount() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/activate-account",
+      const res = await api.post(
+        "/auth/activate-account",
         { email, password, token }
       );
 

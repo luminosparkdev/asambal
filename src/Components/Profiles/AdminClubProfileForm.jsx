@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import api from "../../Api/Api";
 
 function AdminClubProfileForm({ userId, clubId }) {
   const [nombre, setNombre] = useState("");
@@ -24,14 +24,7 @@ function AdminClubProfileForm({ userId, clubId }) {
   const navigate = useNavigate();
 
   const getClubData = async () => {
-  const res = await axios.get(
-    `http://localhost:3000/api/clubs/${clubId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
+  const res = await api.get(`/clubs/${clubId}`);
 
   setNombre(res.data.nombre);
   setCiudad(res.data.ciudad);
@@ -45,18 +38,13 @@ useEffect(() => {
     e.preventDefault();
     setLoading(true);
 
-    await axios.post(`http://localhost:3000/api/clubs/${clubId}/complete-profile`, {
+    await api.post(`/clubs/${clubId}/complete-profile`, {
       adminUserId: userId,
       responsable,
       sede,
       telefono,
       canchas,
       canchasAlternativas,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
     });
 
     setLoading(false);
