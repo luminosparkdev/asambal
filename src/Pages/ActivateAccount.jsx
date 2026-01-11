@@ -20,6 +20,8 @@ function ActivateAccount() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState(null);
+  const [clubId, setClubId] = useState(null);
+
 
   if (!email || !token ) {
     return (
@@ -39,8 +41,13 @@ function ActivateAccount() {
         "http://localhost:3000/api/auth/activate-account",
         { email, password, token }
       );
+
+      localStorage.setItem("token", res.data.token);
+
       setRole(res.data.role);
       setUserId(res.data.userId);
+      setClubId(res.data.clubId);
+      
       setStep("PROFILE");
       console.log(res.data);
       setSuccess(true);
@@ -99,7 +106,7 @@ function ActivateAccount() {
             </button>
           </form>
         )}
-        {step === "PROFILE" && role === "admin_club" && (<AdminClubProfileForm userId={userId} />)}
+        {step === "PROFILE" && role === "admin_club" && (<AdminClubProfileForm userId={userId} clubId={clubId} />)}
         {step === "PROFILE" && role === "profesor" && (<ProfesorProfileForm userId={userId} />)}
         {step === "PROFILE" && role === "jugador" && (<JugadorProfileForm userId={userId} />)}
 

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
-function AdminClubProfileForm({ userId }) {
+function AdminClubProfileForm({ userId, clubId }) {
   const [nombre, setNombre] = useState("");
   const [responsable, setResponsable] = useState("");
   const [sede, setSede] = useState("");
@@ -19,30 +19,42 @@ function AdminClubProfileForm({ userId }) {
     techo: "",
   });
 
+  const getClubData = async () => {
+  const res = await axios.get(
+    `http://localhost:3000/api/clubs/${clubId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+
+  setNombre(res.data.nombre);
+  setCiudad(res.data.ciudad);
+};
+
+useEffect(() => {
+  getClubData();
+}, [clubId]);
+
   const submitProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    await axios.post("http://localhost:3000/api/admin-club/complete-profile", {
+    await axios.post(`http://localhost:3000/api/clubs/${clubId}/complete-profile`, {
       adminUserId: userId,
-      nombre: nombre,
       responsable,
       sede,
       telefono,
-      canchas: {
-        ancho: canchas.ancho,
-        largo: canchas.largo,
-        piso: canchas.piso,
-        tablero: canchas.tablero,
-        techo: canchas.techo,
-        alternativas: {
-          cancha1: canchasAlternativas[0] || null,
-          cancha2: canchasAlternativas[1] || null,
-        },
+      canchas,
+      canchasAlternativas,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
-    setSuccess(true);
     setLoading(false);
 
     if (success) {
@@ -56,10 +68,13 @@ function AdminClubProfileForm({ userId }) {
 
       <input
         value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-        placeholder="Nombre"
-        required
-      />  
+        disabled
+      />
+
+      <input
+        value={ciudad}
+        disabled
+      />
 
       <input
         value={responsable}
@@ -76,13 +91,6 @@ function AdminClubProfileForm({ userId }) {
       />
 
       <input
-        value={ciudad}
-        onChange={(e) => setCiudad(e.target.value)}
-        placeholder="Ciudad"
-        required
-      />  
-
-      <input
         value={telefono}
         onChange={(e) => setTelefono(e.target.value)}
         placeholder="Telefono"
@@ -92,19 +100,19 @@ function AdminClubProfileForm({ userId }) {
       <h2>Cancha Principal</h2>
 
       <input type="number" placeholder="Ancho"
-        onChange={(e) => setCancha({ ...cancha, ancho: e.target.value })} />
+        onChange={(e) => setCanchas({ ...canchas, ancho: e.target.value })} />
 
       <input type="number" placeholder="Largo"
-        onChange={(e) => setCancha({ ...cancha, largo: e.target.value })} />
+        onChange={(e) => setCanchas({ ...canchas, largo: e.target.value })} />
 
       <input placeholder="Piso"
-        onChange={(e) => setCancha({ ...cancha, piso: e.target.value })} />
+        onChange={(e) => setCanchas({ ...canchas, piso: e.target.value })} />
 
       <input placeholder="Tablero"
-        onChange={(e) => setCancha({ ...cancha, tablero: e.target.value })} />
+        onChange={(e) => setCanchas({ ...canchas, tablero: e.target.value })} />
 
       <input placeholder="Techo"
-        onChange={(e) => setCancha({ ...cancha, techo: e.target.value })} />
+        onChange={(e) => setCanchas({ ...canchas, techo: e.target.value })} />
 
       <button
         type="button"
