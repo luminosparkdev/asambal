@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function AdminClubProfileForm({ userId, clubId }) {
   const [nombre, setNombre] = useState("");
@@ -18,6 +20,8 @@ function AdminClubProfileForm({ userId, clubId }) {
     tablero: "",
     techo: "",
   });
+
+  const navigate = useNavigate();
 
   const getClubData = async () => {
   const res = await axios.get(
@@ -56,10 +60,16 @@ useEffect(() => {
     });
 
     setLoading(false);
+    setSuccess(true);
+    
+    await Swal.fire({
+      icon: "success",
+      title: "Datos enviados correctamente",
+      text: "El perfil del club quedó pendiente de validación por ASAMBAL.",
+      confirmButtonText: "ir al inicio",
+    });
 
-    if (success) {
-      return <p>Perfil enviado. Pendiente de validación por ASAMBAL.</p>;
-    }
+    navigate("/");
   };
 
   return (
