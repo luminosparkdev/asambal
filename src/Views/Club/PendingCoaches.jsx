@@ -16,12 +16,6 @@ function PendingCoaches() {
     await api.patch("/coaches/validate-coach", { coachId, action });
     setCoaches((prev) => prev.filter((c) => c.id !== coachId));
     fetchPending();
-        },
-      }
-    );
-
-    setCoaches((prev) => prev.filter((c) => c.id !== coachId));
-    fetchPending();
   };
 
   useEffect(() => {
