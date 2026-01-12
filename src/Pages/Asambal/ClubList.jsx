@@ -100,6 +100,13 @@
   <div className="flex flex-col h-screen p-6 bg-gray-100">
     {/* Título */}
     <h2 className="mb-4 text-2xl font-semibold text-gray-800">Clubs registrados</h2>
+    <button
+    onClick={() => navigate("/clubs/create")}
+    className="px-5 py-2 font-medium text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700 w-fit"
+    title="Agregar nuevo club"
+    >
+      + Nuevo club
+    </button>
 
     {/* Contenedor de tabla con scroll */}
     <div className="flex-1 overflow-auto">
