@@ -86,6 +86,12 @@ function CreateClub() {
         >
           Crear
         </button>
+        <button 
+            onClick={() => navigate("/clubs")}
+            className="text-sm text-gray-500 hover:underline"
+          >
+            Cancelar
+          </button>
       </form>
     </div>
   );

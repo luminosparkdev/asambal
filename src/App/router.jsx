@@ -21,6 +21,7 @@ import CoachesCreate from "../Pages/Clubes/CoachesCreate";
 import CoachesDetail from "../Pages/Clubes/CoachesDetail";
 import PendingUsers from "../Views/Asambal/PendingUsers";
 import PendingCoaches from "../Views/Club/PendingCoaches";
+import CreateClub from "../Pages/Asambal/CreateClub";
 
 export const router = createBrowserRouter([
     {
@@ -77,6 +78,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL, ROLES.ADMIN_CLUB]}>
                         <ClubDetails />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "clubs/create",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL, ROLES.ADMIN_CLUB]}>
+                        <CreateClub />
                     </ProtectedRoute>
                 ),
             },

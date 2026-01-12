@@ -1,11 +1,40 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../Auth/AuthContext";
-import { ArrowLeftIcon, BellIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect, useRef } from "react";
+import { div } from "framer-motion/client";
 
 function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const profileRef = useRef(null);
+
+  const isHome = location.pathname === "/";
+  const isLogin = location.pathname === "/login";
+  const isDashboard = location.pathname === "/admin";
+  const isAppView = isAuthenticated && !isHome && !isLogin;
+
+  const showDashboardButton = isAuthenticated && !isDashboard;
+const showHomeSections = isHome && !isAuthenticated;
+
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    setProfileOpen(false);
+  }, [isAuthenticated, location.pathname]);
 
   const notifications = 0;
 
@@ -14,16 +43,11 @@ function Navbar() {
     navigate("/login");
   };
 
-  // Rutas donde NO queremos mostrar la flecha
-  const noBackArrowPaths = ["/", "/login", "/admin"];
-  const showBackArrow = isAuthenticated && !noBackArrowPaths.includes(location.pathname);
-
-  const showDashboardButton = isAuthenticated && location.pathname === "/";
-
   return (
-    <nav className="text-white bg-blue-900 shadow-md">
+    <nav className="text-white bg-gradient-to-b from-[#334353] to-[#0F1317] shadow-md border-b-2 border-[#334353]">
       <div className="px-4 mx-auto max-w-7xl">
-        {/* Top Navbar: Logo + Links */}
+
+        {/* Top Navbar */}
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
@@ -31,79 +55,104 @@ function Navbar() {
             <span className="text-xl font-bold text-white">AsAmBal</span>
           </Link>
 
-          {/* Links */}
-          <ul className="flex items-center space-x-6 font-light">
+          {/* Secciones del Home (solo público) */}
+          {showHomeSections && (
+            <ul className="hidden md:flex items-center gap-6 text-sm text-gray-300">
+              <li><a href="#clubes" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Clubes</a></li>
+              <li><a href="#novedades" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Novedades</a></li>
+              <li><a href="#sponsors" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Sponsors</a></li>
+              <li><a href="#contacto" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Contacto</a></li>
+            </ul>
+          )}
 
-            {!isAuthenticated && (
-              <li>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 font-semibold transition-colors bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                  Iniciar sesión
-                </Link>
-              </li>
-            )}
-
-            {isAuthenticated && (
+          {/*Right side */}
+          {!isLogin && (
+            <div className="flex items-center gap-4">
+              {!isAuthenticated && (
+              <Link to="/login" className="px-4 py-2 font-semibold border border-blue-500/40 text-gray-400 rounded-md hover:bg-blue-500/10 hover:text-gray-200 transition-colors">
+                Iniciar sesión
+              </Link>
+              )}
+              {isAuthenticated && (
               <>
-                <li>
-                  <Link to="/perfil" className="transition-colors hover:text-blue-200">Perfil</Link>
-                </li>
+              {/* Campana de notificaciones */}
+                <div className="relative cursor-pointer">
+                  <BellIcon className="w-8 h-8 text-gray-300 hover:text-white transition-colors" />
+                  {notifications > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 text-xs bg-red-600 rounded-full flex items-center justify-center">
+                      {notifications}
+                    </span>
+                    )}
+                </div>
 
-                <li>
+                {/* Avatar */}
+                <div ref={profileRef} className="relative">
                   <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 transition-colors bg-red-700 rounded-md hover:bg-red-600"
-                  >
-                    Cerrar sesión
+                    onClick={() => setProfileOpen(prev => !prev)}
+                    className="flex items-center gap-2 px-4 text-gray-300 hover:text-white transition-colors"
+                    >
+                    <UserCircleIcon className="w-8 h-8" />
                   </button>
-                </li>
+
+                  {profileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#0F1317] shadow-xl border border-gray-700 z-50">
+                      <div className="px-4 py-3 text-sm text-gray-300 border-b border-gray-700">
+                        <p className="font-medium text-white">
+                          {user?.email ?? "Administrador"}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {user?.role.split("_").join(" ").toUpperCase() ?? "AsAmBal"}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setProfileOpen(false);
+                          navigate("/perfil");
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+                        >
+                        Mi perfil
+                      </button>
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20"
+                        >
+                        Cerrar sesión
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
-          </ul>
+          </div>
+          )}
         </div>
 
-        {/* Usuario / Flecha / Dashboard button / Campana */}
-        {isAuthenticated && (
+        {/* Segunda fila */}
+        {isAuthenticated && !isLogin && (
           <div className="flex items-center justify-between py-2">
-
-            {/* Flecha de volver atrás */}
-            {showBackArrow && (
+            {/*Volver*/}
+            {isAppView && !isDashboard && (
               <div
-                className="flex items-center gap-2 text-sm text-blue-200 cursor-pointer hover:text-blue-100"
-                onClick={() => window.history.length > 1 && navigate(-1)}
-                title="Volver atrás"
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm text-gray-400 border border-gray-500/40 cursor-pointer hover:text-white hover:bg-gray-500/10 transition-all"
+                onClick={() => navigate(-1)}
               >
                 <ArrowLeftIcon className="w-5 h-5" />
-                <span>Volver</span>
+                <span className="font-medium">Volver</span>
               </div>
             )}
 
-            {/* Saludo */}
-            <div className="flex-1 text-sm text-center text-blue-200">
-              Bienvenido, <span className="font-medium">{user.email}</span>
-            </div>
-
-            {/* Botón ir al Dashboard */}
+            {/* Dashboard */}
             {showDashboardButton && (
               <button
-                className="px-3 py-1 text-sm text-white bg-green-600 rounded-md hover:bg-green-500"
+                className="ml-auto px-3 py-1 text-sm text-green-400 border border-green-500/40 rounded-md hover:bg-green-500/10 hover:text-green-200 transition-all"
                 onClick={() => navigate("/admin")}
               >
-                Ir al Dashboard
+                <span className="font-medium">Ir al Dashboard</span>
               </button>
-            )}
-
-            {/* Campana de notificaciones */}
-            <div className="relative ml-4 cursor-pointer">
-              <BellIcon className="w-6 h-6 text-blue-200 hover:text-blue-100" />
-              {notifications > 0 && (
-                <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full -top-1 -right-1">
-                  {notifications}
-                </span>
-              )}
-            </div>
+            )}            
           </div>
         )}
       </div>
