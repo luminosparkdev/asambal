@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const API_URL = "http://localhost:3000/api";
+import api from "../../Api/Api";
 
 function CoachDetails() {
   const { id } = useParams();
@@ -12,11 +10,7 @@ function CoachDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${API_URL}/coaches/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
+    api.get(`/coaches/${id}`)
     .then(res => {
       setCoach(res.data);
       setLoading(false);
@@ -41,16 +35,7 @@ function CoachDetails() {
     e.preventDefault();
 
     try {
-      await axios.put(
-        `${API_URL}/coaches/${id}`,
-        coach,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
+      await api.put(`/coaches/${id}`, coach);
       navigate("/coaches");
     } catch (err) {
       console.error(err);

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const API_URL = "http://localhost:3000/api";
+import api from "../../Api/Api";
 
 function CoachCreate() {
   const navigate = useNavigate();
@@ -25,15 +23,7 @@ function CoachCreate() {
     e.preventDefault();
 
     try {
-      await axios.post(
-        `${API_URL}/coaches`,
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await api.post(`/coaches`, form);
 
       navigate("/coaches");
     } catch (err) {

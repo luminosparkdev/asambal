@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../Api/Api";
 
 function PendingCoaches() {
   const [coaches, setCoaches] = useState([]);
@@ -7,26 +7,13 @@ function PendingCoaches() {
 
   const fetchPending = async () => {
     setLoading(true);
-    const res = await axios.get("http://localhost:3000/api/coaches/pending-coaches", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const res = await api.get("/coaches/pending-coaches");
     setCoaches(res.data);
     setLoading(false);
   };
 
   const handleAction = async (coachId, action) => {
-    await axios.patch(
-      "http://localhost:3000/api/coaches/validate-coach",
-      { coachId, action },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
+    await api.patch("/coaches/validate-coach", { coachId, action });
     setCoaches((prev) => prev.filter((c) => c.id !== coachId));
     fetchPending();
   };

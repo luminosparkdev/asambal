@@ -28,6 +28,7 @@ function Login() {
 
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
+      localStorage.setItem("refreshToken", data.refreshToken);
 
       const redirectPath = roleRedirectMap[data.user.role] || "/perfil";
       navigate(redirectPath);

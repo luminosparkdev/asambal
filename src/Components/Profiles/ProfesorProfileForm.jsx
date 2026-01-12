@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../../Api/Api";
 
 function ProfesorProfileForm({ userId }) {
   const [nombre, setNombre] = useState("");
@@ -16,7 +16,7 @@ function ProfesorProfileForm({ userId }) {
     e.preventDefault();
     setLoading(true);
 
-    await axios.post("http://localhost:3000/api/coaches/complete-profile", {
+    await api.post(`/coaches/complete-profile`, {
       coachId: userId,
       nombre: nombre,
       apellido,

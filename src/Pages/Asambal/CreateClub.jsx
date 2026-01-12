@@ -1,8 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = "http://localhost:3000/api";
+import api from "../../Api/Api";
 
 function CreateClub() {
   const navigate = useNavigate();
@@ -22,18 +20,12 @@ function CreateClub() {
     }
 
     try {
-      const response = await axios.post(
-        API_URL + "/clubs",
+      const response = await api.post(
+        "/clubs",
         {
           clubName,
           adminEmail,
           city,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
         }
       );
 

@@ -1,10 +1,8 @@
   import { useEffect, useState } from "react";
   import { useNavigate } from "react-router-dom";
-  import axios from "axios";
   import Swal from "sweetalert2";
+  import api from "../../Api/Api";
 
-
-  const API_URL = "http://localhost:3000/api";
 
   function ClubsList() {
     const [clubs, setClubs] = useState([]);
@@ -23,11 +21,7 @@
     //OBTENER LISTA DE CLUBES
     const fetchClubs = async () => {
       try {
-        const res = await axios.get(`${API_URL}/clubs`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await api.get(`/clubs`);
         setClubs(res.data);
       } catch (err) {
         console.error(err);
@@ -67,15 +61,7 @@
 
         updateClubStatusLocally(club.id, optimisticStatus);
 
-        await axios.patch(
-          `${API_URL}/clubs/${club.id}/toggle`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        }
-      );
+        await api.patch(`/clubs/${club.id}/toggle`);
 
       Swal.fire({
         icon: "success",
@@ -89,7 +75,7 @@
       });
     } catch (err) {
       updateClubStatusLocally(club.id, previousStatus);
-      
+
       Swal.fire({
         title: "Error",
         text: err.response?.data?.message || "No se pudo cambiar el estado del club",
