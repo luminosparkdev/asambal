@@ -65,46 +65,86 @@ function ActivateAccount() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h2 className="mb-6 text-2xl font-semibold text-center text-gray-800">
-          Activación de cuenta
-        </h2>
+    <div
+      className="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-top"
+      style={{ backgroundImage: "url('/src/assets/fondoactivacion.webp')" }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />
+
+      {/* Card */}
+      <div
+        className="
+          relative z-10
+          w-full max-w-md
+          p-8
+          bg-slate-900/70 backdrop-blur-md
+          border border-cyan-400/20
+          rounded-xl shadow-2xl
+          text-slate-100
+        "
+      >
 
         {step === "PASSWORD" && (
+          <>
+          <h2 className="mb-2 text-2xl font-semibold text-center tracking-wide">
+              Activación de cuenta
+          </h2>
+
+          <p className="mb-6 text-center text-sm text-slate-400">
+              Estás a un paso de completar tu registro
+          </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm mb-1 text-slate-300">Email</label>
               <input
                 type="email"
                 value={email}
                 readOnly
-                className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
+                className="block w-full px-3 py-2
+                    bg-slate-800/70
+                    border border-slate-700
+                    rounded-md
+                    text-slate-400
+                    cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nueva contraseña</label>
+              <label className="block text-sm mb-1 text-slate-300">Nueva contraseña</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full px-3 py-2 mt-1 text-gray-700 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:outline-none"
+                className="block w-full px-3 py-2
+                    bg-slate-800
+                    border border-slate-700
+                    rounded-md
+                    text-slate-100
+                    placeholder-slate-400
+                    focus:outline-none
+                    focus:ring-2 focus:ring-cyan-400"
               />
             </div>
 
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            {success && <p className="text-sm text-green-500">Cuenta activada correctamente!</p>}
+            {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+            {success && <p className="text-sm text-green-400 text-center">Cuenta activada correctamente!</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 font-medium text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="w-full mt-4 px-4 py-2 font-medium rounded-md
+                  bg-gradient-to-r from-cyan-500 to-blue-600
+                  hover:from-cyan-400 hover:to-blue-500
+                  transition
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed"
             >
               {loading ? "Activando..." : "Activar cuenta"}
             </button>
           </form>
+          </>
         )}
         {step === "PROFILE" && role === "admin_club" && (<AdminClubProfileForm userId={userId} clubId={clubId} />)}
         {step === "PROFILE" && role === "profesor" && (<ProfesorProfileForm userId={userId} />)}

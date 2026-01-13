@@ -52,13 +52,6 @@ function CoachCreate() {
         />
 
         <input
-          name="dni"
-          placeholder="DNI"
-          value={form.dni}
-          onChange={handleChange}
-        />
-
-        <input
           name="email"
           placeholder="Email"
           value={form.email}
@@ -66,30 +59,9 @@ function CoachCreate() {
         />
 
         <input
-          name="telefono"
-          placeholder="Telefono"
-          value={form.telefono}
-          onChange={handleChange}
-        />
-
-        <input
-          name="domicilio"
-          placeholder="Domicilio"
-          value={form.domicilio}
-          onChange={handleChange}
-        />
-
-        <input
           name="categoria"
           placeholder="Categoria"
           value={form.categoria}
-          onChange={handleChange}
-        />
-
-        <input
-          name="enea"
-          placeholder="ENEA"
-          value={form.enea}
           onChange={handleChange}
         />
 

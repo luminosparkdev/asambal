@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import api from "../../Api/Api";
+import { formatLabel } from "../../Utils/formatters";
 
 function ClubDetails() {
   const { id } = useParams();
@@ -154,125 +155,171 @@ function ClubDetails() {
   if (!club) return <div>Club no encontrado</div>;
 
 return (
-  <div className="p-4 min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
-    <h2 className="mb-6 text-2xl font-bold text-gray-200">
-      {editing ? "Editar club" : club.nombre}
-    </h2>
+  <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="absolute inset-0 bg-black/20" />
 
-    {editing ? (
-      <div className="flex flex-col gap-4">
-        <input
-          name="nombre"
-          value={form.nombre}
-          type="text"
-          onChange={handleChange}
-          placeholder="Nombre"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          name="ciudad"
-          value={form.ciudad}
-          type="text"
-          onChange={handleChange}
-          placeholder="Ciudad"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          name="email"
-          value={form.email}
-          type="text"
-          onChange={handleChange}
-          placeholder="Email"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          name="responsable"
-          value={form.responsable}
-          type="text"
-          onChange={handleChange}
-          placeholder="Responsable"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          name="telefono"
-          value={form.telefono}
-          type="text"
-          onChange={handleChange}
-          placeholder="Teléfono"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          name="sede"
-          value={form.sede}
-          type="text"
-          onChange={handleChange}
-          placeholder="Sede"
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <div className="mt-2 space-y-1 text-gray-200">
-          <p><span className="font-semibold">Fecha de creación:</span> {formatDate(club.createdAt)}</p>
-          <p><span className="font-semibold">Fecha de actualización:</span> {formatDate(club.updatedAt)}</p>
-          <p><span className="font-semibold">Estado:</span> 
-            <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-              club.status === "ACTIVO" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-            }`}>
+      <div className="relative z-10 max-w-4xl mx-auto">
+        {/*CARD*/}
+        <div
+          className={`p-8 rounded-2xl shadow-xl bg-transparent border-l-4 transition-all
+          ${club.status === "ACTIVO" ? "border-green-500" : "border-red-500"}
+          `}
+        >
+          {/*HEADER*/}
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <h2 className="mb-6 text-2xl font-bold text-gray-200">
+                {editing ? "Editar club" : club.nombre}
+              </h2>
+              <p className="mt-1 text-sm text-gray-400">
+                Gestión institucional · ASAMBAL
+              </p>
+            </div>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold
+              ${club.status === "ACTIVO"
+                ? "bg-green-500/20 text-green-300"
+                : "bg-red-500/20 text-red-300"}
+              `}
+            >
               {club.status}
             </span>
-          </p>
-        </div>
+          </div>
 
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={handleSave}
-            className="flex-1 px-4 py-2 font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+          {/*BODY*/}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-200">
+            {[
+              { label: "Ciudad", name: "ciudad" },
+              { label: "Responsable", name: "responsable" },
+              { label: "Email", name: "email" },
+              { label: "Teléfono", name: "telefono" },
+              { label: "Sede", name: "sede" },
+            ].map(({ label, name }) => (
+              <div key={name} className="flex flex-col gap-1">
+                <span className="text-xs uppercase tracking-wide text-gray-400">
+                  {label}
+                </span>
+
+                {editing ? (
+                  <input
+                    name={name}
+                    value={form[name] || ""}
+                    onChange={handleChange}
+                    className="px-3 py-2 rounded-md bg-gray-800/70 border border-white/10
+                             text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  <span className="text-sm">
+                    {club[name] || "-"}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* META */}
+          <div className="mt-6 text-sm text-gray-400 space-y-1">
+            <p>Creado: {formatDate(club.createdAt)}</p>
+            <p>Última actualización: {formatDate(club.updatedAt)}</p>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex gap-4 mt-8">
+            {editing ? (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="flex-1 py-3 rounded-lg font-semibold text-white
+                           bg-blue-600 hover:bg-blue-700 transition"
+                >
+                  Guardar cambios
+                </button>
+
+                <button
+                  onClick={() => setEditing(false)}
+                  className="flex-1 py-3 rounded-lg font-semibold text-gray-200
+                           bg-gray-700 hover:bg-gray-600 transition"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setEditing(true)}
+                  className="flex-1 py-3 rounded-lg font-semibold text-white
+                           bg-blue-600 hover:bg-blue-700 transition"
+                >
+                  Editar
+                </button>
+
+                <button
+                  onClick={handleToggle}
+                  className={`flex-1 py-3 rounded-lg font-semibold text-white transition
+                    ${club.status === "ACTIVO"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"}
+                  `}
+                >
+                  {club.status === "ACTIVO" ? "Desactivar" : "Activar"}
+                </button>
+              </>
+            )}
+          </div>
+          {/* INSTALACIONES */}
+<div className="mt-8 space-y-4">
+  <h3 className="text-lg font-semibold text-gray-100">
+    🏟️ Instalaciones
+  </h3>
+
+  {/* Cancha principal */}
+  {club.canchas && (
+    <div className="p-4 rounded-xl border border-white/20 bg-black/30 backdrop-blur">
+      <h4 className="mb-2 text-sm font-semibold text-blue-400 uppercase">
+        Cancha principal
+      </h4>
+
+      <div className="grid grid-cols-2 gap-2 text-sm text-gray-200">
+        <p><span className="text-gray-400">Dimensiones:</span> {club.canchas.ancho}m × {club.canchas.largo}m</p>
+        <p><span className="text-gray-400">Piso:</span> {formatLabel(club.canchas.piso)}</p>
+        <p><span className="text-gray-400">Tablero:</span> {formatLabel(club.canchas.tablero)}</p>
+        <p><span className="text-gray-400">Techo:</span> {club.canchas.techo ? "Sí" : "No"}</p>
+      </div>
+    </div>
+  )}
+
+  {/* Canchas alternativas */}
+  {club.canchasAlternativas?.length > 0 && (
+    <div className="space-y-3">
+      <h4 className="text-sm font-semibold text-gray-300 uppercase">
+        Canchas alternativas
+      </h4>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        {club.canchasAlternativas.map((cancha, i) => (
+          <div
+            key={i}
+            className="p-4 rounded-xl border border-white/20 bg-black/20 backdrop-blur"
           >
-            Guardar
-          </button>
-          <button
-            onClick={() => setEditing(false)}
-            className="flex-1 px-4 py-2 font-semibold text-gray-200 transition-colors bg-gray-300 rounded-lg hover:bg-gray-400"
-          >
-            Cancelar
-          </button>
+            <h5 className="mb-2 text-xs font-semibold text-yellow-400 uppercase">
+              Alternativa {i + 1}
+            </h5>
+
+            <div className="space-y-1 text-sm text-gray-200">
+              <p>Dimensiones: {cancha.ancho}m × {cancha.largo}m</p>
+              <p>Piso: {formatLabel(cancha.piso)}</p>
+              <p>Tablero: {formatLabel(cancha.tablero)}</p>
+              <p>Techo: {cancha.techo ? "Sí" : "No"}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
         </div>
       </div>
-    ) : (
-      <div className="flex flex-col gap-3 text-gray-200">
-        <p><span className="font-semibold">Ciudad:</span> {club.ciudad}</p>
-        <p><span className="font-semibold">Responsable:</span> {club.responsable}</p>
-        <p><span className="font-semibold">Email:</span> {club.email}</p>
-        <p><span className="font-semibold">Teléfono:</span> {club.telefono}</p>
-        <p><span className="font-semibold">Sede:</span> {club.sede}</p>
-        <p><span className="font-semibold">Fecha de creación:</span> {formatDate(club.createdAt)}</p>
-        <p><span className="font-semibold">Fecha de actualización:</span> {formatDate(club.updatedAt)}</p>
-        <p><span className="font-semibold">Estado:</span> 
-          <span className={`ml-2 px-2 py-1 rounded-full text-sm font-medium ${
-            club.status === "ACTIVO" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-          }`}>
-            {club.status}
-          </span>
-        </p>
-
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={() => setEditing(true)}
-            className="flex-1 px-4 py-2 font-semibold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-          >
-            Editar
-          </button>
-          <button
-            onClick={handleToggle}
-            className={`flex-1 px-4 py-2 font-semibold rounded-lg text-white transition-colors ${
-              club.status === "ACTIVO" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
-            }`}
-          >
-            {club.status === "ACTIVO" ? "Desactivar" : "Activar"}
-          </button>
-        </div>
-      </div>
-    )}
-  </div>
+    </div>
 );
 
 }
