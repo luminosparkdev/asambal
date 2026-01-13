@@ -9,42 +9,44 @@ function CreateClub() {
   const [city, setCity] = useState("");
   const [message, setMessage] = useState(""); // Para mostrar feedback
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (!token) {
-      setMessage("❌ No estás autenticado. Por favor, logueate.");
-      return;
-    }
+  if (!token) {
+    setMessage("❌ No estás autenticado. Por favor, logueate.");
+    return;
+  }
 
-    try {
-      const response = await api.post(
-        "/clubs",
-        {
-          clubName,
-          adminEmail,
-          city,
-        }
-      );
-
-      setMessage("✅ Club creado correctamente!");
-      setClubName("");
-      setAdminEmail("");
-      setCity("");
-      console.log(response.data);
-      // Opcional: redirigir al listado
-      // navigate("/clubs");
-    } catch (error) {
-      console.error(error);
-      if (error.response?.status === 401) {
-        setMessage("❌ No autorizado. Revisa tu sesión.");
-      } else {
-        setMessage("❌ Error al crear el club.");
+  try {
+    const response = await api.post(
+      "/clubs",
+      { clubName, adminEmail, city },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
       }
+    );
+
+    setMessage("✅ Club creado correctamente!");
+    setClubName("");
+    setAdminEmail("");
+    setCity("");
+    console.log(response.data);
+    // navigate("/clubs");
+  } catch (error) {
+    console.error(error);
+    if (error.response) {
+      setMessage(`❌ ${error.response.data.message || "Error al crear el club"}`);
+    } else {
+      setMessage("❌ Error de red o backend no disponible.");
     }
-  };
+  }
+};
 
   return (
     <div className="max-w-md p-6 mx-auto mt-8 bg-white rounded-lg shadow">

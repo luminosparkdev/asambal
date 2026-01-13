@@ -22,6 +22,7 @@ import CoachesDetail from "../Pages/Clubes/CoachesDetail";
 import PendingUsers from "../Views/Asambal/PendingUsers";
 import PendingCoaches from "../Views/Club/PendingCoaches";
 import CreateClub from "../Pages/Asambal/CreateClub";
+import RecuperarClave from "../Pages/HomeComponents/RecuperarClave";
 
 export const router = createBrowserRouter([
     {
@@ -33,7 +34,8 @@ export const router = createBrowserRouter([
             { path: "login", element: <Login />, },
             { path: "activar-cuenta", element: <ActivateAccount /> },
             { path: "unauthorized", element: <Unauthorized /> },
-
+            { path: "recuperar-clave", element: <RecuperarClave /> },
+            
             //RUTAS PROTEGIDAS SIN ROL ESPECÍFICO
             {
                 path: "perfil",

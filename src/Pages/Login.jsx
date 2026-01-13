@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Auth/AuthContext";
 import { loginService } from "../Services/auth.service";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -93,12 +94,12 @@ function Login() {
             Iniciar sesión
           </button>
 
-                  <button
-          type="button"
-          className="w-full mt-2 text-sm text-blue-700 cursor-pointer hover:underline"
-        >
-          ¿Olvidaste tu contraseña?
-        </button>
+<Link
+  to="/recuperar-clave"
+  className="w-full mt-2 text-sm text-blue-700 cursor-pointer hover:underline"
+>
+  ¿Olvidaste tu contraseña?
+</Link>
         </form>
       </div>
     </div>
