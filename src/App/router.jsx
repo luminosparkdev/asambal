@@ -15,7 +15,11 @@ import AdminAsambalDashboard from "../Pages/Asambal/AdminAsambalDashboard";
 import ClubList from "../Pages/Asambal/ClubList";
 import ClubDetails from "../Views/Asambal/ClubDetails";
 import AdminClubDashboard from "../Pages/Clubes/AdminClubDashboard";
-import ProfesorDashboard from "../Pages/ProfesorDashboard";
+import ProfesorDashboard from "../Pages/Profesores/ProfesorDashboard";
+import CreatePlayer from "../Pages/Profesores/CreatePlayer";
+import PlayersList from "../Pages/Profesores/PlayerList";
+import PlayerDetail from "../Pages/Profesores/PlayerDetail";
+import EditPlayer from "../Pages/Profesores/EditPlayer";
 import CoachesList from "../Pages/Clubes/CoachesList";
 import CoachesCreate from "../Pages/Clubes/CoachesCreate";
 import CoachesDetail from "../Pages/Clubes/CoachesDetail";
@@ -137,14 +141,46 @@ export const router = createBrowserRouter([
                 ),
             },
             //PROFESOR
-            {
-                path: "profesor",
-                element: (
-                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-                        <ProfesorDashboard />
-                    </ProtectedRoute>
-                ),
-            },
+{
+    path: "profesor",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+            <ProfesorDashboard />
+        </ProtectedRoute>
+    ),
+},
+{
+    path: "profesor/jugadores",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+            <PlayersList />
+        </ProtectedRoute>
+    ),
+},
+{
+    path: "profesor/jugadores/crear",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+            <CreatePlayer />
+        </ProtectedRoute>
+    ),
+},
+{
+    path: "profesor/jugadores/:id",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+            <PlayerDetail />
+        </ProtectedRoute>
+    ),
+},
+{
+    path: "profesor/jugadores/:id/editar",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+            <EditPlayer />
+        </ProtectedRoute>
+    ),
+},
         ],
     },
 ]);
