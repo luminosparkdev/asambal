@@ -13,7 +13,7 @@ function PendingCoaches() {
   };
 
   const handleAction = async (coachId, action) => {
-    await api.patch("/coaches/validate-coach", { coachId, action });
+    await api.patch(`/coaches/${coachId}/validate-coach`, { action });
     setCoaches((prev) => prev.filter((c) => c.id !== coachId));
     fetchPending();
   };
