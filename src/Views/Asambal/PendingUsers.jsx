@@ -32,7 +32,10 @@ function PendingUsers() {
   }, []);
 
   return (
-    <div className="max-w-6xl px-4 py-8 mx-auto relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+      <div className="absolute inset-0 bg-black/20" />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-8 mx-auto">
       <h1 className="mb-6 text-2xl font-bold text-gray-200">Usuarios Pendientes</h1>
 
       {users.length === 0 ? (
@@ -79,6 +82,7 @@ function PendingUsers() {
           ))}
         </motion.div>
       )}
+      </div>
     </div>
   );
 

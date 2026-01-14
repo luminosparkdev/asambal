@@ -13,7 +13,11 @@ function Navbar() {
 
   const isHome = location.pathname === "/";
   const isLogin = location.pathname === "/login";
-  const isDashboard = location.pathname === "/admin";
+  const isDashboard = location.pathname === "/dashboard"
+    || location.pathname === "/admin"
+    || location.pathname === "/admin_club"
+    || location.pathname === "/profesor";
+
   const isAppView = isAuthenticated && !isHome && !isLogin;
 
   const showDashboardButton = isAuthenticated && !isDashboard;
@@ -148,7 +152,7 @@ const showHomeSections = isHome && !isAuthenticated;
             {showDashboardButton && (
               <button
                 className="ml-auto px-3 py-1 text-sm text-green-400 border border-green-500/40 rounded-md hover:bg-green-500/10 hover:text-green-200 transition-all"
-                onClick={() => navigate("/admin")}
+                onClick={() => navigate("/dashboard")}
               >
                 <span className="font-medium">Ir al Dashboard</span>
               </button>

@@ -36,6 +36,7 @@ const sections = [
       { name: "Jugadores", path: "/profesor/jugadores", icon: "🏃" },
     { name: "Crear Jugador", path: "/profesor/jugadores/crear", icon: "➕" },
       { name: "Becados", path: "/admin/becados", icon: "🎓" },
+      { name: "Solicitudes pendientes", path: "/pending-players", icon: "👨‍🏫" },
     ],
   },
   {

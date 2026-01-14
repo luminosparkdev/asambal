@@ -22,11 +22,13 @@ import PlayerDetail from "../Pages/Profesores/PlayerDetail";
 import EditPlayer from "../Pages/Profesores/EditPlayer";
 import CoachesList from "../Pages/Clubes/CoachesList";
 import CoachesCreate from "../Pages/Clubes/CoachesCreate";
-import CoachesDetail from "../Pages/Clubes/CoachesDetail";
+import CoachesDetail from "../Views/Club/CoachesDetail";
 import PendingUsers from "../Views/Asambal/PendingUsers";
 import PendingCoaches from "../Views/Club/PendingCoaches";
 import CreateClub from "../Pages/Asambal/CreateClub";
 import RecuperarClave from "../Pages/HomeComponents/RecuperarClave";
+import DashboardRouter from "../Pages/DashboardRouter";
+import PendingPlayers from "../Views/Profesores/PendingPlayers";
 
 export const router = createBrowserRouter([
     {
@@ -46,6 +48,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <Profile />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "dashboard",
+                element: (
+                    <ProtectedRoute>
+                        <DashboardRouter />
                     </ProtectedRoute>
                 ),
             },
@@ -141,6 +151,14 @@ export const router = createBrowserRouter([
                 ),
             },
             //PROFESOR
+            {
+                path: "pending-players",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <PendingPlayers />
+                    </ProtectedRoute>
+                ),
+            },
 {
     path: "profesor",
     element: (
