@@ -1,5 +1,4 @@
 import { useAuth } from "../Auth/AuthContext";
-import PlayerProfile from "./Jugadores/PlayerProfile";
 
 function Profile() {
   const { user } = useAuth();
@@ -18,7 +17,7 @@ function Profile() {
         return <p>Bienvenido, Profesor. Podés ver tus equipos y horarios.</p>;
 
       case "jugador":
-        return <PlayerProfile />
+        return <p>Bienvenido, Jugador. Podés ver tus datos.</p>
 
       default:
         return <p>Bienvenido, usuario.</p>;
