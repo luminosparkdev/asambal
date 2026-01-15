@@ -152,6 +152,14 @@ export const router = createBrowserRouter([
             },
             //PROFESOR
             {
+                path: "profesor",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <ProfesorDashboard />
+                    </ProtectedRoute>
+                ),
+            },
+            {
                 path: "pending-players",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
@@ -159,46 +167,38 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-{
-    path: "profesor",
-    element: (
-        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-            <ProfesorDashboard />
-        </ProtectedRoute>
-    ),
-},
-{
-    path: "profesor/jugadores",
-    element: (
-        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-            <PlayersList />
-        </ProtectedRoute>
-    ),
-},
-{
-    path: "profesor/jugadores/crear",
-    element: (
-        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-            <CreatePlayer />
-        </ProtectedRoute>
-    ),
-},
-{
-    path: "profesor/jugadores/:id",
-    element: (
-        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-            <PlayerDetail />
-        </ProtectedRoute>
-    ),
-},
-{
-    path: "profesor/jugadores/:id/editar",
-    element: (
-        <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-            <EditPlayer />
-        </ProtectedRoute>
-    ),
-},
+            {
+                path: "players",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <PlayersList />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "profesor/jugadores/crear",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <CreatePlayer />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "profesor/jugadores/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <PlayerDetail />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "profesor/jugadores/:id/editar",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <EditPlayer />
+                    </ProtectedRoute>
+                ),
+            },
         ],
     },
 ]);

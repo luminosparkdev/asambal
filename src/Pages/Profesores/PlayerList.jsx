@@ -28,13 +28,12 @@ function PlayersList() {
 
 const fetchPlayers = async () => {
   try {
-    const res = await api.get("/");
+    const res = await api.get("/players/players-by-coach");
     setPlayers(res.data);
   } catch (err) {
     console.error("Error fetching players:", err.response?.data || err);
   }
 };
-
 
   useEffect(() => {
     fetchPlayers();
@@ -146,12 +145,36 @@ const fetchPlayers = async () => {
             <thead className="text-gray-100 bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-center">Nombre</th>
+                <th className="px-4 py-3 text-center">Apellido</th>
                 <th className="px-4 py-3 text-center">DNI</th>
-                <th className="px-4 py-3 text-center">Categoría</th>
+                <th className="px-4 py-3 text-center">Fecha de nacimiento</th>
                 <th className="px-4 py-3 text-center">Edad</th>
+                <th className="px-4 py-3 text-center">Sexo</th>
+                <th className="px-4 py-3 text-center">Domicilio</th>
+                <th className="px-4 py-3 text-center">Localidad</th>
                 <th className="px-4 py-3 text-center">Teléfono</th>
+                <th className="px-4 py-3 text-center">Email</th>
+                <th className="px-4 py-3 text-center">Instagram</th>
+                <th className="px-4 py-3 text-center">Categoría</th>
+                <th className="px-4 py-3 text-center">Fecha de inscripción</th>
+                <th className="px-4 py-3 text-center">Nivel</th>
+                <th className="px-4 py-3 text-center">Escuela</th>
+                <th className="px-4 py-3 text-center">Turno</th>
+                <th className="px-4 py-3 text-center">Año</th>
+                <th className="px-4 py-3 text-center">Peso</th>
+                <th className="px-4 py-3 text-center">Estatura</th>
+                <th className="px-4 py-3 text-center">Domicilio de cobro</th>
+                <th className="px-4 py-3 text-center">Horario de cobro</th>
+                <th className="px-4 py-3 text-center">Uso de imagen</th>
+                <th className="px-4 py-3 text-center">Tutor</th>
+                <th className="px-4 py-3 text-center">Autorización</th>
+                <th className="px-4 py-3 text-center">Reglas del club</th>
+                <th className="px-4 py-3 text-center">Fecha de creación</th>
+                <th className="px-4 py-3 text-center">Fecha de modificación</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
+                <th className="px-4 py-3 text-center">Mano hábil</th>
+                <th className="px-4 py-3 text-center">Posición</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300">
@@ -159,9 +182,41 @@ const fetchPlayers = async () => {
                 <tr key={player.id} className="transition-colors hover:bg-white/5">
                   <td className="px-4 py-2 text-center">{player.nombre} {player.apellido}</td>
                   <td className="px-4 py-2 text-center">{player.dni}</td>
-                  <td className="px-4 py-2 text-center">{player.categoria}</td>
+                  <td className="px-4 py-2 text-center">{player.fecha_nacimiento}</td>
                   <td className="px-4 py-2 text-center">{player.edad}</td>
+                  <td className="px-4 py-2 text-center">{player.sexo}</td>
+                  <td className="px-4 py-2 text-center">{player.domicilio}</td>
+                  <td className="px-4 py-2 text-center">{player.localidad}</td>
                   <td className="px-4 py-2 text-center">{player.telefono}</td>
+                  <td className="px-4 py-2 text-center">{player.email}</td>
+                  <td className="px-4 py-2 text-center">{player.instagram}</td>
+                  <td className="px-4 py-2 text-center">{player.categoria}</td>
+                  <td className="px-4 py-2 text-center">{player.fecha_inscripcion}</td>
+                  <td className="px-4 py-2 text-center">{player.nivel}</td>
+                  <td className="px-4 py-2 text-center">{player.escuela}</td>
+                  <td className="px-4 py-2 text-center">{player.turno}</td>
+                  <td className="px-4 py-2 text-center">{player.anio}</td>
+                  <td className="px-4 py-2 text-center">{player.peso}</td>
+                  <td className="px-4 py-2 text-center">{player.estatura}</td>
+                  <td className="px-4 py-2 text-center">{player.domicilio_cobro}</td>
+                  <td className="px-4 py-2 text-center">{player.horario_cobro}</td>
+                  <td className="px-4 py-2 text-center">{player.uso_imagen}</td>
+                  <td className="px-4 py-2 text-center">
+                    {player.tutor ? (
+                      <>
+                        <div>{player.tutor.nombre} {player.tutor.apellido}</div>
+                        <div className="text-xs text-gray-500">{player.tutor.telefono}</div>
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-center">{player.autorizacion}</td>
+                  <td className="px-4 py-2 text-center">{player.reglas_club}</td>
+                  <td className="px-4 py-2 text-center">{player.manohabil}</td>
+                  <td className="px-4 py-2 text-center">{player.posicion}</td>
+                  <td className="px-4 py-2 text-center">{player.fecha_creacion}</td>
+                  <td className="px-4 py-2 text-center">{player.fecha_modificacion}</td>
                   <td className="px-4 py-2 text-center">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -177,13 +232,6 @@ const fetchPlayers = async () => {
                       className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100"
                     >
                       <EyeIcon className="w-4 h-4" /> Ver
-                    </button>
-
-                    <button
-                      onClick={() => navigate(`/profesor/jugadores/${player.id}/editar`)}
-                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-yellow-600 rounded-md hover:bg-yellow-500 hover:text-gray-100"
-                    >
-                      <PencilSquareIcon className="w-4 h-4" /> Editar
                     </button>
 
                     <button

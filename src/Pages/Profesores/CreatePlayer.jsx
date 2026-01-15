@@ -6,90 +6,49 @@ import Swal from "sweetalert2";
 
 function CreatePlayer() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    nombre: "",
-    apellido: "",
-    sexo: "",
-    fechanacimiento: "",
-    edad: null,
-    dni: "",
-    email: "",
-    telefono: "",
-    domicilio: "",
-    domiciliocobro: "",
-    categoria: "",
-    nivel: "",
-    peso: null,
-    estatura: null,
-    escuela: "",
-    turno: "",
-    instagram: "",
-    reglasclub: false,
-    usoimagen: false,
-    horariocobro: "",
-    año: "",
-  });
-
-  const [tutor, setTutor] = useState({
-    nombre: "",
-    apellido: "",
-    dni: "",
-    email: "",
-    telefono: "",
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    if (name === "fechanacimiento") {
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      setForm((prev) => ({ ...prev, edad: age }));
-    }
-  };
+  const [form, setForm] = useState({
+    nombre: "",
+    apellido: "",
+    email: "",
+    categoria: "",
+  });
 
-  const handleTutorChange = (e) => {
-    const { name, value } = e.target;
-    setTutor((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Si jugador <16, agregar tutor al objeto
-    const payload = { ...form };
-    if (form.edad < 16) payload.tutor = tutor;
-
     setIsSubmitting(true);
+    setMessage("");
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await api.post("/players", payload, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
+      await api.post("/players", form);
 
       Swal.fire({
         icon: "success",
-        title: "Jugador creado",
-        text: "El jugador fue registrado correctamente",
+        title: "Jugador creado.",
+        text: "El jugador fue registrado exitosamente. Se envió un mail al jugador para que complete su registro.",
         confirmButtonText: "Aceptar",
         background: "#0f172a",
         color: "#e5e7eb",
         confirmButtonColor: "#16a34a",
-      }).then(() => navigate("/profesor"));
+      });
 
+      setForm({
+        nombre: "",
+        apellido: "",
+        email: "",
+        categoria: "",
+      });
     } catch (err) {
       console.error(err);
       setMessage(err.response?.data?.message || "Error al crear el jugador");
@@ -99,88 +58,84 @@ function CreatePlayer() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center px-4">
+    <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-3xl p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
+        initial={{ opacity: 0, y: 20, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="w-full max-w-md p-6 border border-gray-500 shadow-xl bg-transparent backdrop-blur rounded-2xl"
       >
-        <h2 className="mb-2 text-2xl font-bold text-gray-200">Crear Jugador</h2>
-        <p className="mb-4 text-sm text-gray-300">Completa los datos del jugador</p>
+        <h2 className="mb-1 text-2xl font-bold text-gray-200">
+          Crear jugador
+        </h2>
+        <p className="mb-6 text-sm text-gray-300">
+          Registrá un nuevo jugador para el club
+        </p>
 
-        {message && <div className="mb-4 text-red-400">{message}</div>}
+        {message && (
+          <div className="mb-4 rounded-md px-4 py-2 text-sm font-medium bg-red-700/30 text-white">
+            {message}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/** Inputs principales */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {[
-            { name: "nombre", placeholder: "Nombre" },
-            { name: "apellido", placeholder: "Apellido" },
-            { name: "sexo", placeholder: "Sexo" },
-            { name: "fechanacimiento", placeholder: "Fecha de Nacimiento", type: "date" },
-            { name: "edad", placeholder: "Edad", type: "number", disabled: true },
-            { name: "dni", placeholder: "DNI" },
-            { name: "email", placeholder: "Email", type: "email" },
-            { name: "telefono", placeholder: "Teléfono" },
-            { name: "domicilio", placeholder: "Domicilio" },
-            { name: "domiciliocobro", placeholder: "Domicilio Cobro" },
-            { name: "categoria", placeholder: "Categoría" },
-            { name: "nivel", placeholder: "Nivel" },
-            { name: "peso", placeholder: "Peso", type: "number" },
-            { name: "estatura", placeholder: "Estatura", type: "number" },
-            { name: "escuela", placeholder: "Escuela" },
-            { name: "turno", placeholder: "Turno" },
-            { name: "instagram", placeholder: "Instagram" },
-            { name: "horariocobro", placeholder: "Horario Cobro" },
-            { name: "año", placeholder: "Año" },
-          ].map((input) => (
-            <input
-              key={input.name}
-              name={input.name}
-              type={input.type || "text"}
-              placeholder={input.placeholder}
-              value={form[input.name]}
-              onChange={handleChange}
-              disabled={input.disabled}
-              className="px-3 py-2 text-gray-200 placeholder-gray-400 bg-gray-800 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-            />
+            { name: "nombre", label: "Nombre", placeholder: "Nombre" },
+            { name: "apellido", label: "Apellido", placeholder: "Apellido" },
+            { name: "email", label: "Email", placeholder: "Email", type: "email" },
+            { name: "categoria", label: "Categoría", placeholder: "Categoría" },
+          ].map(({ name, label, placeholder, type }) => (
+            <div key={name} className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-300">
+                {label}
+              </label>
+              <input
+                required
+                type={type || "text"}
+                name={name}
+                placeholder={placeholder}
+                value={form[name]}
+                onChange={handleChange}
+                className="px-3 py-2 text-gray-200 border border-gray-500 placeholder-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
+            </div>
           ))}
 
-          {/** Checkboxes */}
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="reglasclub" onChange={handleChange} />
-            Acepta reglas del club
-          </label>
+          <div className="flex gap-3 mt-4">
+            <button
+              disabled={isSubmitting}
+              type="submit"
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors 
+              ${
+                isSubmitting
+                  ? "border border-green-500/80 bg-green-700/80 rounded-md cursor-not-allowed"
+                  : "text-gray-200 border border-green-500/80 bg-green-700/80 rounded-md hover:bg-green-600/80 hover:text-white hover:border-green-600/80"
+              }`}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                  Creando...
+                </span>
+              ) : (
+                "Crear"
+              )}
+            </button>
 
-          <label className="flex items-center gap-2">
-            <input type="checkbox" name="usoimagen" onChange={handleChange} />
-            Acepta uso de imagen
-          </label>
-
-          {/** Formulario tutor si jugador <16 */}
-          {form.edad !== null && form.edad < 16 && (
-            <div className="p-4 border border-yellow-400 rounded-md col-span-full bg-yellow-100/10">
-              <h3 className="mb-2 font-semibold text-yellow-400">Datos del Tutor</h3>
-              {["nombre", "apellido", "dni", "email", "telefono"].map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  value={tutor[field]}
-                  onChange={handleTutorChange}
-                  className="px-3 py-2 mb-2 text-gray-200 placeholder-gray-400 bg-gray-800 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-                />
-              ))}
-            </div>
-          )}
-
-          <button
-            disabled={isSubmitting}
-            type="submit"
-            className="px-4 py-2 mt-2 text-white transition bg-blue-500 rounded col-span-full hover:bg-blue-600"
-          >
-            {isSubmitting ? "Creando..." : "Crear"}
-          </button>
+            <button
+              disabled={isSubmitting}
+              type="button"
+              onClick={() => navigate("/coaches")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors 
+              ${
+                isSubmitting
+                  ? "border border-gray-500/40 text-gray-500 cursor-not-allowed"
+                  : "text-gray-300 border border-gray-500/80 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-600/80"
+              }`}
+            >
+              Cancelar
+            </button>
+          </div>
         </form>
       </motion.div>
     </div>

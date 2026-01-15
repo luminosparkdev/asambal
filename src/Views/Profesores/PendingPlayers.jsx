@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/Api";
+import { motion } from "framer-motion";
 
 const containerVariants = {
   hidden: {},
