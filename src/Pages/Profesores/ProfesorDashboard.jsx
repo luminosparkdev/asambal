@@ -33,7 +33,7 @@ const sections = [
     title: "Gestión de Jugadores",
     color: "border-blue-500",
     links: [
-      { name: "Jugadores", path: "/profesor/jugadores", icon: "🏃" },
+      { name: "Jugadores", path: "/players/pending", icon: "🏃" },
     { name: "Crear Jugador", path: "/profesor/jugadores/crear", icon: "➕" },
       { name: "Becados", path: "/admin/becados", icon: "🎓" },
       { name: "Solicitudes pendientes", path: "/pending-players", icon: "👨‍🏫" },

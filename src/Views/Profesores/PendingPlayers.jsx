@@ -70,9 +70,7 @@ function PendingPlayers() {
               <motion.div
                 key={p.id}
                 variants={cardVariants}
-                className="p-6 transition-all duration-200 border-l-4 border-blue-400 shadow-lg
-                           bg-white/80 backdrop-blur-sm rounded-2xl
-                           hover:-translate-y-1 hover:shadow-2xl"
+                className="p-6 transition-all duration-200 border-l-4 border-blue-400 shadow-lg bg-white/80 backdrop-blur-sm rounded-2xl hover:-translate-y-1 hover:shadow-2xl"
               >
                 <p className="mb-1 text-sm text-gray-600">
                   <b>Nombre:</b> {p.nombre}
@@ -129,14 +127,14 @@ function PendingPlayers() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleAction(p.id, "APPROVE")}
-                    className="flex-1 px-3 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
+                    className="flex-1 px-3 py-2 text-white transition bg-green-600 rounded-lg hover:bg-green-700"
                   >
                     Aprobar
                   </button>
 
                   <button
                     onClick={() => handleAction(p.id, "REJECT")}
-                    className="flex-1 px-3 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+                    className="flex-1 px-3 py-2 text-white transition bg-red-600 rounded-lg hover:bg-red-700"
                   >
                     Rechazar
                   </button>
