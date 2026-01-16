@@ -16,7 +16,8 @@ function Navbar() {
   const isDashboard = location.pathname === "/dashboard"
     || location.pathname === "/admin"
     || location.pathname === "/admin_club"
-    || location.pathname === "/profesor";
+    || location.pathname === "/profesor"
+    || location.pathname === "/jugador";
 
   const isAppView = isAuthenticated && !isHome && !isLogin;
 
@@ -61,11 +62,11 @@ const showHomeSections = isHome && !isAuthenticated;
 
           {/* Secciones del Home (solo público) */}
           {showHomeSections && (
-            <ul className="hidden md:flex items-center gap-6 text-sm text-gray-300">
-              <li><a href="#clubes" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Clubes</a></li>
-              <li><a href="#novedades" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Novedades</a></li>
-              <li><a href="#sponsors" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Sponsors</a></li>
-              <li><a href="#contacto" className="ml-auto px-3 py-1 text-sm text-gray-400 rounded-md hover:text-white transition-all">Contacto</a></li>
+            <ul className="items-center hidden gap-6 text-sm text-gray-300 md:flex">
+              <li><a href="#clubes" className="px-3 py-1 ml-auto text-sm text-gray-400 transition-all rounded-md hover:text-white">Clubes</a></li>
+              <li><a href="#novedades" className="px-3 py-1 ml-auto text-sm text-gray-400 transition-all rounded-md hover:text-white">Novedades</a></li>
+              <li><a href="#sponsors" className="px-3 py-1 ml-auto text-sm text-gray-400 transition-all rounded-md hover:text-white">Sponsors</a></li>
+              <li><a href="#contacto" className="px-3 py-1 ml-auto text-sm text-gray-400 transition-all rounded-md hover:text-white">Contacto</a></li>
             </ul>
           )}
 
@@ -73,7 +74,7 @@ const showHomeSections = isHome && !isAuthenticated;
           {!isLogin && (
             <div className="flex items-center gap-4">
               {!isAuthenticated && (
-              <Link to="/login" className="px-4 py-2 font-semibold border border-blue-500/40 text-gray-400 rounded-md hover:bg-blue-500/10 hover:text-gray-200 transition-colors">
+              <Link to="/login" className="px-4 py-2 font-semibold text-gray-400 transition-colors border rounded-md border-blue-500/40 hover:bg-blue-500/10 hover:text-gray-200">
                 Iniciar sesión
               </Link>
               )}
@@ -81,9 +82,9 @@ const showHomeSections = isHome && !isAuthenticated;
               <>
               {/* Campana de notificaciones */}
                 <div className="relative cursor-pointer">
-                  <BellIcon className="w-8 h-8 text-gray-300 hover:text-white transition-colors" />
+                  <BellIcon className="w-8 h-8 text-gray-300 transition-colors hover:text-white" />
                   {notifications > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 text-xs bg-red-600 rounded-full flex items-center justify-center">
+                    <span className="absolute flex items-center justify-center w-4 h-4 text-xs bg-red-600 rounded-full -top-1 -right-1">
                       {notifications}
                     </span>
                     )}
@@ -93,7 +94,7 @@ const showHomeSections = isHome && !isAuthenticated;
                 <div ref={profileRef} className="relative">
                   <button
                     onClick={() => setProfileOpen(prev => !prev)}
-                    className="flex items-center gap-2 px-4 text-gray-300 hover:text-white transition-colors"
+                    className="flex items-center gap-2 px-4 text-gray-300 transition-colors hover:text-white"
                     >
                     <UserCircleIcon className="w-8 h-8" />
                   </button>
@@ -114,14 +115,14 @@ const showHomeSections = isHome && !isAuthenticated;
                           setProfileOpen(false);
                           navigate("/perfil");
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+                        className="w-full px-4 py-2 text-sm text-left text-gray-300 hover:bg-gray-800"
                         >
                         Mi perfil
                       </button>
 
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20"
+                        className="w-full px-4 py-2 text-sm text-left text-red-400 hover:bg-red-900/20"
                         >
                         Cerrar sesión
                       </button>
@@ -140,7 +141,7 @@ const showHomeSections = isHome && !isAuthenticated;
             {/*Volver*/}
             {isAppView && !isDashboard && (
               <div
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm text-gray-400 border border-gray-500/40 cursor-pointer hover:text-white hover:bg-gray-500/10 transition-all"
+                className="inline-flex items-center gap-2 px-3 py-1 text-sm text-gray-400 transition-all border rounded-md cursor-pointer border-gray-500/40 hover:text-white hover:bg-gray-500/10"
                 onClick={() => navigate(-1)}
               >
                 <ArrowLeftIcon className="w-5 h-5" />
@@ -151,7 +152,7 @@ const showHomeSections = isHome && !isAuthenticated;
             {/* Dashboard */}
             {showDashboardButton && (
               <button
-                className="ml-auto px-3 py-1 text-sm text-green-400 border border-green-500/40 rounded-md hover:bg-green-500/10 hover:text-green-200 transition-all"
+                className="px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
                 onClick={() => navigate("/dashboard")}
               >
                 <span className="font-medium">Ir al Dashboard</span>

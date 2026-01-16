@@ -29,6 +29,7 @@ import CreateClub from "../Pages/Asambal/CreateClub";
 import RecuperarClave from "../Pages/HomeComponents/RecuperarClave";
 import DashboardRouter from "../Pages/DashboardRouter";
 import PendingPlayers from "../Views/Profesores/PendingPlayers";
+import PlayerDashboard from "../Pages/Jugadores/PlayerDashboard";
 
 export const router = createBrowserRouter([
     {
@@ -199,6 +200,31 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+            // JUGADOR
+{
+  path: "jugador",
+  element: (
+    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+      <PlayerDashboard />
+    </ProtectedRoute>
+  ),
+},
+{
+  path: "jugador/:id",
+  element: (
+    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+      <PlayerDetail />
+    </ProtectedRoute>
+  ),
+},
+{
+  path: "jugador/me/editar",
+  element: (
+    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+      <EditPlayer />
+    </ProtectedRoute>
+  ),
+},
         ],
     },
 ]);

@@ -17,7 +17,7 @@ function DashboardRouter() {
     case ROLES.PROFESOR:
       return <Navigate to="/profesor" />;
     case ROLES.JUGADOR:
-      return <Navigate to="/players/me" />;
+      return <Navigate to="/jugador" />;
     default:
       return <Navigate to="/unauthorized" />;
   }

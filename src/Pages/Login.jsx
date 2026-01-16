@@ -15,7 +15,7 @@ function Login() {
     admin_asambal: "/admin",
     admin_club: "/admin-club",
     profesor: "/profesor",
-    jugador: "/perfil",
+    jugador: "/jugador",
   };
 
 
@@ -70,7 +70,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 text-white border rounded-lg bg-white/10 border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="correo@ejemplo.com"
             />
           </div>
@@ -85,7 +85,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 text-white border rounded-lg bg-white/10 border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="••••••••"
             />
           </div>
