@@ -30,12 +30,30 @@ const cardVariants = {
 // Secciones del jugador
 const sections = [
   {
-    title: "Mis Acciones",
+    title: "Mi Club",
     color: "border-blue-500",
     links: [
-      { name: "Ver mi perfil", path: "/jugador/me", icon: "👤" },
-      { name: "Mis pagos y cuotas", path: "/players/me/pagos", icon: "💰" },
-      { name: "Mis solicitudes", path: "/players/me/solicitudes", icon: "📝" },
+      { name: "Alta médica", path: "/players/me/alta-medica", icon: "🏢" },
+      { name: "Inscripciones", path: "/players/me/inscripciones", icon: "📝" },
+      { name: "Cuotas", path: "/players/me/cuotas", icon: "💰" },
+      { name: "Viajes", path: "/players/me/viajes", icon: "✈️" },
+    ],
+  },
+  {
+    title: "Asambal",
+    color: "border-blue-500",
+    links: [
+      { name: "Empadronamientos", path: "/players/me/empadronamientos", icon: "💰" },
+      { name: "Pases", path: "/players/me/pases", icon: "🔁" },
+      { name: "Lesiones", path: "/players/me/lesiones", icon: "🩹" },
+    ],
+  },
+  {
+    title: "Sistema",
+    color: "border-blue-500",
+    links: [
+      { name: "Ver tutor", path: "/players/me/tutor", icon: "👨" },
+      { name: "Configuración", path: "/players/me/configuracion", icon: "⚙️" },
     ],
   },
 ];

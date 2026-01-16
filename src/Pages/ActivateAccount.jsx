@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AdminClubProfileForm from "../Components/Profiles/AdminClubProfileForm";
-import ProfesorProfileForm from "../Components/Profiles/ProfesorProfileForm";
-import JugadorProfileForm from "../Components/Profiles/JugadorProfileForm";
+import AdminClubProfileForm from "./Profiles/AdminClubProfileForm";
+import ProfesorProfileForm from "./Profiles/ProfesorProfileForm";
+import JugadorProfileForm from "./Profiles/JugadorProfileForm";
 import api from "../Api/Api";
 
 function ActivateAccount() {

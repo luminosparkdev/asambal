@@ -36,13 +36,6 @@ const sections = [
       { name: "Jugadores", path: "/players", icon: "🏃" },
       { name: "Profesores", path: "/coaches", icon: "👨‍🏫" },
       { name: "Administradores", path: "/admins", icon: "👨‍💻" },
-    ]
-  },
-  {
-    title: "Operaciones y Validaciones",
-    color: "border-orange-400",
-    links: [
-      { name: "Solicitudes pendientes", path: "/asambal/pendientes", icon: "⏳" },
       { name: "Habilitaciones", path: "/asambal/habilitaciones", icon: "✅" },
     ]
   },
@@ -67,6 +60,7 @@ const sections = [
     title: "Sistema",
     color: "border-red-500",
     links: [
+      { name: "Solicitudes pendientes", path: "/asambal/pendientes", icon: "⏳" },
       { name: "Auditoría", path: "/asambal/auditoria", icon: "🔍" },
       { name: "Balance", path: "/balance", icon: "💰" },
       { name: "Configuración", path: "/configuracion", icon: "⚙️" },

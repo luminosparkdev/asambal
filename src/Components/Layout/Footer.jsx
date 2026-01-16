@@ -9,6 +9,7 @@ import {
   FaXTwitter,
   FaYoutube,
   FaWhatsapp,
+  FaTiktok,
 } from "react-icons/fa6";
 import logo from "../../Assets/Asambal/logo.png";
 
@@ -78,6 +79,7 @@ function Footer() {
                 <a href="https://x.com/AsAmBal_" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500"><FaXTwitter /></a>
                 <a href="https://www.youtube.com/@Asambal" target="_blank" rel="noopener noreferrer" className="hover:text-red-500"><FaYoutube /></a>
                 <a href="https://wa.me/5492346573613" target="_blank" rel="noopener noreferrer" className="hover:text-green-500"><FaWhatsapp /></a>
+                <a href="https://www.tiktok.com/@asambal" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400"><FaTiktok /></a>
               </div>
             </div>
 

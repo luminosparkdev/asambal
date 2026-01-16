@@ -30,24 +30,30 @@ const cardVariants = {
 // Secciones específicas para profesores
 const sections = [
   {
-    title: "Gestión de Jugadores",
+    title: "Gestión Deportiva",
     color: "border-blue-500",
     links: [
       { name: "Jugadores", path: "/players", icon: "🏃" },
-    { name: "Crear Jugador", path: "/profesor/jugadores/crear", icon: "➕" },
-      { name: "Becados", path: "/admin/becados", icon: "🎓" },
-      { name: "Solicitudes pendientes", path: "/pending-players", icon: "👨‍🏫" },
+      { name: "Liberados", path: "/admin/liberados", icon: "🎓" },
+      { name: "Categorías", path: "/admin/categorias", icon: "📋" },
+      { name: "Lesiones", path: "/admin/lesiones", icon: "🩹" },
     ],
   },
   {
     title: "Consultas",
     color: "border-green-500",
     links: [
-      { name: "Categorías", path: "/admin/categorias", icon: "📋" },
       { name: "Pagos y cuotas", path: "/admin/pagos", icon: "💰" },
-      { name: "Lesiones", path: "/admin/lesiones", icon: "🩹" },
       { name: "Inscripciones", path: "/admin/inscripciones", icon: "📝" },
       { name: "Empadronamientos", path: "/admin/empadronamientos", icon: "📑" },
+    ],
+  },
+  {
+    title: "Sistema",
+    color: "border-red-500",
+    links: [
+      { name: "Solicitudes pendientes", path: "/pending-players", icon: "👨‍🏫" },
+      { name: "Alta médica", path: "/admin/alta-medica", icon: "🏥" },
     ],
   },
   {
@@ -55,8 +61,6 @@ const sections = [
     color: "border-orange-400",
     links: [
       { name: "Viajes", path: "/admin/viajes", icon: "✈️" },
-      { name: "Alta médica", path: "/admin/alta-medica", icon: "🏥" },
-      { name: "Datos del jugador", path: "/admin/datos-jugador", icon: "🗂️" },
       { name: "Arbitrajes", path: "/admin/arbitrajes", icon: "🏐" },
     ],
   },

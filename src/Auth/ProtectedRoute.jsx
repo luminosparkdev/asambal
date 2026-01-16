@@ -16,6 +16,12 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/unauthorized" replace />;
   }
 
+  console.log("ProtectedRoute", {
+  user,
+  role: user?.role,
+  allowedRoles,
+});
+
   return children;
 }
 

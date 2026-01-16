@@ -9,7 +9,7 @@ import { ROLES } from "../Utils/roles";;
 import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import ActivateAccount from "../Pages/ActivateAccount";
-import Profile from "../Pages/Profile";
+import ProfileRouter from "../Pages/ProfileRouter";
 import Unauthorized from "../Pages/Unauthorized";
 import AdminAsambalDashboard from "../Pages/Asambal/AdminAsambalDashboard";
 import ClubList from "../Pages/Asambal/ClubList";
@@ -30,6 +30,7 @@ import RecuperarClave from "../Pages/HomeComponents/RecuperarClave";
 import DashboardRouter from "../Pages/DashboardRouter";
 import PendingPlayers from "../Views/Profesores/PendingPlayers";
 import PlayerDashboard from "../Pages/Jugadores/PlayerDashboard";
+import PlayerProfile from "../Pages/Profiles/PlayerProfile";
 
 export const router = createBrowserRouter([
     {
@@ -48,7 +49,7 @@ export const router = createBrowserRouter([
                 path: "perfil",
                 element: (
                     <ProtectedRoute>
-                        <Profile />
+                        <ProfileRouter />
                     </ProtectedRoute>
                 ),
             },
@@ -201,30 +202,14 @@ export const router = createBrowserRouter([
                 ),
             },
             // JUGADOR
-{
-  path: "jugador",
-  element: (
-    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
-      <PlayerDashboard />
-    </ProtectedRoute>
-  ),
-},
-{
-  path: "jugador/:id",
-  element: (
-    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
-      <PlayerDetail />
-    </ProtectedRoute>
-  ),
-},
-{
-  path: "jugador/me/editar",
-  element: (
-    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
-      <EditPlayer />
-    </ProtectedRoute>
-  ),
-},
+            {
+                path: "jugador",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+                        <PlayerDashboard />
+                    </ProtectedRoute>
+                ),
+            },
         ],
     },
 ]);
