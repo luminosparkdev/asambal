@@ -1,5 +1,6 @@
 import { useState } from "react";
 import hero from "../../../src/Assets/hero.png";
+import { main } from "framer-motion/client";
 
 const novedades = [
     {
@@ -24,6 +25,7 @@ const novedades = [
 
 function Novedades() {
     return (
+        <main className="bg-gradient-to-b from-white to-[#334353]">
         <section className="px-4 py-16 mx-auto max-w-7xl">
             <h2 className="mb-10 text-3xl font-bold text-center">
                 Novedades
@@ -35,6 +37,7 @@ function Novedades() {
                 ))}
             </div>
         </section>
+    </main>
     );
 }
 

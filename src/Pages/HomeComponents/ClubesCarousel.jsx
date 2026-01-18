@@ -5,8 +5,8 @@ const clubes = Array(12).fill(logo);
 
 function ClubesCarousel() {
   return (
-    <main>
-    <section className="py-16 overflow-hidden">
+    <main className="bg-gradient-to-b from-[#334353] to-white">
+    <section className="py-16 overflow-hidden mx-auto max-w-7xl">
       <h2 className="mb-8 text-4xl font-bold text-center">
         CLUBES
       </h2>

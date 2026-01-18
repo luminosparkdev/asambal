@@ -17,6 +17,8 @@ const handleSubmit = async (e) => {
 
   if (isSubmitting) return;
 
+  setMessage("");
+
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -38,6 +40,8 @@ const handleSubmit = async (e) => {
         withCredentials: true,
       }
     );
+
+    setMessage("");
 
     Swal.fire({
       icon: "success",

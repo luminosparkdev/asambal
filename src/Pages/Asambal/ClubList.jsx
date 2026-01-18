@@ -125,7 +125,7 @@
 
   return (
   <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto pb-6">
       {/* Título */}
       <div className="px-2 py-6">
         <h2 className="text-2xl font-semibold text-gray-200">Clubes registrados</h2>

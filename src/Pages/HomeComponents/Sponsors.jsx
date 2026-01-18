@@ -5,7 +5,8 @@ const sponsors = Array(10).fill(logo);
 
 function Sponsors() {
     return (
-        <section className="py-10 overflow-hidden text-black">
+        <main className="bg-gradient-to-b from-[#334353] to-[#0F1317]">
+        <section className="py-10 overflow-hidden text-black mx-auto max-w-7xl">
             <h2 className="mb-12 text-3xl font-bold text-center">
                 Sponsors oficiales
             </h2>
@@ -40,6 +41,7 @@ function Sponsors() {
                 ))}
             </Motion.div>
         </section>
+    </main>
     );
 }
 

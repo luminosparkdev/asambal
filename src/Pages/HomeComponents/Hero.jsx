@@ -108,7 +108,7 @@ function Hero() {
       </section>
 
       {/* SCROLL */}
-      <section className="relative flex flex-col items-center justify-center h-[15vh] bg-gradient-to-b from-blue-900 to-gray-300">
+      <section className="relative flex flex-col items-center justify-center h-[15vh] bg-gradient-to-b from-[#0F1317] to-[#334353]">
         <p className="text-xl font-light text-gray-200 mb-2">
           Explorá nuestra web
         </p>
