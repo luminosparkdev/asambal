@@ -33,7 +33,7 @@ const sections = [
     color: "border-blue-500",
     links: [
       { name: "Clubes", path: "/clubs", icon: "🏢" },
-      { name: "Jugadores", path: "/players", icon: "🏃" },
+      { name: "Jugadores", path: "/asambal/jugadores", icon: "🏃" },
       { name: "Profesores", path: "/coaches", icon: "👨‍🏫" },
       { name: "Administradores", path: "/admins", icon: "👨‍💻" },
       { name: "Habilitaciones", path: "/asambal/habilitaciones", icon: "✅" },

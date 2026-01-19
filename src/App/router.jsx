@@ -31,6 +31,7 @@ import DashboardRouter from "../Pages/DashboardRouter";
 import PendingPlayers from "../Views/Profesores/PendingPlayers";
 import PlayerDashboard from "../Pages/Jugadores/PlayerDashboard";
 import PlayerProfile from "../Pages/Profiles/PlayerProfile";
+import PlayerListAsambal from "../Pages/Asambal/PlayerListAsambal";
 
 export const router = createBrowserRouter([
     {
@@ -73,11 +74,21 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+
             {
                 path: "/asambal/pendientes",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <PendingUsers />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "asambal/jugadores",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <PlayerListAsambal />
                     </ProtectedRoute>
                 ),
             },
