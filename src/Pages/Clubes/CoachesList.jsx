@@ -15,7 +15,10 @@ function CoachesList() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
-  const categories = ["ALL", ...new Set(coaches.map(c => c.categoria))];
+  const categories = [
+    "ALL",
+    ...new Set(coaches.flatMap(c => c.categorias || []))
+  ];
 
   const filteredCoaches = coaches.filter(coach => {
       const matchName = coach.nombre
@@ -26,7 +29,7 @@ function CoachesList() {
         statusFilter === "ALL" || coach.status === statusFilter;
 
       const matchCategory =
-        categoryFilter === "ALL" || coach.categoria === categoryFilter;
+        categoryFilter === "ALL" || coach.categorias?.includes(categoryFilter);
 
       return matchName && matchStatus && matchCategory;
     });
@@ -190,7 +193,7 @@ function CoachesList() {
                 <th className="px-4 py-3 text-center">DNI</th>
                 <th className="px-4 py-3 text-center">Email</th>
                 <th className="px-4 py-3 text-center">Teléfono</th>
-                <th className="px-4 py-3 text-center">Categoría</th>
+                <th className="px-4 py-3 text-center">Categorías</th>
                 <th className="px-4 py-3 text-center">ENEA</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
@@ -209,7 +212,7 @@ function CoachesList() {
                   <td className="px-4 py-2 text-center">{p.dni}</td>
                   <td className="px-4 py-2 text-center">{p.email}</td>
                   <td className="px-4 py-2 text-center">{p.telefono}</td>
-                  <td className="px-4 py-2 text-center">{p.categoria}</td>
+                  <td className="px-4 py-2 text-center">{p.categorias.join(", ") || "-"}</td>
                   <td className="px-4 py-2 text-center">{p.enea}</td>
 
                   <td className="px-4 py-2 text-center">

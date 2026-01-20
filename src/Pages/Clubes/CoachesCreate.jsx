@@ -4,6 +4,28 @@ import api from "../../Api/Api";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
+const CATEGORIAS = [
+  "Mini Masculino",
+  "Mini Femenino",
+  "Infantil Masculino",
+  "Infantil Femenino",
+  "Infantil Mixto",
+  "Menor Masculino",
+  "Menor Femenino",
+  "Cadete Masculino",
+  "Cadete Femenino",
+  "Juvenil Masculino",
+  "Juvenil Femenino",
+  "Junior Masculino",
+  "Junior Femenino",
+  "Mayor Masculino",
+  "Mayor Femenino",
+  "Alevines Masculino",
+  "Alevines Femenino",
+  "Segunda Masculino",
+  "Intermedia Femenino",
+];
+
 function CoachCreate() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -13,7 +35,7 @@ function CoachCreate() {
     nombre: "",
     apellido: "",
     email: "",
-    categoria: "",
+    categorias: [],
   });
 
   const handleChange = (e) => {
@@ -23,20 +45,54 @@ function CoachCreate() {
     });
   };
 
+  const toggleCategoria = (categoria) => {
+    setForm((prev) => ({
+      ...prev,
+      categorias: prev.categorias.includes(categoria)
+        ? prev.categorias.filter((c) => c !== categoria)
+        : [...prev.categorias, categoria],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    if (form.categorias.length === 0) {
+      setMessage("❌ Debe seleccionar al menos una categoría");
+      return;
+    }
 
     setIsSubmitting(true);
     setMessage("");
 
     try {
-      await api.post(`/coaches`, form);
+      const res = await api.post("/coaches", form);
 
-      Swal.fire({
+      if (res.data.code === "PROFESOR_EXISTENTE") {
+        const confirm = await Swal.fire({
+          icon: "question",
+          title: "Profesor existente",
+          text: "Este profesor ya existe. ¿Desea enviarle una solicitud para agregarlo a su club?",
+          showCancelButton: true,
+          confirmButtonText: "Enviar solicitud",
+        });
+
+        if (confirm.isConfirmed) {
+          await api.post("/coaches/request-join", {
+            email: form.email,
+            categorias: form.categorias,
+          });
+          Swal.fire("Solicitud enviada", "", "success");
+          navigate("/coaches");
+          return;
+        }
+      }
+
+      await Swal.fire({
         icon: "success",
         title: "Profesor creado",
-        text: "El profesor fue registrado exitosamente. Se envió un mail al profesor para que complete su registro.",
+        text: "El profesor fue registrado exitosamente. Se envió un mail para que complete su perfil.",
         confirmButtonText: "Aceptar",
         background: "#0f172a",
         color: "#e5e7eb",
@@ -47,8 +103,10 @@ function CoachCreate() {
         nombre: "",
         apellido: "",
         email: "",
-        categoria: "",
+        categorias: [],
       });
+
+      navigate("/coaches");
     } catch (err) {
       console.error(err);
       setMessage(
@@ -84,8 +142,12 @@ function CoachCreate() {
           {[
             { name: "nombre", label: "Nombre", placeholder: "Nombre" },
             { name: "apellido", label: "Apellido", placeholder: "Apellido" },
-            { name: "email", label: "Email", placeholder: "Email", type: "email" },
-            { name: "categoria", label: "Categoría", placeholder: "Categoría" },
+            {
+              name: "email",
+              label: "Email",
+              placeholder: "Email",
+              type: "email",
+            },
           ].map(({ name, label, placeholder, type }) => (
             <div key={name} className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-300">
@@ -102,6 +164,35 @@ function CoachCreate() {
               />
             </div>
           ))}
+
+          {/* CATEGORÍAS */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-300">
+              Categorías
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIAS.map((cat) => {
+                const active = form.categorias.includes(cat);
+
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => toggleCategoria(cat)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition
+                      ${
+                        active
+                          ? "bg-green-600/80 border-green-500 text-white"
+                          : "border-gray-500 text-gray-300 hover:bg-gray-700/50"
+                      }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="flex gap-3 mt-4">
             <button
@@ -145,4 +236,3 @@ function CoachCreate() {
 }
 
 export default CoachCreate;
-

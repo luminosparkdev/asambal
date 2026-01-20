@@ -52,7 +52,8 @@ const sections = [
     title: "Sistema",
     color: "border-red-500",
     links: [
-      { name: "Solicitudes pendientes", path: "/pending-players", icon: "👨‍🏫" },
+      { name: "Solicitudes de jugadores pendientes", path: "/pending-players", icon: "👨‍🏫" },
+      { name: "Solicitudes de clubes pendientes", path: "/pending-club-requests", icon: "👨‍🏫" },
       { name: "Alta médica", path: "/admin/alta-medica", icon: "🏥" },
     ],
   },

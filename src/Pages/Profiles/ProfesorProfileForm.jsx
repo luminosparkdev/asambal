@@ -1,53 +1,108 @@
 import { useState, useEffect } from "react";
 import api from "../../Api/Api";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-function ProfesorProfileForm({ userId }) {
+function ProfesorProfileForm() {
+  const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
+  const [categorias, setCategorias] = useState("");
+
   const [telefono, setTelefono] = useState("");
   const [domicilio, setDomicilio] = useState("");
-  const [categoria, setCategoria] = useState("");
   const [enea, setEnea] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await api.get("/coaches/me");
-        setNombre(res.data.nombre);
-        setApellido(res.data.apellido);
-        setEmail(res.data.email);
-        setCategoria(res.data.categoria);
-        console.log(res.data);
+
+        setNombre(res.data.nombre || "");
+        setApellido(res.data.apellido || "");
+        setEmail(res.data.email || "");
+
+        if (res.data.clubs?.length) {
+          const categoriasTexto = res.data.clubs
+            .flatMap((club) => club.categorias || [])
+            .join(", ");
+
+          setCategorias(categoriasTexto);
+        }
       } catch (error) {
-        console.error(error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo cargar la información del perfil",
+          background: "#0f172a",
+          color: "#e5e7eb",
+          confirmButtonColor: "#dc2626",
+        });
       }
     };
+
     fetchProfile();
   }, []);
 
   const submitProfile = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
+    const payload = {
+      telefono: telefono.trim(),
+      domicilio: domicilio.trim(),
+      enea: Number(enea),
+    };
+
+    // Validación defensiva en front
+    if (!payload.telefono || !payload.domicilio || Number.isNaN(payload.enea)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Datos incompletos",
+        text: "Completá todos los campos antes de enviar",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#f59e0b",
+      });
+      return;
+    }
+
     setLoading(true);
 
-    await api.post(`/coaches/complete-profile`, {
-      telefono,
-      domicilio,
-      enea,
-    });
+    try {
+      await api.post("/coaches/complete-profile", payload);
 
-    setSuccess(true);
-    setLoading(false);
-
-    if (success) {
-      return <p>Perfil enviado. Pendiente de validación por ASAMBAL.</p>;
+      Swal.fire({
+        icon: "success",
+        title: "Perfil enviado",
+        text: "El perfil fue enviado correctamente. Queda pendiente de validación por ASAMBAL.",
+        confirmButtonText: "Aceptar",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#16a34a",
+      });
+      navigate("/");
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          err.response?.data?.message ||
+          "No se pudo enviar el perfil. Intente nuevamente.",
+        background: "#0f172a",
+        color: "#e5e7eb",
+        confirmButtonColor: "#dc2626",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={submitProfile}>
+    <form onSubmit={submitProfile} className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-white">Completar perfil</h2>
         <p className="mt-1 text-sm text-gray-300">
@@ -59,11 +114,12 @@ function ProfesorProfileForm({ userId }) {
         <h3 className="text-sm font-semibold tracking-wide text-gray-200 uppercase">
           Datos personales
         </h3>
+
         <div className="grid grid-cols-1 gap-4">
           <input value={nombre} disabled className="input-glass opacity-70" />
           <input value={apellido} disabled className="input-glass opacity-70" />
           <input value={email} disabled className="input-glass opacity-70" />
-          <input value={categoria} disabled className="input-glass opacity-70" />
+          <input value={categorias} disabled className="input-glass opacity-70" />
         </div>
       </section>
 
@@ -74,39 +130,37 @@ function ProfesorProfileForm({ userId }) {
 
         <div className="grid grid-cols-1 gap-4">
           <input
-            value={ telefono}
+            value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
-            placeholder="Telefono"
-            required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
-          />  
+            placeholder="Teléfono"
+            className="input-glass"
+          />
 
           <input
             value={domicilio}
             onChange={(e) => setDomicilio(e.target.value)}
             placeholder="Domicilio"
-            required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
+            className="input-glass"
           />
 
           <input
+            type="number"
             value={enea}
             onChange={(e) => setEnea(e.target.value)}
             placeholder="ENEA"
-            required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
-          />  
+            className="input-glass"
+          />
         </div>
 
-        <button disabled={loading} className="w-full py-3 text-sm font-semibold text-white rounded-md border border-green-500 bg-green-700 hover:bg-green-600/90 hover:cursor-pointer disabled:opacity-50 transition">
+        <button
+          disabled={loading}
+          className="w-full py-3 text-sm font-semibold text-white rounded-md border border-green-500 bg-green-700 hover:bg-green-600/90 disabled:opacity-50 transition"
+        >
           {loading ? "Enviando..." : "Enviar"}
-        </button> 
-
-      <h2>Perfil enviado. Pendiente de validación por el administrador.</h2>
+        </button>
       </section>
     </form>
   );
 }
 
 export default ProfesorProfileForm;
-
