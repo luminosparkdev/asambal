@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 
-function AdminClubProfileForm({ userId, clubId }) {
+function AdminClubProfileForm({ userId, clubId, activationToken }) {
   const [nombre, setNombre] = useState("");
   const [responsable, setResponsable] = useState("");
   const [sede, setSede] = useState("");
@@ -48,7 +48,7 @@ useEffect(() => {
     setLoading(true);
 
     await api.post(`/clubs/${clubId}/complete-profile`, {
-      adminUserId: userId,
+      activationToken,
       responsable,
       sede,
       telefono,

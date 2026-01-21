@@ -19,8 +19,9 @@ function ActivateAccount() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);  
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState(null);
+  const [roles, setRoles] = useState([]);
   const [clubId, setClubId] = useState(null);
+  const [activationToken, setActivationToken] = useState(null);
 
 
   if (!email || !token ) {
@@ -44,10 +45,10 @@ function ActivateAccount() {
 
       localStorage.setItem("token", res.data.token);
 
-      setRole(res.data.role);
+      setRoles(res.data.roles);
       setUserId(res.data.userId);
       setClubId(res.data.clubId);
-      
+      setActivationToken(token);      
       setStep("PROFILE");
       console.log(res.data);
       setSuccess(true);
@@ -146,9 +147,9 @@ function ActivateAccount() {
           </form>
           </>
         )}
-        {step === "PROFILE" && role === "admin_club" && (<AdminClubProfileForm userId={userId} clubId={clubId} />)}
-        {step === "PROFILE" && role === "profesor" && (<ProfesorProfileForm userId={userId} />)}
-        {step === "PROFILE" && role === "jugador" && (<JugadorProfileForm userId={userId} />)}
+        {step === "PROFILE" && roles.includes("admin_club") && (<AdminClubProfileForm userId={userId} clubId={clubId} activationToken={activationToken} />)}
+        {step === "PROFILE" && roles.includes("profesor") && (<ProfesorProfileForm userId={userId} activationToken={activationToken} />)}
+        {step === "PROFILE" && roles.includes("jugador") && (<JugadorProfileForm userId={userId} activationToken={activationToken} />)}
 
       </div>
     </div>

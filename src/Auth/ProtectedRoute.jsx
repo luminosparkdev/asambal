@@ -12,13 +12,13 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+  if (allowedRoles && !allowedRoles.some(role => user?.roles?.includes(role))) {
     return <Navigate to="/unauthorized" replace />;
   }
 
   console.log("ProtectedRoute", {
   user,
-  role: user?.role,
+  roles: user?.roles,
   allowedRoles,
 });
 

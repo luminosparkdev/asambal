@@ -9,18 +9,20 @@ function DashboardRouter() {
 
   if (!user) return <Navigate to="/login" />;
 
-  switch (user.role) {
-    case ROLES.ADMIN_ASAMBAL:
-      return <Navigate to="/admin" />;
-    case ROLES.ADMIN_CLUB:
-      return <Navigate to="/admin-club" />;
-    case ROLES.PROFESOR:
-      return <Navigate to="/profesor" />;
-    case ROLES.JUGADOR:
-      return <Navigate to="/jugador" />;
-    default:
-      return <Navigate to="/unauthorized" />;
+  if (user.roles.includes(ROLES.ADMIN_ASAMBAL)) {
+    return <Navigate to="/admin" />;
   }
+  if (user.roles.includes(ROLES.ADMIN_CLUB)) {
+    return <Navigate to="/admin-club" />;
+  }
+  if (user.roles.includes(ROLES.PROFESOR)) {
+    return <Navigate to="/profesor" />;
+  }
+  if (user.roles.includes(ROLES.JUGADOR)) {
+    return <Navigate to="/jugador" />;
+  }
+
+  return <Navigate to="/unauthorized" />;
 }
 
 export default DashboardRouter;

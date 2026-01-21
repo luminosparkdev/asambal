@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/Api";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 const containerVariants = {
   hidden: {},
@@ -23,8 +24,28 @@ function PendingUsers() {
   };
 
   const handleAction = async (userId, action) => {
+    try {
     await api.patch("/asambal/validate-user", { userId, action });
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: action === "APPROVE" ? 'success' : 'error',
+      title: action === "APPROVE" ? 'Usuario aprobado' : 'Usuario rechazado',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+    
     fetchPending();
+    }catch(error){
+      console.log(error);
+      Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo completar la acción',
+    });
+    }
   };
 
   useEffect(() => {

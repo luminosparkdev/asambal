@@ -31,7 +31,10 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
 
-      const redirectPath = roleRedirectMap[data.user.role] || "/perfil";
+      const userRoles = data.user.roles;
+
+      const redirectPath = roleRedirectMap[userRoles[0]] || "/perfil";
+
       navigate(redirectPath);
 
     } catch (error) {

@@ -106,7 +106,9 @@ const showHomeSections = isHome && !isAuthenticated;
                           {user?.email ?? "Administrador"}
                         </p>
                         <p className="text-xs text-gray-400">
-                          {user?.role.split("_").join(" ").toUpperCase() ?? "AsAmBal"}
+                          {user?.roles?.[0]
+                            ? user.roles[0].split("_").join(" ").toUpperCase() 
+                            : "AsAmBal"}
                         </p>
                       </div>
 

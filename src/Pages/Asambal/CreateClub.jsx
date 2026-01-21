@@ -30,7 +30,7 @@ const handleSubmit = async (e) => {
 
   try {
     const response = await api.post(
-      "/clubs",
+      "/asambal/clubs",
       { clubName, adminEmail, city },
       {
         headers: {
