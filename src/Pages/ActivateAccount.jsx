@@ -43,8 +43,6 @@ function ActivateAccount() {
         { email, password, token }
       );
 
-      localStorage.setItem("token", res.data.token);
-
       setRoles(res.data.roles);
       setUserId(res.data.userId);
       setClubId(res.data.clubId);

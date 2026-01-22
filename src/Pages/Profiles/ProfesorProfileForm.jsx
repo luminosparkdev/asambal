@@ -3,12 +3,13 @@ import api from "../../Api/Api";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-function ProfesorProfileForm() {
+function ProfesorProfileForm({userId, activationToken}) {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [categorias, setCategorias] = useState("");
+  const [dni, setDni] = useState("");
 
   const [telefono, setTelefono] = useState("");
   const [domicilio, setDomicilio] = useState("");
@@ -16,49 +17,46 @@ function ProfesorProfileForm() {
 
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get("/coaches/me");
+useEffect(() => {
+  const fetchPrefill = async () => {
+    try {
+      const res = await api.get(`/coaches/prefill/${activationToken}`);
 
-        setNombre(res.data.nombre || "");
-        setApellido(res.data.apellido || "");
-        setEmail(res.data.email || "");
+      setNombre(res.data.nombre || "");
+      setApellido(res.data.apellido || "");
+      setEmail(res.data.email || "");
 
-        if (res.data.clubs?.length) {
-          const categoriasTexto = res.data.clubs
-            .flatMap((club) => club.categorias || [])
-            .join(", ");
-
-          setCategorias(categoriasTexto);
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo cargar la información del perfil",
-          background: "#0f172a",
-          color: "#e5e7eb",
-          confirmButtonColor: "#dc2626",
-        });
+      if (res.data.categorias?.length) {
+        setCategorias(res.data.categorias.join(", "));
       }
-    };
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo cargar la información inicial del perfil",
+      });
+    }
+  };
 
-    fetchProfile();
-  }, []);
+  if (activationToken) {
+    fetchPrefill();
+  }
+}, [activationToken]);
 
   const submitProfile = async (e) => {
     e.preventDefault();
     if (loading) return;
 
     const payload = {
+      activationToken,
       telefono: telefono.trim(),
       domicilio: domicilio.trim(),
       enea: Number(enea),
+      dni: dni.trim(),
     };
 
     // Validación defensiva en front
-    if (!payload.telefono || !payload.domicilio || Number.isNaN(payload.enea)) {
+    if (!payload.telefono || !payload.domicilio || Number.isNaN(payload.enea) || !payload.dni) {
       Swal.fire({
         icon: "warning",
         title: "Datos incompletos",
@@ -73,7 +71,7 @@ function ProfesorProfileForm() {
     setLoading(true);
 
     try {
-      await api.post("/coaches/complete-profile", payload);
+      await api.post(`/coaches/${userId}/complete-profile`, payload);
 
       Swal.fire({
         icon: "success",
@@ -120,6 +118,7 @@ function ProfesorProfileForm() {
           <input value={apellido} disabled className="input-glass opacity-70" />
           <input value={email} disabled className="input-glass opacity-70" />
           <input value={categorias} disabled className="input-glass opacity-70" />
+          <input value={dni} onChange={(e) => setDni(e.target.value)} placeholder="DNI" className="input-glass opacity-70" />
         </div>
       </section>
 

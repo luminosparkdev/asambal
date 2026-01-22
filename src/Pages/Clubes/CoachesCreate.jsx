@@ -67,7 +67,7 @@ function CoachCreate() {
     setMessage("");
 
     try {
-      const res = await api.post("/coaches", form);
+      const res = await api.post("/coaches/create", form);
 
       if (res.data.code === "PROFESOR_EXISTENTE") {
         const confirm = await Swal.fire({

@@ -85,14 +85,6 @@ function CoachDetails() {
     }
   };
 
-  const formatDate = (date) => {
-    if (!date) return "-";
-    let d = date;
-    // si es Firestore Timestamp
-    if (date.seconds) d = date.toDate();
-    return new Date(d).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
-  };
-
   if (loading) return <p>Cargando...</p>;
   if (!coach) return null;
 
@@ -153,8 +145,8 @@ function CoachDetails() {
           </div>
 
           <div className="mt-6 text-sm text-gray-400 space-y-1">
-            <p>Creado: {formatDate(coach.createdAt)}</p>
-            <p>Última actualización: {formatDate(coach.updatedAt)}</p>
+            <p>Creado: {coach.createdAt || "-"}</p>
+            <p>Última actualización: {coach.updatedAt || "-"}</p>
           </div>
 
           {/* ACTIONS */}

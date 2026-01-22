@@ -47,7 +47,7 @@ function CoachesList() {
     //OBTENER LISTA DE PROFESORES
     const fetchCoaches = async () => {
       try {
-        const res = await api.get(`/coaches`);
+        const res = await api.get(`/coaches/club`);
         setCoaches(res.data);
         console.log(res.data);
       } catch (err) {
@@ -212,7 +212,11 @@ function CoachesList() {
                   <td className="px-4 py-2 text-center">{p.dni}</td>
                   <td className="px-4 py-2 text-center">{p.email}</td>
                   <td className="px-4 py-2 text-center">{p.telefono}</td>
-                  <td className="px-4 py-2 text-center">{p.categorias.join(", ") || "-"}</td>
+                  <td className="px-4 py-2 text-center">
+                    {Array.isArray(p.categorias) && p.categorias.length > 0
+                      ? p.categorias.join(", ")
+                      : "-"}
+                  </td>
                   <td className="px-4 py-2 text-center">{p.enea}</td>
 
                   <td className="px-4 py-2 text-center">

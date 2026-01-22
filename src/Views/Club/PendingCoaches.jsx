@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "../../Api/Api";
 import { useAuth } from "../../Auth/AuthContext";
+import Swal from "sweetalert2";
 
 const containerVariants = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
 const cardVariants = { hidden: { opacity: 0, y: 20, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: "easeOut" } } };
@@ -13,25 +14,28 @@ function PendingCoaches() {
   const [coaches, setCoaches] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+  });
+
   const fetchPending = async () => {
     if (!currentClubId) return;
     setLoading(true);
     try {
-      const res = await api.get("/coaches/pending-coaches");
+      const res = await api.get("/clubs/pending-coaches");
 
       // filtramos por club actual y transformamos categorías para mostrar
-      const filtered = res.data
-        .map(c => {
-          const clubData = c.clubs?.find(cl => cl.clubId === currentClubId);
-          if (!clubData) return null;
-          return {
-            ...c,
-            categoria: clubData.categorias.join(", "),
-            clubId: clubData.clubId,
-            clubName: clubData.nombreClub,
-          };
-        })
-        .filter(Boolean);
+      const filtered = res.data.map(c => ({
+        ...c,
+        categoria: Array.isArray(c.categorias)
+          ? c.categorias.join(", ")
+          : "-",
+        clubName: user?.nombreClub || "Club",
+      }));
 
       setCoaches(filtered);
     } catch (err) {
@@ -44,13 +48,26 @@ function PendingCoaches() {
   const handleAction = async (coachId, action) => {
     if (!currentClubId) return;
     try {
-      await api.patch(`/coaches/${coachId}/validate-coach`, {
+      await api.patch(`/clubs/${coachId}/validate-coach`, {
         action,
-        clubId: currentClubId,
       });
+
+      toast.fire({
+      icon: "success",
+      title:
+        action === "APPROVE"
+          ? "Profesor aprobado correctamente"
+          : "Profesor rechazado",
+    });
+
       fetchPending(); // refrescar lista después de aprobar/rechazar
     } catch (err) {
       console.error("Error validating coach:", err);
+
+      toast.fire({
+        icon: "error",
+        title: "Error al validar el profesor",
+      });
     }
   };
 
