@@ -15,8 +15,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    console.log("LOGIN CONTEXT RECIBE",userData);
-    setUser(userData);
+  console.log("LOGIN CONTEXT RECIBE", userData);
+
+  setUser(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const logout = () => {

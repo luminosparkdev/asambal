@@ -8,23 +8,27 @@ function CoachDetails() {
   const navigate = useNavigate();
 
   const [coach, setCoach] = useState(null);
-  const [categorias, setCategorias] = useState([]);
+  const [categorias, setCategorias] = useState([]); // categorías activadas del profe
   const [initialCategorias, setInitialCategorias] = useState([]);
+  const [allCategorias, setAllCategorias] = useState([]); // todas las categorías disponibles
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCoach = async () => {
+    const fetchCoachAndCategories = async () => {
       try {
+        // Traigo profe
         const res = await api.get(`/coaches/${id}`);
         const data = res.data;
-
         setCoach(data);
 
-        // Tomamos las categorías del club activo
         const cats = data.categorias || [];
         setCategorias(cats);
         setInitialCategorias(cats);
+
+        // Traigo todas las categorias de la colección
+        const catRes = await api.get("/categories");
+        setAllCategorias(catRes.data);
 
         setLoading(false);
       } catch (err) {
@@ -32,12 +36,20 @@ function CoachDetails() {
       }
     };
 
-    fetchCoach();
+    fetchCoachAndCategories();
   }, [id, navigate]);
 
+  const toggleCategoria = (nombre) => {
+    setCategorias((prev) =>
+      prev.includes(nombre)
+        ? prev.filter((c) => c !== nombre)
+        : [...prev, nombre]
+    );
+  };
+
   const handleSave = async () => {
-    const normalizedCurrent = categorias.map(c => c.trim()).filter(Boolean);
-    const normalizedInitial = initialCategorias.map(c => c.trim()).filter(Boolean);
+    const normalizedCurrent = categorias.map((c) => c.trim()).filter(Boolean);
+    const normalizedInitial = initialCategorias.map((c) => c.trim()).filter(Boolean);
 
     const hasChanges =
       normalizedCurrent.length !== normalizedInitial.length ||
@@ -52,9 +64,18 @@ function CoachDetails() {
       setCategorias(normalizedCurrent);
       setInitialCategorias(normalizedCurrent);
       setEditing(false);
-      Swal.fire({ icon: "success", title: "Categorías actualizadas", timer: 1400, showConfirmButton: false });
+      Swal.fire({
+        icon: "success",
+        title: "Categorías actualizadas",
+        timer: 1400,
+        showConfirmButton: false,
+      });
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "No se pudieron guardar los cambios", "error");
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "No se pudieron guardar los cambios",
+        "error"
+      );
     }
   };
 
@@ -74,13 +95,18 @@ function CoachDetails() {
 
     if (!result.isConfirmed) return;
 
-    setCoach(prev => ({ ...prev, status: optimisticStatus }));
+    setCoach((prev) => ({ ...prev, status: optimisticStatus }));
 
     try {
       await api.patch(`/coaches/${id}/toggle`);
-      Swal.fire({ icon: "success", title: "Estado actualizado", timer: 1200, showConfirmButton: false });
+      Swal.fire({
+        icon: "success",
+        title: "Estado actualizado",
+        timer: 1200,
+        showConfirmButton: false,
+      });
     } catch (err) {
-      setCoach(prev => ({ ...prev, status: previousStatus }));
+      setCoach((prev) => ({ ...prev, status: previousStatus }));
       Swal.fire({ icon: "error", title: "Error", text: "No se pudo cambiar el estado" });
     }
   };
@@ -92,9 +118,11 @@ function CoachDetails() {
     <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
-        <div className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30
-          ${coach.status === "ACTIVO" ? "border-green-500" : "border-red-500"}`}>
-          
+        <div
+          className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30 ${
+            coach.status === "ACTIVO" ? "border-green-500" : "border-red-500"
+          }`}
+        >
           {/* HEADER */}
           <div className="flex justify-between items-start mb-8">
             <div>
@@ -103,8 +131,11 @@ function CoachDetails() {
               </h2>
               <p className="text-sm text-gray-400">Gestión de profesores · ASAMBAL</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold
-              ${coach.status === "ACTIVO" ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                coach.status === "ACTIVO" ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"
+              }`}
+            >
               {coach.status}
             </span>
           </div>
@@ -130,14 +161,27 @@ function CoachDetails() {
             <div className="flex flex-col gap-1 md:col-span-2">
               <span className="text-xs uppercase text-gray-400">Categorías en este club</span>
               {editing ? (
-                <input
-                  value={categorias.join(", ")}
-                  onChange={(e) =>
-                    setCategorias(e.target.value.split(",").map(c => c.trim()).filter(Boolean))
-                  }
-                  placeholder="Ej: Infantil Masculino, Juvenil Femenino"
-                  className="px-3 py-2 rounded-md bg-gray-800/70 border border-white/10 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {allCategorias.map((cat) => {
+                    const nombreCompleto = `${cat.nombre} ${cat.genero}`;
+                    const isActive = categorias.includes(nombreCompleto);
+
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => toggleCategoria(nombreCompleto)}
+                        className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-green-700 text-white border-green-500"
+                            : "bg-gray-800/50 text-gray-200 border-gray-600"
+                        }`}
+                      >
+                        {nombreCompleto}
+                      </button>
+                    );
+                  })}
+                </div>
               ) : (
                 <span className="text-sm">{categorias.length ? categorias.join(", ") : "-"}</span>
               )}
@@ -176,8 +220,9 @@ function CoachDetails() {
                 </button>
                 <button
                   onClick={handleToggle}
-                  className={`flex-1 py-3 rounded-lg text-white font-semibold
-                    ${coach.status === "ACTIVO" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}`}
+                  className={`flex-1 py-3 rounded-lg text-white font-semibold ${
+                    coach.status === "ACTIVO" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+                  }`}
                 >
                   {coach.status === "ACTIVO" ? "Desactivar" : "Activar"}
                 </button>

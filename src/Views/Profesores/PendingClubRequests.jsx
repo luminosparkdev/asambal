@@ -31,6 +31,7 @@ function PendingClubRequests() {
   };
 
   const handleAction = async (requestId, action) => {
+  try {
     await api.patch(
       `/coaches/requests/${requestId}/respond`,
       { action }
@@ -38,7 +39,32 @@ function PendingClubRequests() {
 
     setRequests((prev) => prev.filter((r) => r.id !== requestId));
     fetchPending();
-  };
+
+    // Toast de feedback
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2500,
+      timerProgressBar: true,
+      icon: action === "ACCEPT" ? "success" : "error",
+      title: action === "ACCEPT" 
+        ? "Solicitud aceptada ✅" 
+        : "Solicitud rechazada ❌",
+      background: "#1f2937",
+      color: "#e5e7eb"
+    });
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.response?.data?.message || "No se pudo procesar la solicitud",
+      background: "#1f2937",
+      color: "#e5e7eb"
+    });
+  }
+};
 
   useEffect(() => {
     fetchPending();

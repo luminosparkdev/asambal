@@ -1,35 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
-const CATEGORIAS = [
-  "Mini Masculino",
-  "Mini Femenino",
-  "Infantil Masculino",
-  "Infantil Femenino",
-  "Infantil Mixto",
-  "Menor Masculino",
-  "Menor Femenino",
-  "Cadete Masculino",
-  "Cadete Femenino",
-  "Juvenil Masculino",
-  "Juvenil Femenino",
-  "Junior Masculino",
-  "Junior Femenino",
-  "Mayor Masculino",
-  "Mayor Femenino",
-  "Alevines Masculino",
-  "Alevines Femenino",
-  "Segunda Masculino",
-  "Intermedia Femenino",
-];
-
 function CoachCreate() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [allCategorias, setAllCategorias] = useState([]);
 
   const [form, setForm] = useState({
     nombre: "",
@@ -37,6 +16,19 @@ function CoachCreate() {
     email: "",
     categorias: [],
   });
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const res = await api.get("/categories");
+        setAllCategorias(res.data);
+      } catch (err) {
+        console.error("Error al traer categorías:", err);
+      }
+    };
+
+    fetchCategorias();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -55,67 +47,147 @@ function CoachCreate() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
+  e.preventDefault();
+  if (isSubmitting) return;
 
-    if (form.categorias.length === 0) {
-      setMessage("❌ Debe seleccionar al menos una categoría");
-      return;
-    }
+  if (form.categorias.length === 0) {
+    setMessage("❌ Debe seleccionar al menos una categoría");
+    return;
+  }
 
-    setIsSubmitting(true);
-    setMessage("");
+  setIsSubmitting(true);
+  setMessage("");
 
+  try {
+    const res = await api.post("/coaches/create", form);
+
+    if (res.data.code === "PROFESOR_EXISTENTE") {
+  const confirm = await Swal.fire({
+    icon: "question",
+    title: "Profesor existente",
+    text: "El profesor ya existe, ¿desea enviarle una solicitud para agregarlo a su club?",
+    showCancelButton: true,
+    confirmButtonText: "Enviar solicitud",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (confirm.isConfirmed) {
     try {
-      const res = await api.post("/coaches/create", form);
-
-      if (res.data.code === "PROFESOR_EXISTENTE") {
-        const confirm = await Swal.fire({
-          icon: "question",
-          title: "Profesor existente",
-          text: "Este profesor ya existe. ¿Desea enviarle una solicitud para agregarlo a su club?",
-          showCancelButton: true,
-          confirmButtonText: "Enviar solicitud",
-        });
-
-        if (confirm.isConfirmed) {
-          await api.post("/coaches/request-join", {
-            email: form.email,
-            categorias: form.categorias,
-          });
-          Swal.fire("Solicitud enviada", "", "success");
-          navigate("/coaches");
-          return;
-        }
-      }
-
-      await Swal.fire({
-        icon: "success",
-        title: "Profesor creado",
-        text: "El profesor fue registrado exitosamente. Se envió un mail para que complete su perfil.",
-        confirmButtonText: "Aceptar",
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#16a34a",
+      await api.post("/clubs/request-coach", {
+        email: form.email,
+        nombre: form.nombre,
+        apellido: form.apellido,
+        categorias: form.categorias,
       });
 
-      setForm({
-        nombre: "",
-        apellido: "",
-        email: "",
-        categorias: [],
-      });
-
+      Swal.fire("Solicitud enviada", "", "success");
       navigate("/coaches");
+      return;
     } catch (err) {
       console.error(err);
-      setMessage(
-        `❌ ${err.response?.data?.message || "Error al crear el profesor"}`
-      );
-    } finally {
+      // Si el backend devuelve que el nombre/apellido no coinciden
+      if (err.response?.data?.existingNombre) {
+        await Swal.fire({
+          icon: "error",
+          title: "Datos no coinciden",
+          html: `
+            Los datos ingresados no coinciden con el profesor registrado:<br/>
+            Nombre: <strong>${err.response.data.existingNombre}</strong><br/>
+            Apellido: <strong>${err.response.data.existingApellido}</strong>
+          `,
+          confirmButtonText: "Aceptar",
+        });
+      } else {
+        setMessage(`❌ ${err.response?.data?.message || "Error al enviar solicitud"}`);
+      }
       setIsSubmitting(false);
+      return;
     }
-  };
+  } else {
+    setIsSubmitting(false);
+    return;
+  }
+}
+
+    // JUGADOR EXISTENTE en mismo club
+    if (res.data.code === "JUGADOR_EXISTENTE") {
+      const confirm = await Swal.fire({
+        icon: "question",
+        title: "Jugador existente",
+        text: "El usuario es jugador en su club, ¿desea agregarlo como profesor?",
+        showCancelButton: true,
+        confirmButtonText: "Agregar como profesor",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (confirm.isConfirmed) {
+        await api.post("/coaches/request-join", {
+          email: form.email,
+          categorias: form.categorias,
+        });
+        Swal.fire("Solicitud enviada", "", "success");
+        navigate("/coaches");
+        return;
+      } else {
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // JUGADOR EXISTENTE en otro club
+    if (res.data.code === "JUGADOR_EXISTENTE_OTRO_CLUB") {
+      const confirm = await Swal.fire({
+        icon: "question",
+        title: "Jugador existente en otro club",
+        text: "El usuario es jugador en otro club, ¿desea agregarlo como profesor a su club?",
+        showCancelButton: true,
+        confirmButtonText: "Agregar como profesor",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (confirm.isConfirmed) {
+        await api.post("/coaches/request-join", {
+          email: form.email,
+          categorias: form.categorias,
+        });
+        Swal.fire("Solicitud enviada", "", "success");
+        navigate("/coaches");
+        return;
+      } else {
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    // Si llega hasta acá, se creó correctamente
+    await Swal.fire({
+      icon: "success",
+      title: "Profesor creado",
+      text: "El profesor fue registrado exitosamente. Se envió un mail para que complete su perfil.",
+      confirmButtonText: "Aceptar",
+      background: "#0f172a",
+      color: "#e5e7eb",
+      confirmButtonColor: "#16a34a",
+    });
+
+    setForm({
+      nombre: "",
+      apellido: "",
+      email: "",
+      categorias: [],
+    });
+
+    navigate("/coaches");
+  } catch (err) {
+    console.error(err);
+    setMessage(
+      `❌ ${err.response?.data?.message || "Error al crear el profesor"}`
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
@@ -139,20 +211,12 @@ function CoachCreate() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {[
-            { name: "nombre", label: "Nombre", placeholder: "Nombre" },
+          {[{ name: "nombre", label: "Nombre", placeholder: "Nombre" },
             { name: "apellido", label: "Apellido", placeholder: "Apellido" },
-            {
-              name: "email",
-              label: "Email",
-              placeholder: "Email",
-              type: "email",
-            },
+            { name: "email", label: "Email", placeholder: "Email", type: "email" },
           ].map(({ name, label, placeholder, type }) => (
             <div key={name} className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-300">
-                {label}
-              </label>
+              <label className="text-sm font-medium text-gray-300">{label}</label>
               <input
                 required
                 type={type || "text"}
@@ -167,27 +231,25 @@ function CoachCreate() {
 
           {/* CATEGORÍAS */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-300">
-              Categorías
-            </label>
-
+            <label className="text-sm font-medium text-gray-300">Categorías</label>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIAS.map((cat) => {
-                const active = form.categorias.includes(cat);
+              {allCategorias.map((cat) => {
+                const nombreCompleto = `${cat.nombre} ${cat.genero}`;
+                const active = form.categorias.includes(nombreCompleto);
 
                 return (
                   <button
-                    key={cat}
+                    key={cat.id}
                     type="button"
-                    onClick={() => toggleCategoria(cat)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition
+                    onClick={() => toggleCategoria(nombreCompleto)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
                       ${
                         active
                           ? "bg-green-600/80 border-green-500 text-white"
                           : "border-gray-500 text-gray-300 hover:bg-gray-700/50"
                       }`}
                   >
-                    {cat}
+                    {nombreCompleto}
                   </button>
                 );
               })}
@@ -198,8 +260,7 @@ function CoachCreate() {
             <button
               disabled={isSubmitting}
               type="submit"
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors 
-              ${
+              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
                 isSubmitting
                   ? "border border-green-500/80 bg-green-700/80 rounded-md cursor-not-allowed"
                   : "text-gray-200 border border-green-500/80 bg-green-700/80 rounded-md hover:bg-green-600/80 hover:text-white hover:border-green-600/80"
@@ -219,8 +280,7 @@ function CoachCreate() {
               disabled={isSubmitting}
               type="button"
               onClick={() => navigate("/coaches")}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors 
-              ${
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 isSubmitting
                   ? "border border-gray-500/40 text-gray-500 cursor-not-allowed"
                   : "text-gray-300 border border-gray-500/80 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-600/80"

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import Swal from "sweetalert2";
 
-function JugadorProfileForm({ userId }) {
+function JugadorProfileForm({ userId, activationToken }) {
   const navigate = useNavigate();
 
   const [readonlyData, setReadonlyData] = useState(null);
@@ -47,7 +47,7 @@ function JugadorProfileForm({ userId }) {
 
   const canSubmit = form.reglasclub && form.usoimagen;
 
-  useEffect(() => {
+  {/*useEffect(() => {
     const fetchPlayer = async () => {
       try {
         const res = await api.get("/players/me");
@@ -64,7 +64,7 @@ function JugadorProfileForm({ userId }) {
     };
 
     fetchPlayer();
-  }, []);
+  }, []);*/}
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -92,35 +92,41 @@ function JugadorProfileForm({ userId }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setAttemptedSubmit(true);
+  e.preventDefault();
+  setAttemptedSubmit(true);
 
-    if (isSubmitting || !canSubmit) return;
+  if (isSubmitting || !canSubmit) return;
 
-    const payload = { ...form };
-    if (form.edad < 16) payload.tutor = tutor;
+  setIsSubmitting(true);
 
-    setIsSubmitting(true);
+  try {
+    // Construimos el payload que espera el backend
+    const payload = {
+      activationToken: activationToken, // O reemplazar por un token real si lo tienes
+      form: { ...form },
+      tutor: Number(form.edad) < 16 ? tutor : null,
+      clubs: [], // opcional: si querés enviar clubs desde front, sino el backend usa default
+    };
 
-    try {
-      await api.post("/players/complete-profile", payload);
+    // POST a la ruta que incluye el playerId
+    await api.post(`/players/${userId}/complete-profile`, payload);
 
-      Swal.fire({
-        icon: "success",
-        title: "Perfil enviado",
-        text: "Pendiente de validación por el profesor",
-        confirmButtonText: "Aceptar",
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#16a34a",
-      }).then(() => navigate("/"));
-    } catch (err) {
-      console.error(err);
-      setMessage(err.response?.data?.message || "Error al enviar el perfil");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    Swal.fire({
+      icon: "success",
+      title: "Perfil enviado",
+      text: "Pendiente de validación por el profesor",
+      confirmButtonText: "Aceptar",
+      background: "#0f172a",
+      color: "#e5e7eb",
+      confirmButtonColor: "#16a34a",
+    }).then(() => navigate("/"));
+  } catch (err) {
+    console.error(err);
+    setMessage(err.response?.data?.message || "Error al enviar el perfil");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const showTutor = Number(form.edad) < 16;
 
