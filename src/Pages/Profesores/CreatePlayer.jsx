@@ -224,7 +224,7 @@ function PlayerCreate() {
               className="px-3 py-2 text-gray-200 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
               {allClubs.map((c) => (
-                <option key={c.clubId} value={c.clubId}>{c.nombreClub}</option>
+                <option key={c.clubId} value={c.clubId}>{c.nombre}</option>
               ))}
             </select>
           </div>

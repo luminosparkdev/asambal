@@ -8,9 +8,13 @@ const api = axios.create({
 // AGREGAMOS EL TOKEN A LA PETICION
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
+  const clubId = localStorage.getItem("activeClubId");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  if (clubId) {
+    config.headers["X-club-id"] = clubId;
   }
 
   return config;
