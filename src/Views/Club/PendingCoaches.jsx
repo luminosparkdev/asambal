@@ -9,7 +9,8 @@ const cardVariants = { hidden: { opacity: 0, y: 20, scale: 0.97 }, visible: { op
 
 function PendingCoaches() {
   const { user } = useAuth();
-  const currentClubId = user?.clubId;
+  const currentClubId = user?.clubs?.[0]?.clubId;
+  const currentClubName = user?.clubs?.[0]?.nombre;
 
   const [coaches, setCoaches] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ function PendingCoaches() {
         categoria: Array.isArray(c.categorias)
           ? c.categorias.join(", ")
           : "-",
-        clubName: user?.nombreClub || "Club",
+        clubName: currentClubName || "Club",
       }));
 
       setCoaches(filtered);
