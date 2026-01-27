@@ -28,7 +28,7 @@ function PlayersList() {
 
 const fetchPlayers = async () => {
   try {
-    const res = await api.get("/players/players-by-coach");
+    const res = await api.get("/players/by-coach");
     setPlayers(res.data);
   } catch (err) {
     console.error("Error fetching players:", err.response?.data || err);

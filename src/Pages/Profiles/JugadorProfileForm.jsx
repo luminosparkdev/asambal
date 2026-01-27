@@ -91,7 +91,7 @@ function JugadorProfileForm({ userId, activationToken }) {
     setTutor((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setAttemptedSubmit(true);
 
@@ -100,15 +100,24 @@ function JugadorProfileForm({ userId, activationToken }) {
   setIsSubmitting(true);
 
   try {
-    // Construimos el payload que espera el backend
+    // Aquí asumimos que ya sabes el club del jugador. 
+    // Si lo tenés en readonlyData o en otra parte, ajusta estas variables
+    const clubId = readonlyData?.clubId || "CLUB_ID_DEFAULT";
+    const nombreClub = readonlyData?.clubNombre || "Nombre del club";
+    const categorias = readonlyData?.categorias || ["Categoría por defecto"];
+
+    // Payload que espera el backend
     const payload = {
-      activationToken: activationToken, // O reemplazar por un token real si lo tienes
+      activationToken: activationToken,
       form: { ...form },
       tutor: Number(form.edad) < 16 ? tutor : null,
-      clubs: [], // opcional: si querés enviar clubs desde front, sino el backend usa default
+      clubId,
+      nombreClub,
+      categorias,
     };
 
-    // POST a la ruta que incluye el playerId
+    console.log("Payload enviado:", payload); // 👈 útil para debug
+
     await api.post(`/players/${userId}/complete-profile`, payload);
 
     Swal.fire({
@@ -121,7 +130,7 @@ function JugadorProfileForm({ userId, activationToken }) {
       confirmButtonColor: "#16a34a",
     }).then(() => navigate("/"));
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error enviando perfil:", err);
     setMessage(err.response?.data?.message || "Error al enviar el perfil");
   } finally {
     setIsSubmitting(false);
@@ -170,7 +179,7 @@ function JugadorProfileForm({ userId, activationToken }) {
                 Datos del jugador
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2 text-sm text-gray-300">
                 <span className="font-medium text-gray-400">Nombre: </span>
                 <span>{readonlyData.nombre}</span>
@@ -181,9 +190,9 @@ function JugadorProfileForm({ userId, activationToken }) {
                 <span>{readonlyData.apellido}</span>
             </div>
 
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
                 <span className="font-medium text-gray-400">Email: </span>
-                <span className="truncate max-w-full">{readonlyData.email}</span>
+                <span className="max-w-full truncate">{readonlyData.email}</span>
             </div>
 
             <div className="flex gap-2">
@@ -200,7 +209,7 @@ function JugadorProfileForm({ userId, activationToken }) {
           Información personal
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input name="dni" placeholder="DNI" onChange={handleChange} className={inputClass} />
         <select name="sexo" onChange={handleChange} className={selectClass} value={form.sexo}>
             <option value="">Seleccionar sexo</option>
@@ -223,7 +232,7 @@ function JugadorProfileForm({ userId, activationToken }) {
           Contacto
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input name="telefono" placeholder="Telefono" onChange={handleChange} className={inputClass} />
         <input name="instagram" placeholder="Instagram" onChange={handleChange} className={inputClass} />
         <input name="domicilio" placeholder="Domicilio" onChange={handleChange} className={inputClass} />
@@ -236,7 +245,7 @@ function JugadorProfileForm({ userId, activationToken }) {
           Datos educativos
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input name="escuela" placeholder="Escuela" onChange={handleChange} className={inputClass} />
         <select name="nivel" onChange={handleChange} className={selectClass} value={form.nivel}>
             <option value="">Seleccionar nivel</option>
@@ -272,7 +281,7 @@ function JugadorProfileForm({ userId, activationToken }) {
           Datos de juego
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <select name="posicion" onChange={handleChange} className={selectClass} value={form.posicion}>
             <option value="">Seleccionar posición</option>
             {POSICIONES.map((posicion) => (
@@ -299,7 +308,7 @@ function JugadorProfileForm({ userId, activationToken }) {
           Cobros
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input name="domiciliocobro" placeholder="Domicilio de cobro" onChange={handleChange} className={inputClass} />
         <input name="horariocobro" placeholder="Horario de cobro" onChange={handleChange} className={inputClass} />
         </div>
@@ -307,12 +316,12 @@ function JugadorProfileForm({ userId, activationToken }) {
 
       {/* Tutor */}
       {showTutor && (
-        <section className="space-y-4 md:col-span-2 border border-yellow-500/40 rounded-md p-4 bg-yellow-500/5">
+        <section className="p-4 space-y-4 border rounded-md md:col-span-2 border-yellow-500/40 bg-yellow-500/5">
           <h3 className="text-xs font-semibold tracking-wide text-yellow-400 uppercase">
             Datos del tutor
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {["nombre", "apellido", "dni", "email", "telefono"].map((field) => (
               <input
                 key={field}
@@ -350,7 +359,7 @@ function JugadorProfileForm({ userId, activationToken }) {
       <button
         disabled={isSubmitting || !canSubmit}
         type="submit"
-        className="md:col-span-2 w-full py-3 text-sm font-semibold text-white rounded-md border border-green-500 bg-green-700 hover:bg-green-600/90 disabled:opacity-50 transition"
+        className="w-full py-3 text-sm font-semibold text-white transition bg-green-700 border border-green-500 rounded-md md:col-span-2 hover:bg-green-600/90 disabled:opacity-50"
       >
         {isSubmitting ? "Enviando..." : "Enviar perfil"}
       </button>
