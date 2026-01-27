@@ -183,13 +183,13 @@ function PlayerCreate() {
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="w-full max-w-md p-6 border border-gray-500 shadow-xl bg-transparent backdrop-blur rounded-2xl"
+        className="w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
       >
         <h2 className="mb-1 text-2xl font-bold text-gray-200">Crear jugador</h2>
         <p className="mb-6 text-sm text-gray-300">Registrá un nuevo jugador para tu club</p>
 
         {message && (
-          <div className="mb-4 rounded-md px-4 py-2 text-sm font-medium bg-red-700/30 text-white">
+          <div className="px-4 py-2 mb-4 text-sm font-medium text-white rounded-md bg-red-700/30">
             {message}
           </div>
         )}
@@ -208,7 +208,7 @@ function PlayerCreate() {
                 placeholder={placeholder}
                 value={form[name]}
                 onChange={handleChange}
-                className="px-3 py-2 text-gray-200 border border-gray-500 placeholder-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="px-3 py-2 text-gray-200 placeholder-gray-500 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
           ))}
@@ -263,7 +263,7 @@ function PlayerCreate() {
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
                   Creando...
                 </span>
               ) : "Crear"}

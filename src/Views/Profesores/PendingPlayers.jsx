@@ -20,17 +20,21 @@ function PendingPlayers() {
     fetchClubs();
   }, []);
 
-  const fetchPending = async (clubId) => {
-    setLoading(true);
-    try {
-      const res = await api.get(
-        `/coaches/pending-players/${clubId}`
-      );
-      setPlayers(res.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchPending = async (clubId) => {
+  setLoading(true);
+  try {
+    const res = await api.get(`/coaches/pending-players/${clubId}`, {
+      headers: {
+        "x-professor-clubs": JSON.stringify(clubs.map(c => c.clubId))
+      },
+    });
+    setPlayers(res.data);
+  } catch (err) {
+    console.error("Error fetching pending players:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // 🚀 SOLO cuando hay club seleccionado
   useEffect(() => {
