@@ -33,6 +33,8 @@ import PlayerDashboard from "../Pages/Jugadores/PlayerDashboard";
 import PlayerProfile from "../Pages/Profiles/PlayerProfile";
 import PlayerListAsambal from "../Pages/Asambal/PlayerListAsambal";
 import PendingClubRequests from "../Views/Profesores/PendingClubRequests";
+import CoachList from "../Pages/Asambal/CoachList";
+import CoachDetail from "../Pages/Asambal/CoachDetail";
 
 export const router = createBrowserRouter([
     {
@@ -116,6 +118,23 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL, ROLES.ADMIN_CLUB]}>
                         <CreateClub />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/profesores",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <CoachList />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "asambal/profesores/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <CoachDetail />
                     </ProtectedRoute>
                 ),
             },
