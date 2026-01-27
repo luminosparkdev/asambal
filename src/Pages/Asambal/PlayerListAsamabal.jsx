@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import { EyeIcon } from "@heroicons/react/24/outline";
@@ -11,26 +11,64 @@ function PlayerListAsambal() {
   const [filterType, setFilterType] = useState("none");
   const [filterValue, setFilterValue] = useState("");
 
-  // Opciones de filtros estáticas
-  const filterOptions = {
-    none: [],
-    estado: ["INCOMPLETO", "PENDIENTE", "ACTIVO", "INACTIVO", "RECHAZADO"],
-    habilitado: [true, false],
-    club: ["Lumino", "Euro Racing", "Independiente"], // reemplazar por todos los clubes posibles
-    categoria: [
-      "Mini Masculino","Mini Femenino","Infantil Masculino","Infantil Femenino",
-      "Infantil Mixto","Alevines Masculino","Alevines Femenino","Menor Masculino",
-      "Menor Femenino","Cadete Masculino","Cadete Femenino","Juvenil Masculino",
-      "Juvenil Femenino","Junior Masculino","Junior Femenino","Segunda Masculino",
-      "Intermedia Femeninio","Mayor Masculino","Mayor Femenino"
-    ],
-    sexo: ["Masculino", "Femenino"],
-    posicion: ["Arquero", "Ala", "Central", "Pivot", "Extremo"],
-    manoHabil: ["Derecha", "Izquierda", "Ambidiestro"],
-  };
+  const getPlayerClubs = (player) =>
+    Array.isArray(player.clubs)
+      ? player.clubs.map(c => c.nombreClub).filter(Boolean)
+      : [];
 
-  // Map para mostrar estados de manera amigable
-  const estadoLabels = {    
+  const getPlayerCategories = (player) =>
+    Array.isArray(player.clubs)
+      ? [...new Set(player.clubs.flatMap(c => c.categorias || []))]
+      : [];
+
+  const unique = (arr) => [...new Set(arr.filter(Boolean))];
+
+  const availableClubs = useMemo(
+    () =>
+      unique(
+        players.flatMap(p =>
+          (p.clubs || []).map(c => c.nombreClub)
+        )
+      ).sort(),
+    [players]
+  );
+
+  const availableCategories = useMemo(
+    () =>
+      unique(
+        players.flatMap(p =>
+          (p.clubs || []).flatMap(c => c.categorias || [])
+        )
+      ).sort(),
+    [players]
+  );
+
+  const availableEstados = useMemo(
+    () => unique(players.map(p => p.status)).sort(),
+    [players]
+  );
+
+  const availablePosiciones = useMemo(
+    () => unique(players.map(p => p.posicion)).sort(),
+    [players]
+  );
+
+  const availableManoHabil = useMemo(
+    () => unique(players.map(p => p.manohabil)).sort(),
+    [players]
+  );
+
+  const availableSexo = useMemo(
+    () => unique(players.map(p => p.sexo)).sort(),
+    [players]
+  );
+
+  const availableHabilitado = useMemo(
+    () => unique(players.map(p => p.habilitadoAsambal)),
+    [players]
+  );
+
+  const estadoLabels = {
     INCOMPLETO: "Incompleto",
     PENDIENTE: "Pendiente",
     ACTIVO: "Activo",
@@ -51,7 +89,6 @@ function PlayerListAsambal() {
     }
   };
 
-  // Filtrado de jugadores
   const filteredPlayers = players.filter((player) => {
     const matchSearch = `${player.nombre} ${player.apellido}`
       .toLowerCase()
@@ -59,19 +96,45 @@ function PlayerListAsambal() {
 
     let matchFilter = true;
 
-    if (filterValue !== "" && filterValue !== "Todos") {
-      if (filterType === "estado") matchFilter = player.status === filterValue;
-      if (filterType === "habilitado")
-        matchFilter = player.habilitadoParaJugar === filterValue;
-      if (filterType === "club") matchFilter = player.clubName === filterValue;
-      if (filterType === "categoria") matchFilter = player.categoria === filterValue;
-      if (filterType === "sexo") matchFilter = player.sexo === filterValue;
-      if (filterType === "posicion") matchFilter = player.posicion === filterValue;
-      if (filterType === "manoHabil") matchFilter = player.manohabil === filterValue;
+    if (filterValue !== "") {
+      if (filterType === "estado")
+        matchFilter = player.status === filterValue;
+
+      if (filterType === "habilitadoAsambal")
+        matchFilter = player.habilitadoAsambal === (filterValue === "true");
+
+      if (filterType === "club")
+        matchFilter = player.clubs?.some(
+          c => c.nombreClub === filterValue
+        );
+
+      if (filterType === "categoria")
+        matchFilter = player.clubs?.some(
+          c => (c.categorias || []).includes(filterValue)
+        );
+
+      if (filterType === "sexo")
+        matchFilter = player.sexo === filterValue;
+
+      if (filterType === "posicion")
+        matchFilter = player.posicion === filterValue;
+
+      if (filterType === "manoHabil")
+        matchFilter = player.manohabil === filterValue;
     }
 
     return matchSearch && matchFilter;
   });
+
+  const filterOptionsMap = {
+    estado: availableEstados,
+    habilitadoAsambal: availableHabilitado.map(v => String(v)),
+    club: availableClubs,
+    categoria: availableCategories,
+    sexo: availableSexo,
+    posicion: availablePosiciones,
+    manoHabil: availableManoHabil,
+  };
 
   const selectClasses =
     "h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-700";
@@ -79,6 +142,7 @@ function PlayerListAsambal() {
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
+
         {/* Título */}
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
@@ -94,7 +158,7 @@ function PlayerListAsambal() {
             placeholder="Buscar por nombre..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 px-3 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
+            className="h-10 px-3 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent"
           />
 
           <select
@@ -107,7 +171,7 @@ function PlayerListAsambal() {
           >
             <option value="none">Sin filtro</option>
             <option value="estado">Estado</option>
-            <option value="habilitado">Habilitado para jugar</option>
+            <option value="habilitadoAsambal">Habilitado</option>
             <option value="club">Club</option>
             <option value="categoria">Categoría</option>
             <option value="sexo">Sexo</option>
@@ -122,14 +186,15 @@ function PlayerListAsambal() {
               className={selectClasses}
             >
               <option value="">Todos</option>
-              {(filterOptions[filterType] || []).map((opt) => (
+
+              {(filterOptionsMap[filterType] || []).map((opt) => (
                 <option key={opt} value={opt}>
                   {filterType === "estado"
                     ? estadoLabels[opt] || opt
-                    : typeof opt === "boolean"
-                    ? opt
-                      ? "Sí"
-                      : "No"
+                    : opt === "true"
+                    ? "Sí"
+                    : opt === "false"
+                    ? "No"
                     : opt}
                 </option>
               ))}
@@ -144,6 +209,9 @@ function PlayerListAsambal() {
               <tr>
                 <th className="px-4 py-3 text-center">Nombre</th>
                 <th className="px-4 py-3 text-center">Apellido</th>
+                <th className="px-4 py-3 text-center">DNI</th>
+                <th className="px-4 py-3 text-center">Fecha de nacimiento</th>
+                <th className="px-4 py-3 text-center">Género</th>
                 <th className="px-4 py-3 text-center">Club</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
                 <th className="px-4 py-3 text-center">Estado</th>
@@ -154,27 +222,41 @@ function PlayerListAsambal() {
 
             <tbody className="divide-y divide-gray-300">
               {filteredPlayers.map((player) => (
-                <tr key={player.id} className="hover:bg-white/5">
+                <tr key={player.id}>
                   <td className="px-4 py-2 text-center">{player.nombre}</td>
                   <td className="px-4 py-2 text-center">{player.apellido}</td>
-                  <td className="px-4 py-2 text-center">{player.clubName}</td>
-                  <td className="px-4 py-2 text-center">{player.categoria}</td>
+                  <td className="px-4 py-2 text-center">{player.dni}</td>
+                  <td className="px-4 py-2 text-center">
+                    {player.fechanacimiento}
+                  </td>
+                  <td className="px-4 py-2 text-center">{player.sexo}</td>
+
+                  <td className="px-4 py-2 text-center max-w-40">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      {getPlayerClubs(player).join(", ") || "-"}
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-2 text-center max-w-48">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      {getPlayerCategories(player).join(", ") || "-"}
+                    </div>
+                  </td>
+
                   <td className="px-4 py-2 text-center">
                     {estadoLabels[player.status] || player.status}
                   </td>
+
                   <td className="px-4 py-2 text-center">
-                    {player.habilitadoParaJugar ? (
-                      <span className="font-semibold text-green-600">Sí</span>
-                    ) : (
-                      <span className="font-semibold text-red-600">No</span>
-                    )}
+                    {player.habilitadoAsambal ? "Sí" : "No"}
                   </td>
-                  <td className="flex justify-center gap-2 px-4 py-2">
+
+                  <td className="px-4 py-2 flex justify-center">
                     <button
                       onClick={() =>
                         navigate(`/asambal/jugadores/${player.id}`)
                       }
-                      className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
+                      className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Ver
@@ -183,6 +265,7 @@ function PlayerListAsambal() {
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       </div>
