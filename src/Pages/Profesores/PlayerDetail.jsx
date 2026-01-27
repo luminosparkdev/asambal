@@ -148,13 +148,13 @@ function PlayerDetails() {
     <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-4xl px-4 py-8 mx-auto">
         <div
           className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30
           ${player.status === "ACTIVO" ? "border-green-500" : "border-red-500"}`}
         >
           {/* HEADER */}
-          <div className="flex justify-between items-start mb-8">
+          <div className="flex items-start justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-200">
                 {editing ? "Editar jugador" : `${player.nombre} ${player.apellido}`}
@@ -175,7 +175,7 @@ function PlayerDetails() {
           </div>
 
           {/* BODY */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-gray-200">
+          <div className="grid grid-cols-1 gap-4 text-gray-200 md:grid-cols-4">
             {[
               { label: "Nombre", name: "nombre" },
               { label: "Apellido", name: "apellido" },
@@ -202,7 +202,7 @@ function PlayerDetails() {
               { label: "Uso de imagen", name: "usoimagen" },
             ].map(({ label, name }) => (
               <div key={name} className="flex flex-col gap-1">
-                <span className="text-xs uppercase text-gray-400">{label}</span>
+                <span className="text-xs text-gray-400 uppercase">{label}</span>
                 
                 {editing ? (
                   <>
@@ -210,8 +210,7 @@ function PlayerDetails() {
                     name={name}
                     value={form[name] || ""}
                     onChange={handleChange}
-                    className="px-3 py-2 rounded-md bg-gray-800/70 border border-white/10
-                               text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-2 text-gray-100 border rounded-md bg-gray-800/70 border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   </>
                 ) : (
@@ -225,7 +224,7 @@ function PlayerDetails() {
             ))}
           </div>
 
-          <div className="mt-6 text-sm text-gray-400 space-y-1">
+          <div className="mt-6 space-y-1 text-sm text-gray-400">
             <p>Creado: {formatDate(player.createdAt)}</p>
             <p>Última actualización: {formatDate(player.updatedAt)}</p>
           </div>
@@ -236,13 +235,13 @@ function PlayerDetails() {
               <>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   Guardar cambios
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200"
+                  className="flex-1 py-3 text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600"
                 >
                   Cancelar
                 </button>
@@ -251,7 +250,7 @@ function PlayerDetails() {
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   Editar
                 </button>

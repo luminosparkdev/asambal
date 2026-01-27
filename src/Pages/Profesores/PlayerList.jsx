@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../Api/Api";
-import { EyeIcon, PencilSquareIcon, CheckCircleIcon, XCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, CheckCircleIcon, XCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 function PlayersList() {
   const [players, setPlayers] = useState([]);
@@ -11,12 +11,19 @@ function PlayersList() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
-  const categories = ["ALL", ...new Set(players.map(p => p.categoria))];
+  const categories = [
+  "ALL",
+  ...new Set(
+    players.flatMap(player =>
+      player.clubs?.flatMap(club => club.categorias || []) || []
+    )
+  ),
+];
 
   const filteredPlayers = players.filter(player => {
     const matchName = `${player.nombre} ${player.apellido}`.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "ALL" || player.status === statusFilter;
-    const matchCategory = categoryFilter === "ALL" || player.categoria === categoryFilter;
+    const matchCategory = categoryFilter === "ALL" || player.clubs.some(club => club.categorias.includes(categoryFilter));
     return matchName && matchStatus && matchCategory;
   });
 
@@ -26,14 +33,14 @@ function PlayersList() {
     );
   };
 
-const fetchPlayers = async () => {
-  try {
-    const res = await api.get("/players/by-coach");
-    setPlayers(res.data);
-  } catch (err) {
-    console.error("Error fetching players:", err.response?.data || err);
-  }
-};
+  const fetchPlayers = async () => {
+    try {
+      const res = await api.get("/players/by-coach");
+      setPlayers(res.data);
+    } catch (err) {
+      console.error("Error fetching players:", err.response?.data || err);
+    }
+  };
 
   useEffect(() => {
     fetchPlayers();
@@ -108,7 +115,7 @@ const fetchPlayers = async () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
+              className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               <option value="ALL" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Todos los estados</option>
               <option value="ACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Activo</option>
@@ -119,7 +126,7 @@ const fetchPlayers = async () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
+              className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat} className="text-gray-100 bg-gray-800 hover:bg-gray-700">
@@ -131,7 +138,7 @@ const fetchPlayers = async () => {
 
           <button
             onClick={() => navigate("/profesor/jugadores/crear")}
-            className="flex items-center h-10 gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
+            className="flex items-center h-10 gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md cursor-pointer border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
             title="Agregar nuevo jugador"
           >
             <PlusIcon className="w-5 h-5" />
@@ -141,57 +148,68 @@ const fetchPlayers = async () => {
 
         {/* Tabla */}
         <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
-<table className="min-w-full text-sm">
-  <thead className="text-gray-100 bg-gray-800">
-  <tr>
-    <th className="px-4 py-3 text-center">Nombre</th>
-    <th className="px-4 py-3 text-center">Apellido</th>
-    <th className="px-4 py-3 text-center">Edad</th>
-    <th className="px-4 py-3 text-center">Categoría</th>
-    <th className="px-4 py-3 text-center">Estatura</th>
-    <th className="px-4 py-3 text-center">Posición</th>
-    <th className="px-4 py-3 text-center">Mano hábil</th>
-    <th className="px-4 py-3 text-center">Acciones</th>
-  </tr>
-</thead>
+          <table className="min-w-full text-sm">
+            <thead className="text-gray-100 bg-gray-800">
+              <tr>
+                <th className="px-4 py-3 text-center">Nombre</th>
+                <th className="px-4 py-3 text-center">Apellido</th>
+                <th className="px-4 py-3 text-center">Edad</th>
+                <th className="px-4 py-3 text-center">Categoría</th>
+                <th className="px-4 py-3 text-center">Club</th>
+                <th className="px-4 py-3 text-center">Sexo</th>
+                <th className="px-4 py-3 text-center">Estatura</th>
+                <th className="px-4 py-3 text-center">Posición</th>
+                <th className="px-4 py-3 text-center">Mano hábil</th>
+                <th className="px-4 py-3 text-center">Acciones</th>
+              </tr>
+            </thead>
 
-<tbody className="divide-y divide-gray-300">
-  {filteredPlayers.map((player) => (
-    <tr key={player.id} className="transition-colors hover:bg-white/5">
-      <td className="px-4 py-2 text-center">{player.nombre}</td>
-      <td className="px-4 py-2 text-center">{player.apellido}</td>
-      <td className="px-4 py-2 text-center">{player.edad}</td>
-      <td className="px-4 py-2 text-center">{player.categoria}</td>
-      <td className="px-4 py-2 text-center">{player.estatura}</td>
-      <td className="px-4 py-2 text-center">{player.posicion}</td>
-      <td className="px-4 py-2 text-center">{player.manohabil}</td>
-      <td className="flex justify-center gap-2 px-4 py-2">
-        <button
-          onClick={() => navigate(`/profesor/jugadores/${player.id}`)}
-          className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100"
-          title="Ver detalles"
-        >
-          <EyeIcon className="w-4 h-4" /> Ver
-        </button>
+            <tbody className="divide-y divide-gray-300">
+              {filteredPlayers.map((player) => (
+                <tr key={player.id} className="transition-colors hover:bg-white/5">
+                  <td className="px-4 py-2 text-center">{player.nombre}</td>
+                  <td className="px-4 py-2 text-center">{player.apellido}</td>
+                  <td className="px-4 py-2 text-center">{player.edad}</td>
+                  <td className="px-4 py-2 text-center">  {player.clubs?.map((club, i) => (
+                    <div key={i}>
+                      {club.categorias?.join(", ")}
+                    </div>
+                  ))}</td>
+                  <td className="px-4 py-2 text-center">  {player.clubs?.map((club, i) => (
+                    <div key={i}>{club.nombreClub}</div>
+                  ))}</td>
+                  <td className="px-4 py-2 text-center">{player.sexo}</td>
+                  <td className="px-4 py-2 text-center">{player.estatura}</td>
+                  <td className="px-4 py-2 text-center">{player.posicion}</td>
+                  <td className="px-4 py-2 text-center">{player.manohabil}</td>
+                  <td className="px-4 py-2 align-middle">
+                      <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => navigate(`/profesor/jugadores/${player.id}`)}
+                      className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md cursor-pointer hover:bg-blue-500 hover:text-gray-100"
+                      title="Ver detalles"
+                    >
+                      <EyeIcon className="w-5 h-5" /> Ver
+                    </button>
 
-        <button
-          onClick={() => togglePlayerStatus(player)}
-          className={`flex items-center gap-1 px-3 py-1 text-sm text-white rounded w-24 ${
-            player.status === "ACTIVO"
-              ? "bg-red-700/95 hover:bg-red-500"
-              : "bg-green-700/95 hover:bg-green-500"
-          }`}
-          title={player.status === "ACTIVO" ? "Desactivar jugador" : "Activar jugador"}
-        >
-          {player.status === "ACTIVO"
-            ? <><XCircleIcon className="w-4 h-4 text-gray-200" /> Desactivar</>
-            : <><CheckCircleIcon className="w-4 h-4 text-gray-200" /> Activar</>}
-        </button>
-      </td>
-    </tr>
-    ))}
-  </tbody>
-</table>
+                    <button
+                      onClick={() => togglePlayerStatus(player)}
+                      className={`cursor-pointer flex items-center gap-1 px-3 py-1 text-sm text-white rounded w-full ${player.status === "ACTIVO"
+                          ? "bg-red-700/95 hover:bg-red-500"
+                          : "bg-green-700/95 hover:bg-green-500"
+                        }`}
+                      title={player.status === "ACTIVO" ? "Desactivar jugador" : "Activar jugador"}
+                    >
+                      {player.status === "ACTIVO"
+                        ? <><XCircleIcon className="w-5 h-5 text-gray-200" /> Desactivar</>
+                        : <><CheckCircleIcon className="w-5 h-5 text-gray-200" /> Activar</>}
+                    </button>
+                      </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

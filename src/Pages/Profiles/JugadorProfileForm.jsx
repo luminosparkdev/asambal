@@ -22,6 +22,7 @@ function JugadorProfileForm({ userId, activationToken }) {
     escuela: "",
     turno: "",
     instagram: "",
+    reglasasambal: false,
     reglasclub: false,
     usoimagen: false,
     horariocobro: "",
@@ -45,7 +46,7 @@ function JugadorProfileForm({ userId, activationToken }) {
   const inputClass =
     "input-glass px-3 py-2 border border-gray-500 rounded-md text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400";
 
-  const canSubmit = form.reglasclub && form.usoimagen;
+  const canSubmit = form.reglasasambal && form.reglasclub && form.usoimagen;
 
   {/*useEffect(() => {
     const fetchPlayer = async () => {
@@ -339,18 +340,23 @@ const handleSubmit = async (e) => {
       {/* Reglas */}
       <section className="space-y-3 md:col-span-2">
         <label className="flex items-center gap-2 text-gray-300">
+          <input type="checkbox" name="reglasasambal" onChange={handleChange} />
+          Acepto que en caso de ser transferido a otro club debo abonar el costo federativo.
+        </label>
+
+        <label className="flex items-center gap-2 text-gray-300">
           <input type="checkbox" name="reglasclub" onChange={handleChange} />
-          Acepto las reglas del club
+          Acepto las reglas del club.
         </label>
 
         <label className="flex items-center gap-2 text-gray-300">
           <input type="checkbox" name="usoimagen" onChange={handleChange} />
-          Autorizo el uso de imagen
+          Autorizo el uso de imagen.
         </label>
 
         {attemptedSubmit && !canSubmit && (
           <p className="text-sm text-red-400">
-            Debe aceptar las reglas del club y el uso de imagen para continuar
+            Debe aceptar las reglas de la federación, del club y el uso de imagen para continuar.
           </p>
         )}
       </section>

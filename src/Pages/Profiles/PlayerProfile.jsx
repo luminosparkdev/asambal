@@ -5,69 +5,84 @@ import Swal from "sweetalert2";
 
 function PlayerProfile() {
   const navigate = useNavigate();
-
+const { id } = useParams();
   const [player, setPlayer] = useState(null);
   const [form, setForm] = useState({});
   const [tutorForm, setTutorForm] = useState({});
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get(`/players/me`)
-      .then((res) => {
-        const data = res.data;
+useEffect(() => {
+  const endpoint = id ? `/players/${id}` : `/players/me`;
 
-        // Normalizo fechas por si vienen en timestamp
-        const formatDateFromApi = (date) => {
-          if (!date) return null;
-          if (date.seconds) return new Date(date.seconds * 1000).toISOString().slice(0, 10);
-          return new Date(date).toISOString().slice(0, 10);
-        };
+  api.get(endpoint)
+    .then((res) => {
+      const data = res.data;
 
-        const normalizedPlayer = {
-          id: data.id,
-          nombre: data.nombre || "",
-          apellido: data.apellido || "",
-          dni: data.dni || "",
-          fechaNacimiento: formatDateFromApi(data.fechanacimiento || data.fechaNacimiento),
-          edad: data.edad || "",
-          sexo: data.sexo || "",
-          domicilio: data.domicilio || "",
-          email: data.email || "",
-          telefono: data.telefono || "",
-          instagram: data.instagram || "",
-          categoria: data.categoria || "",
-          fechaAlta: data.fechaAlta || "",
-          nivel: data.nivel || "",
-          escuela: data.escuela || "",
-          turno: data.turno || "",
-          año: data.año || "",
-          peso: data.peso || "",
-          estatura: data.estatura || "",
-          domiciliocobro: data.domiciliocobro || "",
-          horariocobro: data.horariocobro || "",
-          manohabil: data.manohabil || "",
-          posicion: data.posicion || "",
-          usoimagen: data.usoimagen ?? false,
-          autorizacion: data.autorizacion ?? false,
-          reglasclub: data.reglasclub ?? false,
-          createdAt: data.createdAt || "",
-          updatedAt: data.updatedAt || "",
-          status: data.status || "INACTIVO",
-          tutor: data.tutor || null,
-        };
+      // Normalizo fechas por si vienen en timestamp
+      const formatDateFromApi = (date) => {
+        if (!date) return null;
+        if (date.seconds) {
+          return new Date(date.seconds * 1000).toISOString().slice(0, 10);
+        }
+        return new Date(date).toISOString().slice(0, 10);
+      };
 
-        setPlayer(normalizedPlayer);
-        setForm(normalizedPlayer);
-        setTutorForm(normalizedPlayer.tutor || { nombre: "", apellido: "", dni: "", email: "", telefono: "" });
+      const normalizedPlayer = {
+        id: data.id,
+        nombre: data.nombre || "",
+        apellido: data.apellido || "",
+        dni: data.dni || "",
+        fechaNacimiento: formatDateFromApi(
+          data.fechanacimiento || data.fechaNacimiento
+        ),
+        edad: data.edad || "",
+        sexo: data.sexo || "",
+        domicilio: data.domicilio || "",
+        email: data.email || "",
+        telefono: data.telefono || "",
+        instagram: data.instagram || "",
+        categoria: data.categoria || "",
+        fechaAlta: data.fechaAlta || "",
+        nivel: data.nivel || "",
+        escuela: data.escuela || "",
+        turno: data.turno || "",
+        año: data.año || "",
+        peso: data.peso || "",
+        estatura: data.estatura || "",
+        domiciliocobro: data.domiciliocobro || "",
+        horariocobro: data.horariocobro || "",
+        manohabil: data.manohabil || "",
+        posicion: data.posicion || "",
+        usoimagen: data.usoimagen ?? false,
+        autorizacion: data.autorizacion ?? false,
+        reglasclub: data.reglasclub ?? false,
+        createdAt: data.createdAt || "",
+        updatedAt: data.updatedAt || "",
+        status: data.status || "INACTIVO",
+        tutor: data.tutor || null,
+      };
 
-        setLoading(false);
-      })
-      .catch(() => {
-        console.error("Error al obtener el jugador");
-        navigate("/dashboard");
-      });
-  }, [navigate]);
+      setPlayer(normalizedPlayer);
+      setForm(normalizedPlayer);
+      setTutorForm(
+        normalizedPlayer.tutor || {
+          nombre: "",
+          apellido: "",
+          dni: "",
+          email: "",
+          telefono: "",
+        }
+      );
+
+      setLoading(false);
+    })
+    .catch(() => {
+      console.error("Error al obtener el jugador");
+      navigate("/dashboard");
+    });
+}, [id, navigate]);
+
 
   const formatDisplayDate = (date) => {
     if (!date) return "-";
@@ -185,7 +200,7 @@ function PlayerProfile() {
               <h3 className="pl-2 mb-4 text-lg font-semibold tracking-wider text-gray-800 uppercase rounded-sm bg-gradient-to-r from-gray-200/80 to-transparent">
                 {title}
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {fields.map((field) => (
                   <div key={field} className="flex flex-col gap-1">
                     <span className="text-xs text-gray-400 uppercase">{field}</span>
@@ -207,9 +222,9 @@ function PlayerProfile() {
 
           {/* Tutor */}
           {player.edad < 16 && (
-            <div className="p-6 mt-10 border rounded-lg border-yellow-500/40 bg-yellow-500/5 text-gray-200">
+            <div className="p-6 mt-10 text-gray-200 border rounded-lg border-yellow-500/40 bg-yellow-500/5">
               <h3 className="mb-4 text-xl font-semibold">Datos del Tutor</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {["nombre", "apellido", "dni", "email", "telefono"].map((field) => (
                   <div key={field} className="flex flex-col gap-1">
                     <span className="text-xs text-gray-400 uppercase">{field}</span>

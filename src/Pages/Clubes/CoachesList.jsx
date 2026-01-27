@@ -128,7 +128,7 @@ function CoachesList() {
 
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
@@ -146,29 +146,29 @@ function CoachesList() {
           placeholder="Buscar profesor..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="px-3 py-2 bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-200 h-10"
+          className="h-10 px-3 py-2 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
         />
 
         {/* Estado */}
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
-          className="px-3 py-2 bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 border border-gray-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-200 h-10"
+          className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
         >
-          <option value="ALL" className="bg-gray-800 text-gray-100 hover:bg-gray-700">Todos los estados</option>
-          <option value="ACTIVO" className="bg-gray-800 text-gray-100 hover:bg-gray-700">Activo</option>
-          <option value="INACTIVO" className="bg-gray-800 text-gray-100 hover:bg-gray-700">Inactivo</option>
-          <option value="RECHAZADO" className="bg-gray-800 text-gray-100 hover:bg-gray-700">Rechazado</option>
+          <option value="ALL" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Todos los estados</option>
+          <option value="ACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Activo</option>
+          <option value="INACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Inactivo</option>
+          <option value="RECHAZADO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Rechazado</option>
         </select>
 
         {/* Categoria */}
         <select
           value={categoryFilter}
           onChange={e => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 border border-gray-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-200 "
+          className="px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200 "
         >
           {categories.map(category => (
-            <option key={category} value={category} className="bg-gray-800 text-gray-100 hover:bg-gray-700">
+            <option key={category} value={category} className="text-gray-100 bg-gray-800 hover:bg-gray-700">
               {category === "ALL" ? "Todas las categorías" : category}
             </option>
           ))}
@@ -177,7 +177,7 @@ function CoachesList() {
 
           <button
             onClick={() => navigate("/coaches/nuevo")}
-            className="flex items-center gap-2 px-3 py-1 text-sm text-green-400 border border-green-500/40 rounded-md hover:bg-green-500/10 hover:text-green-200 transition-all w-fit h-10"
+            className="flex items-center h-10 gap-2 px-3 py-1 text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
           >
             <PlusIcon className="w-5 h-5" />
             Nuevo profesor
@@ -185,9 +185,9 @@ function CoachesList() {
         </div>
 
         {/* Tabla */}
-        <div className="mt-6 overflow-x-auto rounded-2xl shadow-xl bg-white/90 backdrop-blur">
+        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-800 text-gray-100">
+            <thead className="text-gray-100 bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-center">Nombre</th>
                 <th className="px-4 py-3 text-center">DNI</th>
@@ -212,11 +212,14 @@ function CoachesList() {
                   <td className="px-4 py-2 text-center">{p.dni}</td>
                   <td className="px-4 py-2 text-center">{p.email}</td>
                   <td className="px-4 py-2 text-center">{p.telefono}</td>
-                  <td className="px-4 py-2 text-center">
-                    {Array.isArray(p.categorias) && p.categorias.length > 0
-                      ? p.categorias.join(", ")
-                      : "-"}
-                  </td>
+<td
+  className="px-4 py-2 text-center"
+  title={Array.isArray(p.categorias) ? p.categorias.join(", ") : ""}
+>
+  {Array.isArray(p.categorias) && p.categorias.length > 0
+    ? p.categorias[0]
+    : "-"}
+</td>
                   <td className="px-4 py-2 text-center">{p.enea}</td>
 
                   <td className="px-4 py-2 text-center">
@@ -231,10 +234,10 @@ function CoachesList() {
                     </span>
                   </td>
 
-                  <td className="flex gap-2 px-4 py-2 items-center">
+                  <td className="flex items-center gap-2 px-4 py-2">
                     <button
                       onClick={() => navigate(`/coaches/${p.id}`)}
-                      className="flex items-center gap-1 ml-auto px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100 hover:cursor-pointer transition-all"
+                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100 hover:cursor-pointer"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Ver
