@@ -34,7 +34,7 @@ const sections = [
     links: [
       { name: "Clubes", path: "/clubs", icon: "🏢" },
       { name: "Jugadores", path: "/asambal/jugadores", icon: "🏃" },
-      { name: "Profesores", path: "/coaches", icon: "👨‍🏫" },
+      { name: "Profesores", path: "/asambal/profesores", icon: "👨‍🏫" },
       { name: "Administradores", path: "/admins", icon: "👨‍💻" },
       { name: "Habilitaciones", path: "/asambal/habilitaciones", icon: "✅" },
     ]
