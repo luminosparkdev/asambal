@@ -31,8 +31,9 @@ import DashboardRouter from "../Pages/DashboardRouter";
 import PendingPlayers from "../Views/Profesores/PendingPlayers";
 import PlayerDashboard from "../Pages/Jugadores/PlayerDashboard";
 import PlayerProfile from "../Pages/Profiles/PlayerProfile";
-import PlayerListAsambal from "../Pages/Asambal/PlayerListAsambal";
+import PlayerListAsambal from "../Pages/Asambal/PlayerListAsamabal";
 import PendingClubRequests from "../Views/Profesores/PendingClubRequests";
+import PlayerDetailAsambal from "../Pages/Asambal/PlayerDetailAsambal";
 import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
 
@@ -92,6 +93,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <PlayerListAsambal />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/jugadores/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <PlayerDetailAsambal />
                     </ProtectedRoute>
                 ),
             },
