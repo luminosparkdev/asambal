@@ -65,7 +65,7 @@ function ActivateAccount() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center p-4 bg-cover bg-top"
+      className="relative flex items-center justify-center min-h-screen p-4 bg-top bg-cover"
       style={{ backgroundImage: "url('/src/assets/fondoactivacion.webp')" }}
     >
       {/* Overlay */}
@@ -73,72 +73,47 @@ function ActivateAccount() {
 
       {/* Card */}
       <div
-        className="
-          relative z-10
-          w-full max-w-md
-          p-8
-          bg-slate-900/70 backdrop-blur-md
-          border border-cyan-400/20
-          rounded-xl shadow-2xl
-          text-slate-100
-        "
+        className="relative z-10 w-full max-w-md p-8 border shadow-2xl  bg-slate-900/70 backdrop-blur-md border-cyan-400/20 rounded-xl text-slate-100"
       >
 
         {step === "PASSWORD" && (
           <>
-          <h2 className="mb-2 text-2xl font-semibold text-center tracking-wide">
+          <h2 className="mb-2 text-2xl font-semibold tracking-wide text-center">
               Activación de cuenta
           </h2>
 
-          <p className="mb-6 text-center text-sm text-slate-400">
+          <p className="mb-6 text-sm text-center text-slate-400">
               Estás a un paso de completar tu registro
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm mb-1 text-slate-300">Email</label>
+              <label className="block mb-1 text-sm text-slate-300">Email</label>
               <input
                 type="email"
                 value={email}
                 readOnly
-                className="block w-full px-3 py-2
-                    bg-slate-800/70
-                    border border-slate-700
-                    rounded-md
-                    text-slate-400
-                    cursor-not-allowed"
+                className="block w-full px-3 py-2 border rounded-md cursor-not-allowed bg-slate-800/70 border-slate-700 text-slate-400"
               />
             </div>
 
             <div>
-              <label className="block text-sm mb-1 text-slate-300">Nueva contraseña</label>
+              <label className="block mb-1 text-sm text-slate-300">Nueva contraseña</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full px-3 py-2
-                    bg-slate-800
-                    border border-slate-700
-                    rounded-md
-                    text-slate-100
-                    placeholder-slate-400
-                    focus:outline-none
-                    focus:ring-2 focus:ring-cyan-400"
+                className="block w-full px-3 py-2 border rounded-md bg-slate-800 border-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
               />
             </div>
 
-            {error && <p className="text-sm text-red-400 text-center">{error}</p>}
-            {success && <p className="text-sm text-green-400 text-center">Cuenta activada correctamente!</p>}
+            {error && <p className="text-sm text-center text-red-400">{error}</p>}
+            {success && <p className="text-sm text-center text-green-400">Cuenta activada correctamente!</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-4 px-4 py-2 font-medium rounded-md
-                  bg-gradient-to-r from-cyan-500 to-blue-600
-                  hover:from-cyan-400 hover:to-blue-500
-                  transition
-                  disabled:opacity-50
-                  disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 mt-4 font-medium transition rounded-md bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Activando..." : "Activar cuenta"}
             </button>

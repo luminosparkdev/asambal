@@ -105,7 +105,7 @@ useEffect(() => {
             onChange={(e) => setResponsable(e.target.value)}
             placeholder="Responsable"
             required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
+            className="px-2 py-1 border border-gray-500 rounded-md input-glass"
           />
 
           <input
@@ -113,7 +113,7 @@ useEffect(() => {
             onChange={(e) => setSede(e.target.value)}
             placeholder="Sede"
             required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
+            className="px-2 py-1 border border-gray-500 rounded-md input-glass"
           />
 
           <input
@@ -121,7 +121,7 @@ useEffect(() => {
             onChange={(e) => setTelefono(e.target.value)}
             placeholder="Telefono"
             required
-            className="input-glass border border-gray-500 rounded-md px-2 py-1"
+            className="px-2 py-1 border border-gray-500 rounded-md input-glass"
           />
         </div>
       </section>
@@ -136,17 +136,17 @@ useEffect(() => {
         <div className="grid grid-cols-2 gap-4">
           <input type="number" placeholder="Ancho (m)"
             onChange={(e) => setCanchas({ ...canchas, ancho: e.target.value })}
-            className="input-glass border border-gray-500 rounded-md px-2 py-1" />
+            className="px-2 py-1 border border-gray-500 rounded-md input-glass" />
 
           <input type="number" placeholder="Largo (m)"
             onChange={(e) => setCanchas({ ...canchas, largo: e.target.value })}
-            className="input-glass border border-gray-500 rounded-md px-2 py-1" />
+            className="px-2 py-1 border border-gray-500 rounded-md input-glass" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <select
             value={canchas.piso}
             onChange={(e) => setCanchas({ ...canchas, piso: e.target.value })}
-            className="bg-slate-900 text-gray-200 border border-gray-500 rounded-md px-2 py-1"
+            className="px-2 py-1 text-gray-200 border border-gray-500 rounded-md bg-slate-900"
           >
             <option value="">Seleccionar piso</option>
             <option value="cemento_crudo">Cemento crudo</option>
@@ -160,7 +160,7 @@ useEffect(() => {
           <select
             value={canchas.tablero}
             onChange={(e) => setCanchas({ ...canchas, tablero: e.target.value })}
-            className="bg-slate-900 text-gray-200 border border-gray-500 rounded-md px-2 py-1"
+            className="px-2 py-1 text-gray-200 border border-gray-500 rounded-md bg-slate-900"
           >
             <option value="">Seleccionar tablero</option>
             <option value="manual">Manual</option>
@@ -168,7 +168,7 @@ useEffect(() => {
           </select>
         </div>
 
-        <label className="flex items-center gap-2 text-md text-gray-200">
+        <label className="flex items-center gap-2 text-gray-200 text-md">
           <input
             type="checkbox"
             checked={canchas.techo}
@@ -192,7 +192,7 @@ useEffect(() => {
             ]);
             }
         }}
-        className="w-full py-2 text-sm font-medium text-gray-200 border border-white/30 rounded-md hover:bg-white/10 hover:cursor-pointer transition"
+        className="w-full py-2 text-sm font-medium text-gray-200 transition border rounded-md border-white/30 hover:bg-white/10 hover:cursor-pointer"
       >
         + Agregar cancha alternativa
       </button>
@@ -200,14 +200,14 @@ useEffect(() => {
       
       {canchasAlternativas.map((canchaAlt, index) => (
         <div key={index}
-          className="p-4 space-y-3 border border-white/20 rounded-lg">
+          className="p-4 space-y-3 border rounded-lg border-white/20">
           <h4 className="text-sm font-semibold text-gray-200">
               Cancha alternativa {index + 1}
           </h4>
           
           <div className="grid grid-cols-2 gap-3">
             <input type="number" placeholder="Ancho"
-              className="input-glass border border-gray-500 rounded-md px-2 py-1"
+              className="px-2 py-1 border border-gray-500 rounded-md input-glass"
               value={canchaAlt.ancho}
               onChange={(e) =>
                 setCanchasAlternativas(prev =>
@@ -219,7 +219,7 @@ useEffect(() => {
             />
 
             <input type="number" placeholder="Largo"
-              className="input-glass border border-gray-500 rounded-md px-2 py-1"
+              className="px-2 py-1 border border-gray-500 rounded-md input-glass"
               value={canchaAlt.largo}
               onChange={(e) =>
                 setCanchasAlternativas(prev =>
@@ -232,7 +232,7 @@ useEffect(() => {
             </div>
             <div className="grid grid-cols-2 gap-4">
             <select
-              className="bg-slate-900 text-gray-200 border border-gray-500 rounded-md px-1 py-1"
+              className="px-1 py-1 text-gray-200 border border-gray-500 rounded-md bg-slate-900"
               value={canchaAlt.piso}
               onChange={(e) =>
                 setCanchasAlternativas(prev =>
@@ -252,7 +252,7 @@ useEffect(() => {
             </select>
 
             <select
-              className="bg-slate-900 text-gray-200 border border-gray-500 rounded-md px-1 py-1"
+              className="px-1 py-1 text-gray-200 border border-gray-500 rounded-md bg-slate-900"
               value={canchaAlt.tablero}
               onChange={(e) =>
                 setCanchasAlternativas(prev =>
@@ -268,7 +268,7 @@ useEffect(() => {
             </select>
             </div>
 
-            <label className="flex items-center gap-2 text-md text-gray-200">
+            <label className="flex items-center gap-2 text-gray-200 text-md">
               <input
                 type="checkbox"
                 checked={canchaAlt.techo}
@@ -287,7 +287,7 @@ useEffect(() => {
         
         </section>
         {/*SUBMIT BUTTON*/}
-        <button disabled={loading} className="w-full py-3 text-sm font-semibold text-white rounded-md border border-green-500 bg-green-700 hover:bg-green-600/90 hover:cursor-pointer disabled:opacity-50 transition">
+        <button disabled={loading} className="w-full py-3 text-sm font-semibold text-white transition bg-green-700 border border-green-500 rounded-md hover:bg-green-600/90 hover:cursor-pointer disabled:opacity-50">
           {loading ? "Enviando..." : "Enviar"}
         </button>
     </form>
