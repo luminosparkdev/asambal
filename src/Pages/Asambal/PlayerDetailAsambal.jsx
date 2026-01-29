@@ -48,6 +48,7 @@ function PlayerDetailAsambal() {
           reglasclub: data.reglasclub ?? false,
           usoimagen: data.usoimagen ?? false,
           habilitadoAsambal: data.habilitadoAsambal ?? false,
+          becado: data.becado ?? false,
 
           clubActivo: activeClub
             ? {
@@ -132,6 +133,13 @@ function PlayerDetailAsambal() {
             >
               {player.status}
             </span>
+            <button
+              onClick={() => navigate(`/asambal/jugadores/${id}/becas`)}
+              className="px-3 py-1 ml-auto text-sm text-purple-400 transition-all border rounded-md border-purple-500/40 hover:bg-purple-500/10 hover:text-purple-200"
+            >
+              Ver historial de becas
+            </button>
+
           </div>
 
           {/* SECCIONES */}
@@ -173,6 +181,7 @@ function PlayerDetailAsambal() {
               <Field label="Uso de imagen" value={player.usoimagen} />
               <Field label="Reglas del club" value={player.reglasclub} />
               <Field label="Habilitado por ASAMBAL" value={player.habilitadoAsambal} />
+              <Field label="Becado" value={player.becado} />
             </Section>
 
             <Section title="Club actual">

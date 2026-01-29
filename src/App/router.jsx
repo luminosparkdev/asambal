@@ -34,6 +34,8 @@ import PlayerProfile from "../Pages/Profiles/PlayerProfile";
 import PlayerListAsambal from "../Pages/Asambal/PlayerListAsamabal";
 import PendingClubRequests from "../Views/Profesores/PendingClubRequests";
 import PlayerDetailAsambal from "../Pages/Asambal/PlayerDetailAsambal";
+import Becados from "../Pages/Asambal/Becados";
+import PlayerScholarshipHistory from "../Pages/Asambal/PlayerScholarshipHistory";
 import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
 
@@ -144,6 +146,22 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <CoachDetail />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/becados",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <Becados />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/jugadores/:id/becas",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <PlayerScholarshipHistory />
                     </ProtectedRoute>
                 ),
             },
