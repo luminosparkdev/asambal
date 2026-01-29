@@ -34,7 +34,7 @@ const sections = [
     links: [
       { name: "Categorías", path: "/categories", icon: "🏷️" },
       { name: "Profesores", path: "/coaches", icon: "👨‍🏫" },
-      { name: "Jugadores", path: "/players", icon: "🏃" },
+      { name: "Jugadores", path: "/clubs/players", icon: "🏃" },
       { name: "Lesiones", path: "/injuries", icon: "🤕" },
     ],
   },
