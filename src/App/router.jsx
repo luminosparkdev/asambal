@@ -38,7 +38,7 @@ import Becados from "../Pages/Asambal/Becados";
 import PlayerScholarshipHistory from "../Pages/Asambal/PlayerScholarshipHistory";
 import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
-import PlayersListClub from "../Pages/Clubes/PlayersListClub";
+import PendingTransfer from "../Views/Asambal/PendingTransfer";
 
 export const router = createBrowserRouter([
     {
@@ -163,6 +163,15 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <PlayerScholarshipHistory />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "asambal/transferencias",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <PendingTransfer />
                     </ProtectedRoute>
                 ),
             },

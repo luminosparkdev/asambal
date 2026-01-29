@@ -46,6 +46,7 @@ const sections = [
       { name: "Membresías", path: "/asambal/membresias", icon: "🥇" },
       { name: "Empadronamientos", path: "/asambal/empadronamientos", icon: "📋" },
       { name: "Becados", path: "/asambal/becados", icon: "🎓" },
+      { name: "Transferencias de jugadores", path: "/asambal/transferencias", icon: "⚽" },
     ]
   },
   {
