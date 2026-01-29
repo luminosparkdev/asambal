@@ -38,6 +38,7 @@ import Becados from "../Pages/Asambal/Becados";
 import PlayerScholarshipHistory from "../Pages/Asambal/PlayerScholarshipHistory";
 import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
+import PlayersListClub from "../Pages/Clubes/PlayersListClub";
 
 export const router = createBrowserRouter([
     {
@@ -207,6 +208,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <CoachesDetail />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "clubs/players",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <PlayersListClub />
                     </ProtectedRoute>
                 ),
             },
