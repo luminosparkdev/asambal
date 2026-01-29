@@ -36,6 +36,7 @@ import PendingClubRequests from "../Views/Profesores/PendingClubRequests";
 import PlayerDetailAsambal from "../Pages/Asambal/PlayerDetailAsambal";
 import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
+import PendingTransfer from "../Views/Asambal/PendingTransfer";
 
 export const router = createBrowserRouter([
     {
@@ -144,6 +145,15 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <CoachDetail />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "asambal/transferencias",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <PendingTransfer />
                     </ProtectedRoute>
                 ),
             },
