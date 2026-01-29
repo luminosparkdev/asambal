@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
-import { EyeIcon } from "@heroicons/react/24/outline";
+import Swal from "sweetalert2";
+import { EyeIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
 
 function PlayerListAsambal() {
   const navigate = useNavigate();
@@ -89,6 +90,28 @@ function PlayerListAsambal() {
     }
   };
 
+  const handleGrantScholarship = async (player) => {
+    const result = await Swal.fire({
+      title: "¿Becar jugador?",
+      text: `${player.nombre} ${player.apellido} quedará habilitado hasta el próximo 28 de febrero sin pagar empadronamiento.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, becar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await api.post(`/asambal/players/${player.id}/grant-scholarship`);
+      Swal.fire("Listo", "El jugador fue becado", "success");
+      fetchPlayers();
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo becar al jugador", "error");
+    }
+  };
+
   const filteredPlayers = players.filter((player) => {
     const matchSearch = `${player.nombre} ${player.apellido}`
       .toLowerCase()
@@ -143,7 +166,6 @@ function PlayerListAsambal() {
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
 
-        {/* Título */}
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Listado de
@@ -151,7 +173,6 @@ function PlayerListAsambal() {
           </h2>
         </div>
 
-        {/* Filtros */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end">
           <input
             type="text"
@@ -189,18 +210,13 @@ function PlayerListAsambal() {
 
               {(filterOptionsMap[filterType] || []).map((opt) => (
                 <option key={opt} value={opt}>
-                  {filterType === "estado"
-                    ? estadoLabels[opt] || opt
-                    : opt === "true"
-                    ? "Sí"
-                    : opt === "false"
-                    ? "No"
-                    : opt}
+                  {opt === "true" ? "Sí" : opt === "false" ? "No" : opt}
                 </option>
               ))}
             </select>
           )}
         </div>
+
 
         {/* Tabla */}
         <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
@@ -210,12 +226,11 @@ function PlayerListAsambal() {
                 <th className="px-4 py-3 text-center">Nombre</th>
                 <th className="px-4 py-3 text-center">Apellido</th>
                 <th className="px-4 py-3 text-center">DNI</th>
-                <th className="px-4 py-3 text-center">Fecha de nacimiento</th>
-                <th className="px-4 py-3 text-center">Género</th>
                 <th className="px-4 py-3 text-center">Club</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Habilitado</th>
+                <th className="px-4 py-3 text-center">Beca</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
               </tr>
             </thead>
@@ -226,10 +241,6 @@ function PlayerListAsambal() {
                   <td className="px-4 py-2 text-center">{player.nombre}</td>
                   <td className="px-4 py-2 text-center">{player.apellido}</td>
                   <td className="px-4 py-2 text-center">{player.dni}</td>
-                  <td className="px-4 py-2 text-center">
-                    {player.fechanacimiento}
-                  </td>
-                  <td className="px-4 py-2 text-center">{player.sexo}</td>
 
                   <td className="px-4 py-2 text-center max-w-40">
                     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -249,6 +260,25 @@ function PlayerListAsambal() {
 
                   <td className="px-4 py-2 text-center">
                     {player.habilitadoAsambal ? "Sí" : "No"}
+                  </td>
+
+                  {/* COLUMNA BECA */}
+                  <td className="px-4 py-2 text-center">
+                    {player.becado ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-purple-700 bg-purple-200 rounded-full">
+                        <AcademicCapIcon className="w-4 h-4" />
+                        Becado
+                      </span>
+                    ) : !player.habilitadoAsambal ? (
+                      <button
+                        onClick={() => handleGrantScholarship(player)}
+                        className="px-3 py-1 text-xs font-medium text-white bg-purple-600 rounded hover:bg-purple-500"
+                      >
+                        Becar
+                      </button>
+                    ) : (
+                      "—"
+                    )}
                   </td>
 
                   <td className="px-4 py-2 flex justify-center">
