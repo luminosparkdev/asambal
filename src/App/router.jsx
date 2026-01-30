@@ -40,6 +40,7 @@ import CoachList from "../Pages/Asambal/CoachList";
 import CoachDetail from "../Pages/Asambal/CoachDetail";
 import PlayersListClub from "../Pages/Clubes/PlayersListClub";
 import PendingTransfer from "../Views/Asambal/PendingTransfer";
+import CreatePlayerClub from "../Pages/Clubes/CreatePlayerClub";
 
 export const router = createBrowserRouter([
     {
@@ -52,7 +53,7 @@ export const router = createBrowserRouter([
             { path: "activar-cuenta", element: <ActivateAccount /> },
             { path: "unauthorized", element: <Unauthorized /> },
             { path: "recuperar-clave", element: <RecuperarClave /> },
-            
+
             //RUTAS PROTEGIDAS SIN ROL ESPECÍFICO
             {
                 path: "perfil",
@@ -186,15 +187,25 @@ export const router = createBrowserRouter([
                 ),
             },
 
+            // RUTA PARA FORMULARIO DE CREACION DE JUGADOR DESDE ADMIN CLUB
+            {
+                path: "clubs/jugadores/create",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CreatePlayerClub />
+                    </ProtectedRoute>
+                ),
+            },
+
             {
                 path: "coaches/pending-coaches",
                 element: (
-                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}> 
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <PendingCoaches />
                     </ProtectedRoute>
                 ),
-            }, 
-            {   
+            },
+            {
                 path: "coaches",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>

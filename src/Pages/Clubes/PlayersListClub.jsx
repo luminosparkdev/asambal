@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../Api/Api";
-import { EyeIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, CheckCircleIcon, XCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 function PlayersListClub() {
   const [players, setPlayers] = useState([]);
@@ -40,7 +40,6 @@ function PlayersListClub() {
   const fetchPlayers = async () => {
     try {
       const res = await api.get("/clubs/players-by-club");
-      console.log(res);
       setPlayers(res.data);
     } catch (err) {
       console.error("Error fetching players:", err.response?.data || err);
@@ -99,8 +98,15 @@ function PlayersListClub() {
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
-        <div className="px-2 py-6">
+        <div className="flex items-center justify-between px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Jugadores de mi club</h2>
+          <button
+            onClick={() => navigate("/clubs/jugadores/create")}
+            className="flex items-center h-10 gap-2 px-3 py-1 text-sm text-green-400 transition-all border rounded-md cursor-pointer border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Nuevo jugador
+          </button>
         </div>
 
         {/* Filtros */}
@@ -149,7 +155,7 @@ function PlayersListClub() {
                 <th className="px-4 py-3 text-center">Edad</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
                 <th className="px-4 py-3 text-center">Club</th>
-                <th className="px-4 py-3 text-center">Género</th>
+                <th className="px-4 py-3 text-center">Sexo</th>
                 <th className="px-4 py-3 text-center">Estatura</th>
                 <th className="px-4 py-3 text-center">Posición</th>
                 <th className="px-4 py-3 text-center">Mano hábil</th>
