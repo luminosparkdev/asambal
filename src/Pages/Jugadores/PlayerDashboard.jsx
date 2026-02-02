@@ -44,7 +44,7 @@ const sections = [
     color: "border-blue-500",
     links: [
       { name: "Empadronamientos", path: "/players/me/empadronamientos", icon: "💰" },
-      { name: "Pases", path: "/players/me/pases", icon: "🔁" },
+      { name: "Pases", path: "/players/transfers", icon: "🔁" },
       { name: "Lesiones", path: "/players/me/lesiones", icon: "🩹" },
     ],
   },

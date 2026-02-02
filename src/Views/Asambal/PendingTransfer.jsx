@@ -17,45 +17,62 @@ function PendingTransfer() {
   const [transfers, setTransfers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchPending = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get("/transfers");
-      setTransfers(res.data);
-    } catch (err) {
-      console.error("Error fetching transfers:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudieron cargar las transferencias",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchPending = async () => {
+  setLoading(true);
+  try {
+    const res = await api.get("/asambal/transfers");
 
-  const handleAction = async (transferId, action) => {
-    try {
-      await api.patch(`/transfers/${transferId}/respond`, { action });
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: action === "ACCEPT" ? "success" : "error",
-        title: action === "ACCEPT" ? "Transferencia aprobada" : "Transferencia rechazada",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-      fetchPending();
-    } catch (err) {
-      console.error("Error responding transfer:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo completar la acción",
-      });
-    }
-  };
+    const transfersFormatted = res.data.map(t => ({
+      ...t,
+      clubOrigen: t.clubOrigen || { nombreClub: "-" },
+      clubDestino: t.clubDestino || { nombreClub: "-" },
+      categorias: t.categorias || []
+    }));
+
+    console.log("Transfers formatted:", transfersFormatted); // <-- aquí ves si es un objeto plano
+
+    setTransfers(transfersFormatted);
+  } catch (err) {
+    console.error("Error fetching transfers:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudieron cargar las transferencias",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const handleAction = async (transferId, action) => {
+  try {
+    await api.patch(`/players/transfers/${transferId}/respond`, { action });
+
+    Swal.fire({
+      toast: true,
+      position: "top-end",
+      icon: action === "ACCEPT" ? "success" : "error",
+      title:
+        action === "ACCEPT"
+          ? "Transferencia aprobada"
+          : "Transferencia rechazada",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+
+    fetchPending();
+  } catch (err) {
+    console.error("Error responding transfer:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo completar la acción",
+    });
+  }
+};
+
 
   useEffect(() => {
     fetchPending();
@@ -77,11 +94,12 @@ function PendingTransfer() {
         ) : (
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {transfers.map(t => (
+              
               <motion.div key={t.id} variants={cardVariants} className="p-6 transition-all duration-200 border-l-4 border-purple-500 shadow-lg bg-white/80 backdrop-blur-sm rounded-2xl hover:-translate-y-1 hover:shadow-2xl">
                 <p className="mb-1 text-sm text-gray-600"><b>Jugador:</b> {t.jugadorNombre || "-"}</p>
-                <p className="mb-1 text-sm text-gray-600"><b>Club Origen:</b> {t.clubOrigen || "-"}</p>
-                <p className="mb-1 text-sm text-gray-600"><b>Club Destino:</b> {t.clubDestino || "-"}</p>
-                <p className="mb-4 text-sm text-gray-600"><b>Categorías:</b> {t.categorias?.join(", ") || "-"}</p>
+                <p className="mb-1 text-sm text-gray-600"><b>Club Origen:</b> {t.clubOrigen.nombreClub || "-"}</p>
+                <p className="mb-1 text-sm text-gray-600"><b>Club Destino:</b> {t.clubDestino.nombreClub || "-"}</p>
+                <p className="mb-4 text-sm text-gray-600"><b>Categorías:</b> {t.categorias?.map(c => `${c.nombre} ${c.genero}`).join(", ") || "-"}</p>
 
                 <div className="flex gap-2">
                   <button onClick={() => handleAction(t.id, "ACCEPT")} className="flex-1 px-3 py-2 text-white transition bg-green-600 rounded-lg hover:bg-green-700">Aprobar</button>
