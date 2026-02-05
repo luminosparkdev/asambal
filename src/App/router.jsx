@@ -46,6 +46,8 @@ import Empadronamiento from "../Pages/Asambal/Empadronamiento";
 import EmpadronamientoJugador from "../Views/Jugadores/EmpadronamientoJugador";
 import ClubSettings from "../Pages/Clubes/ClubSettings";
 import ClubHeroSettings from "../Pages/Clubes/ClubHeroSettings";
+import Membresias from "../Pages/Asambal/Membresias";
+import MembresiaClub from "../Views/Club/MembresiaClub";
 
 export const router = createBrowserRouter([
     {
@@ -189,6 +191,14 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+            {
+                path: "asambal/membresias",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <Membresias />
+                    </ProtectedRoute>
+                ),
+            },
 
             //ADMIN CLUB
             {
@@ -265,6 +275,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <ClubHeroSettings />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "club/membresia",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <MembresiaClub />
                     </ProtectedRoute>
                 ),
             },

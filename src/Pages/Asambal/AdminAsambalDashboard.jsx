@@ -35,8 +35,7 @@ const sections = [
       { name: "Clubes", path: "/clubs", icon: "🏢" },
       { name: "Jugadores", path: "/asambal/jugadores", icon: "🏃" },
       { name: "Profesores", path: "/asambal/profesores", icon: "👨‍🏫" },
-      { name: "Administradores", path: "/admins", icon: "👨‍💻" },
-      { name: "Habilitaciones", path: "/asambal/habilitaciones", icon: "✅" },
+      { name: "Transferencias de jugadores", path: "/asambal/transferencias", icon: "⚽" },
     ]
   },
   {
@@ -46,7 +45,6 @@ const sections = [
       { name: "Membresías", path: "/asambal/membresias", icon: "🥇" },
       { name: "Empadronamientos", path: "/asambal/empadronamientos", icon: "📋" },
       { name: "Becados", path: "/asambal/becados", icon: "🎓" },
-      { name: "Transferencias de jugadores", path: "/asambal/transferencias", icon: "⚽" },
     ]
   },
   {

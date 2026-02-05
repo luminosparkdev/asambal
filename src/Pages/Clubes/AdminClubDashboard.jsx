@@ -44,7 +44,7 @@ const sections = [
     links: [
       { name: "Cuotas y pagos", path: "/fees", icon: "💳" },
       { name: "Balance", path: "/balance", icon: "📊" },
-      { name: "Membresía ASAMBAL", path: "/membership", icon: "🥇" },
+      { name: "Membresía ASAMBAL", path: "/club/membresia", icon: "🥇" },
     ],
   },
   {
