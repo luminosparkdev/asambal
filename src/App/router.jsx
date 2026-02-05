@@ -43,6 +43,7 @@ import PendingTransfer from "../Views/Asambal/PendingTransfer";
 import CreatePlayerClub from "../Pages/Clubes/CreatePlayerClub";
 import PendingTransferRequest from "../Views/Jugadores/PendingTransferRequest";
 import Empadronamiento from "../Pages/Asambal/Empadronamiento";
+import EmpadronamientoJugador from "../Views/Jugadores/EmpadronamientoJugador";
 
 export const router = createBrowserRouter([
     {
@@ -320,6 +321,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
                         <PendingTransferRequest />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/players/empadronamientos",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+                        <EmpadronamientoJugador />
                     </ProtectedRoute>
                 ),
             },

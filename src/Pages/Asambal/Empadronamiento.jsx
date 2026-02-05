@@ -15,7 +15,7 @@ function Empadronamiento() {
   const fetchEmpadronamientoActivo = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/admin/empadronamiento/activo");
+      const res = await api.get("/asambal/empadronamiento/activo");
       setEmpadronamiento(res.data || null);
     } catch (error) {
       console.error(error);
@@ -37,7 +37,7 @@ function Empadronamiento() {
     if (!confirm.isConfirmed) return;
 
     try {
-      await api.post("/admin/empadronamiento", {
+      await api.post("/asambal/empadronamiento", {
         year,
         amount: Number(amount),
       });
@@ -58,6 +58,19 @@ function Empadronamiento() {
       </p>
     );
   }
+
+const formatCurrency = (value) => {
+  if (!value) return "";
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 0,
+  }).format(value);
+};
+
+const parseCurrency = (value) => {
+  return Number(value.replace(/[^\d]/g, ""));
+};
 
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
@@ -87,13 +100,16 @@ function Empadronamiento() {
                 placeholder="Año"
               />
 
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="h-10 px-3 border border-gray-400 rounded-lg"
-                placeholder="Monto"
-              />
+<input
+  type="text"
+  value={formatCurrency(amount)}
+  onChange={(e) => {
+    const rawValue = parseCurrency(e.target.value);
+    setAmount(rawValue);
+  }}
+  className="h-10 px-3 border border-gray-400 rounded-lg"
+  placeholder="$ 0"
+/>
 
               <button
                 onClick={crearEmpadronamiento}

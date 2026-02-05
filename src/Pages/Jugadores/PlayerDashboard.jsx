@@ -43,7 +43,7 @@ const sections = [
     title: "Asambal",
     color: "border-blue-500",
     links: [
-      { name: "Empadronamientos", path: "/players/me/empadronamientos", icon: "💰" },
+      { name: "Empadronamientos", path: "/players/empadronamientos", icon: "💰" },
       { name: "Pases", path: "/players/transfers", icon: "🔁" },
       { name: "Lesiones", path: "/players/me/lesiones", icon: "🩹" },
     ],
