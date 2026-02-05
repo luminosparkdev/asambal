@@ -44,6 +44,8 @@ import CreatePlayerClub from "../Pages/Clubes/CreatePlayerClub";
 import PendingTransferRequest from "../Views/Jugadores/PendingTransferRequest";
 import Empadronamiento from "../Pages/Asambal/Empadronamiento";
 import EmpadronamientoJugador from "../Views/Jugadores/EmpadronamientoJugador";
+import ClubSettings from "../Pages/Clubes/ClubSettings";
+import ClubHeroSettings from "../Pages/Clubes/ClubHeroSettings";
 
 export const router = createBrowserRouter([
     {
@@ -247,6 +249,22 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <PlayersListClub />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "club/settings",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <ClubSettings />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "club/settings/hero",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <ClubHeroSettings />
                     </ProtectedRoute>
                 ),
             },
