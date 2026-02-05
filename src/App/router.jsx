@@ -42,6 +42,7 @@ import PlayersListClub from "../Pages/Clubes/PlayersListClub";
 import PendingTransfer from "../Views/Asambal/PendingTransfer";
 import CreatePlayerClub from "../Pages/Clubes/CreatePlayerClub";
 import PendingTransferRequest from "../Views/Jugadores/PendingTransferRequest";
+import Empadronamiento from "../Pages/Asambal/Empadronamiento";
 
 export const router = createBrowserRouter([
     {
@@ -174,6 +175,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <PlayerScholarshipHistory />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/empadronamientos",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <Empadronamiento />
                     </ProtectedRoute>
                 ),
             },
