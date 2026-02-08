@@ -10,6 +10,7 @@ function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const roleRedirectMap = {
     admin_asambal: "/admin",
@@ -21,6 +22,9 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+      if (loading) return;
+
+  setLoading(true);
 
     try {
       const data = await loginService(email, password);
@@ -95,6 +99,7 @@ function Login() {
           {/* Submit */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-2 mt-4 font-semibold text-white transition-all rounded-lg bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"
           >
             Iniciar sesión
