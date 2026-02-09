@@ -160,7 +160,7 @@ function ClubsList() {
             <select
               value={cityFilter}
               onChange={e => setCityFilter(e.target.value)}
-              className="cursor-pointer px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200 "
+              className="cursor-pointer px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               {cities.map(city => (
                 <option key={city} value={city} className="text-gray-100 bg-gray-800 hover:bg-gray-700">
