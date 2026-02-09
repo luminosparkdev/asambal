@@ -54,7 +54,7 @@ function AsambalProfile() {
     <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
     <div className="absolute inset-0 bg-black/30" />
 
-    <div className="relative z-10 max-w-4xl mx-auto px-4 py-8 mt-8">
+    <div className="select-none relative z-10 max-w-4xl mx-auto px-4 py-8 mt-8">
       <div
         className={`p-8 rounded-2xl border-l-4 border-l-blue-500 shadow-xl backdrop-blur bg-black/30`}
       >
@@ -118,13 +118,13 @@ function AsambalProfile() {
             <>
               <button
                 onClick={handleSave}
-                className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+                className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
               >
                 Guardar cambios
               </button>
               <button
                 onClick={() => setEditing(false)}
-                className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold transition-colors"
+                className="cursor-pointer flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold transition-colors"
               >
                 Cancelar
               </button>
@@ -132,7 +132,7 @@ function AsambalProfile() {
           ) : (
             <button
               onClick={() => setEditing(true)}
-              className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+              className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
             >
               Editar
             </button>

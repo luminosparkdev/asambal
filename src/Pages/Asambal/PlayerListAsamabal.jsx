@@ -160,46 +160,47 @@ function PlayerListAsambal() {
   };
 
   const selectClasses =
-    "h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-700";
+    "cursor-pointer px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200";
 
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
-      <div className="px-4 mx-auto max-w-7xl">
-
+      <div className="pb-6 mx-auto max-w-7xl">
+        {/* Título */}
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
-            Listado de
-            <span className="text-yellow-600"> Jugadores</span>
+            Listado de jugadores
           </h2>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end">
-          <input
-            type="text"
-            placeholder="Buscar por nombre..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-10 px-3 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent"
-          />
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          {/* Filtros */}
+          <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-4 ">
+            <input
+              type="text"
+              placeholder="Buscar por nombre..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-10 px-3 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent"
+            />
 
-          <select
-            value={filterType}
-            onChange={(e) => {
-              setFilterType(e.target.value);
-              setFilterValue("");
-            }}
-            className={selectClasses}
-          >
-            <option value="none">Sin filtro</option>
-            <option value="estado">Estado</option>
-            <option value="habilitadoAsambal">Habilitado</option>
-            <option value="club">Club</option>
-            <option value="categoria">Categoría</option>
-            <option value="sexo">Sexo</option>
-            <option value="posicion">Posición</option>
-            <option value="manoHabil">Mano hábil</option>
-          </select>
-
+            <select
+              value={filterType}
+              onChange={(e) => {
+                setFilterType(e.target.value);
+                setFilterValue("");
+              }}
+              className={selectClasses}
+            >
+              <option value="none">Seleccionar filtro</option>
+              <option value="estado">Estado</option>
+              <option value="habilitadoAsambal">Habilitado</option>
+              <option value="club">Club</option>
+              <option value="categoria">Categoría</option>
+              <option value="sexo">Sexo</option>
+              <option value="posicion">Posición</option>
+              <option value="manoHabil">Mano hábil</option>
+            </select>
+          </div>
           {filterType !== "none" && (
             <select
               value={filterValue}

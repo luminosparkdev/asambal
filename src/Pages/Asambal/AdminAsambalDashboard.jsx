@@ -45,6 +45,17 @@ const sections = [
       { name: "Membresías", path: "/asambal/membresias", icon: "🥇" },
       { name: "Empadronamientos", path: "/asambal/empadronamientos", icon: "📋" },
       { name: "Becados", path: "/asambal/becados", icon: "🎓" },
+      { name: "Solicitudes pendientes", path: "/asambal/pendientes", icon: "⏳" },
+    ]
+  },
+  {
+    title: "Gestión financiera",
+    color: "border-gray-200",
+    links: [
+      { name: "Cashflow", path: "asambal/cashflow", icon: "📊" },
+      { name: "Reportes", path: "/balance", icon: "📈" },
+      { name: "Ingresos", path: "/balance", icon: "🏦" },
+      { name: "Gastos", path: "/balance", icon: "💸" },
     ]
   },
   {
@@ -59,12 +70,10 @@ const sections = [
     title: "Sistema",
     color: "border-red-500",
     links: [
-      { name: "Solicitudes pendientes", path: "/asambal/pendientes", icon: "⏳" },
       { name: "Auditoría", path: "/asambal/auditoria", icon: "🔍" },
-      { name: "Balance", path: "/balance", icon: "💰" },
       { name: "Configuración", path: "/configuracion", icon: "⚙️" },
     ]
-  }
+  },
 ];
 
 function AdminAsambalDashboard() {
@@ -98,7 +107,7 @@ function AdminAsambalDashboard() {
                   <button
                     key={link.name}
                     onClick={() => navigate(link.path)}
-                    className="flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
+                    className="cursor-pointer flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
                     >
                     <span className="text-lg group-hover:scale-110 transition-transform whileTap={{ scale: 0.97 }}">{link.icon}</span>
                     <span className="text-sm font-medium">{link.name}</span>

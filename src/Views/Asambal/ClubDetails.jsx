@@ -161,7 +161,7 @@ return (
       <div className="relative z-10 max-w-4xl mx-auto">
         {/*CARD*/}
         <div
-          className={`p-8 rounded-2xl shadow-xl bg-transparent border-l-4 transition-all
+          className={`select-none p-8 rounded-2xl shadow-xl bg-transparent border-l-4 transition-all
           ${club.status === "ACTIVO" ? "border-green-500" : "border-red-500"}
           `}
         >
@@ -229,7 +229,7 @@ return (
               <>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 rounded-lg font-semibold text-white
+                  className="cursor-pointer flex-1 py-3 rounded-lg font-semibold text-white
                            bg-blue-600 hover:bg-blue-700 transition"
                 >
                   Guardar cambios
@@ -237,7 +237,7 @@ return (
 
                 <button
                   onClick={() => setEditing(false)}
-                  className="flex-1 py-3 rounded-lg font-semibold text-gray-200
+                  className="cursor-pointer flex-1 py-3 rounded-lg font-semibold text-gray-200
                            bg-gray-700 hover:bg-gray-600 transition"
                 >
                   Cancelar
@@ -247,7 +247,7 @@ return (
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex-1 py-3 rounded-lg font-semibold text-white
+                  className="cursor-pointer flex-1 py-3 rounded-lg font-semibold text-white
                            bg-blue-600 hover:bg-blue-700 transition"
                 >
                   Editar
@@ -255,7 +255,7 @@ return (
 
                 <button
                   onClick={handleToggle}
-                  className={`flex-1 py-3 rounded-lg font-semibold text-white transition
+                  className={`cursor-pointer flex-1 py-3 rounded-lg font-semibold text-white transition
                     ${club.status === "ACTIVO"
                       ? "bg-red-600 hover:bg-red-700"
                       : "bg-green-600 hover:bg-green-700"}

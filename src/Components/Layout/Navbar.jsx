@@ -50,7 +50,7 @@ const showHomeSections = isHome && !isAuthenticated;
 
   return (
     <nav className="text-white bg-gradient-to-b from-[#334353] to-[#0F1317] shadow-md border-b-2 border-[#334353]">
-      <div className="px-4 mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl">
 
         {/* Top Navbar */}
         <div className="flex items-center justify-between h-16">
@@ -82,7 +82,7 @@ const showHomeSections = isHome && !isAuthenticated;
               <>
               {/* Campana de notificaciones */}
                 <div className="relative cursor-pointer">
-                  <BellIcon className="w-8 h-8 text-gray-300 transition-colors hover:text-white" />
+                  <BellIcon className="cursor-pointer w-8 h-8 text-gray-300 transition-colors hover:text-white" />
                   {notifications > 0 && (
                     <span className="absolute flex items-center justify-center w-4 h-4 text-xs bg-red-600 rounded-full -top-1 -right-1">
                       {notifications}
@@ -96,12 +96,12 @@ const showHomeSections = isHome && !isAuthenticated;
                     onClick={() => setProfileOpen(prev => !prev)}
                     className="flex items-center gap-2 px-4 text-gray-300 transition-colors hover:text-white"
                     >
-                    <UserCircleIcon className="w-8 h-8" />
+                    <UserCircleIcon className="cursor-pointer w-8 h-8" />
                   </button>
 
                   {profileOpen && (
                     <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#0F1317] shadow-xl border border-gray-700 z-50">
-                      <div className="px-4 py-3 text-sm text-gray-300 border-b border-gray-700">
+                      <div className="select-none px-4 py-3 text-sm text-gray-300 border-b border-gray-700">
                         <p className="font-medium text-white">
                           {user?.email ?? "Administrador"}
                         </p>
@@ -117,14 +117,14 @@ const showHomeSections = isHome && !isAuthenticated;
                           setProfileOpen(false);
                           navigate("/perfil");
                         }}
-                        className="w-full px-4 py-2 text-sm text-left text-gray-300 hover:bg-gray-800"
+                        className="cursor-pointer w-full px-4 py-2 text-sm text-left text-gray-300 hover:bg-gray-800"
                         >
                         Mi perfil
                       </button>
 
                       <button
                         onClick={handleLogout}
-                        className="w-full px-4 py-2 text-sm text-left text-red-400 hover:bg-red-900/20"
+                        className="cursor-pointer w-full px-4 py-2 text-sm text-left text-red-400 hover:bg-red-900/20"
                         >
                         Cerrar sesión
                       </button>
@@ -154,7 +154,7 @@ const showHomeSections = isHome && !isAuthenticated;
             {/* Dashboard */}
             {showDashboardButton && (
               <button
-                className="px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
+                className="cursor-pointer px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
                 onClick={() => navigate("/dashboard")}
               >
                 <span className="font-medium">Ir al Dashboard</span>
