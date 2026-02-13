@@ -63,6 +63,7 @@ const sections = [
     links: [
       { name: "Viajes", path: "/admin/viajes", icon: "✈️" },
       { name: "Arbitrajes", path: "/admin/arbitrajes", icon: "🏐" },
+      { name: "Seguros", path: "/profesor/seguros", icon: "📄" },
     ],
   },
 ];

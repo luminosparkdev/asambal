@@ -48,6 +48,8 @@ import ClubSettings from "../Pages/Clubes/ClubSettings";
 import ClubHeroSettings from "../Pages/Clubes/ClubHeroSettings";
 import Membresias from "../Pages/Asambal/Membresias";
 import MembresiaClub from "../Views/Club/MembresiaClub";
+import Seguros from "../Pages/Asambal/Seguros";
+import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
 
 export const router = createBrowserRouter([
     {
@@ -199,6 +201,14 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+                        {
+                path: "asambal/seguros",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <Seguros />
+                    </ProtectedRoute>
+                ),
+            },
 
             //ADMIN CLUB
             {
@@ -341,6 +351,14 @@ export const router = createBrowserRouter([
                     <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
                         <EditPlayer />
                     </ProtectedRoute>
+                ),
+            },
+            {
+                path: "profesor/seguros",
+                element: (
+                <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                    <ProfeSeguros />
+                </ProtectedRoute>
                 ),
             },
             // JUGADOR
