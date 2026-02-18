@@ -6,17 +6,19 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 function Empadronamiento() {
   const currentYear = new Date().getFullYear();
 
-  // Estados
   const [tickets, setTickets] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
   const [loadingClubs, setLoadingClubs] = useState(true);
   const [clubFilter, setClubFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [selectedTickets, setSelectedTickets] = useState([]);
+const [loadingPago, setLoadingPago] = useState(false);
+const [yearFilter, setYearFilter] = useState(currentYear);
 
-  // ========================================
-  // FETCH
-  // ========================================
+const totalPendiente = tickets.filter(t => t.status === "pendiente").length;
+const totalPagado = tickets.filter(t => t.status === "pagado").length;
+
   const fetchTickets = async () => {
     try {
       setLoadingTickets(true);
@@ -34,7 +36,7 @@ const fetchClubs = async () => {
   try {
     setLoadingClubs(true);
     const res = await api.get("/clubs");
-    console.log("Respuesta clubs:", res.data); // <-- esto
+    console.log("Respuesta clubs:", res.data);
     setClubs(res.data || []);
   } catch (error) {
     console.error(error);
@@ -47,11 +49,11 @@ const fetchClubs = async () => {
   useEffect(() => {
     fetchTickets();
     fetchClubs();
-  }, []);
+  }, [yearFilter]);
 
-  // ========================================
-  // SWAL - NUEVO EMPADRONAMIENTO
-  // ========================================
+/*---------------------------------------
+---------SWAL CREAR EMPADRONAMIENTO------
+---------------------------------------*/
   const seleccionarTipo = async () => {
     const result = await Swal.fire({
       title: "Nuevo empadronamiento!",
@@ -141,25 +143,56 @@ const fetchClubs = async () => {
     }
   };
 
-  // ========================================
-  // FILTROS
-  // ========================================
+/*---------------------------------------
+------------------FILTROS----------------
+---------------------------------------*/
   const ticketsFiltrados = tickets
     .filter((t) => (clubFilter ? t.clubId === Number(clubFilter) : true))
     .filter((t) => `${t.nombre} ${t.apellido}`.toLowerCase().includes(search.toLowerCase()));
 
+// FUNCION PARA OBTENER NOMBRE DE CLUB CON ID
 const obtenerNombreClub = (clubId) => {
   console.log("clubId a buscar:", clubId);
 console.log("Lista de clubes:", clubs.map(c => c.id));
   const club = clubs.find(c => c.id === clubId);
   return club ? club.nombre : "Sin club";
-  
 };
 
+// FUNCION PARA MARCAR TICKETS COMO PAGADOS
+const marcarComoPagado = async () => {
+  if (loadingPago) return; // evita doble click
 
-  // ========================================
-  // RENDER
-  // ========================================
+  const pendientes = tickets
+    .filter(t => selectedTickets.includes(t.id))
+    .filter(t => t.status !== "pagado")
+    .map(t => t.id);
+
+  if (pendientes.length === 0) {
+    Swal.fire("Atención", "No hay tickets pendientes seleccionados", "info");
+    return;
+  }
+
+  try {
+    setLoadingPago(true);
+
+    await api.put("/asambal/empadronamiento/pagar-masivo", {
+      ticketIds: pendientes,
+    });
+
+    Swal.fire("Actualizado", "Tickets actualizados correctamente", "success");
+
+    setSelectedTickets([]);
+    await fetchTickets();
+  } catch (error) {
+    Swal.fire("Error", "No se pudieron actualizar los tickets", "error");
+  } finally {
+    setLoadingPago(false);
+  }
+};
+
+/*---------------------------------------
+------------------RENDER-----------------
+---------------------------------------*/
   if (loadingTickets || loadingClubs) {
     return <p className="mt-10 text-center text-gray-200">Cargando tickets de empadronamiento...</p>;
   }
@@ -172,6 +205,10 @@ console.log("Lista de clubes:", clubs.map(c => c.id));
           <h2 className="text-2xl font-semibold text-gray-200">
             Empadronamiento <span className="text-yellow-600">Jugadores</span>
           </h2>
+          <div className="flex gap-4 px-2 text-sm text-white">
+  <span>Pendientes: {totalPendiente}</span>
+  <span>Pagados: {totalPagado}</span>
+</div>
           <button
             onClick={seleccionarTipo}
             className="cursor-pointer flex items-center gap-2 h-10 px-3 text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
@@ -182,13 +219,37 @@ console.log("Lista de clubes:", clubs.map(c => c.id));
 
         {/* Filtros */}
         <div className="flex gap-3 px-2">
-          <select value={clubFilter} onChange={(e) => setClubFilter(e.target.value)} className="h-10 px-3 border rounded-lg">
+          <select value={clubFilter} onChange={(e) => setClubFilter(e.target.value)} className="bg-gray-200 h-10 px-3 border rounded-lg">
             <option value="">Todos los clubes</option>
             {clubs.map((c) => (
               <option key={c.id} value={c.id}>{c.nombre}</option>
             ))}
           </select>
-          <input type="text" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-10 px-3 border rounded-lg" />
+          <select
+  value={yearFilter}
+  onChange={(e) => setYearFilter(Number(e.target.value))}
+  className="bg-gray-200 h-10 px-3 border rounded-lg"
+>
+  {[currentYear, currentYear - 1, currentYear - 2].map((year) => (
+    <option key={year} value={year}>
+      {year}
+    </option>
+  ))}
+</select>
+          <input type="text" placeholder="Buscar..." value={search} onChange={(e) => setSearch(e.target.value)} className="bg-gray-200 h-10 px-3 border rounded-lg" />
+{selectedTickets.length > 0 && (
+  <button
+    onClick={marcarComoPagado}
+    disabled={loadingPago}
+    className={`px-4 py-2 text-white rounded-lg transition ${
+      loadingPago
+        ? "bg-gray-400 cursor-not-allowed"
+        : "bg-green-600 hover:bg-green-700"
+    }`}
+  >
+    {loadingPago ? "Actualizando..." : `Marcar como pagado (${selectedTickets.length})`}
+  </button>
+)}
         </div>
 
         {/* Tabla de tickets */}
@@ -196,6 +257,22 @@ console.log("Lista de clubes:", clubs.map(c => c.id));
           <table className="min-w-full text-sm">
             <thead className="text-gray-100 bg-gray-800">
               <tr>
+                <th className="px-4 py-3 text-center">
+                  <input
+                    type="checkbox"
+onChange={(e) => {
+  if (e.target.checked) {
+    setSelectedTickets(
+      ticketsFiltrados
+        .filter(t => t.status !== "pagado")
+        .map(t => t.id)
+    );
+  } else {
+    setSelectedTickets([]);
+  }
+}}
+                  />
+                </th>
                 <th className="px-4 py-3 text-center">Nombre</th>
                 <th className="px-4 py-3 text-center">Club</th>
                 <th className="px-4 py-3 text-center">Monto</th>
@@ -206,11 +283,34 @@ console.log("Lista de clubes:", clubs.map(c => c.id));
             <tbody className="divide-y divide-gray-300">
               {ticketsFiltrados.map((t) => (
                 <tr key={t.id} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 text-center">
+<input
+  type="checkbox"
+  disabled={t.status === "pagado"}
+  checked={selectedTickets.includes(t.id)}
+  onChange={(e) => {
+    if (e.target.checked) {
+      setSelectedTickets([...selectedTickets, t.id]);
+    } else {
+      setSelectedTickets(selectedTickets.filter(id => id !== t.id));
+    }
+  }}
+/>
+                  </td>
                   <td className="px-4 py-2 text-center">{t.nombre}</td>
                   <td className="px-4 py-2 text-center"> {obtenerNombreClub(t.clubId)}</td>
                   <td className="px-4 py-2 text-center">{t.amount.toLocaleString("es-AR", { style: "currency", currency: "ARS" })}</td>
                   <td className="px-4 py-2 text-center">{t.year}</td>
-                  <td className="px-4 py-2 text-center">{t.status}</td>
+                  <td className="px-4 py-2 text-center">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${t.status === "pagado"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {t.status}
+                    </span>
+                  </td>
                 </tr>
               ))}
               {ticketsFiltrados.length === 0 && (
