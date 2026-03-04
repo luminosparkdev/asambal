@@ -26,24 +26,30 @@ function EmpadronamientoJugador() {
 
   const pagarTicket = async (ticketId) => {
     const confirm = await Swal.fire({
-      title: "¿Confirmar pago?",
-      text: "Se actualizará el estado del ticket a pagado.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Pagar",
-      cancelButtonText: "Cancelar",
+    title: "¿Ir a pagar el empadronamiento?",
+    text: "Serás redirigido a Mercado Pago",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Ir a pagar",
+    cancelButtonText: "Cancelar",
     });
 
     if (!confirm.isConfirmed) return;
 
     try {
-      await api.post(`/players/tickets/${ticketId}/pay`);
-      Swal.fire("Listo", "Ticket pagado correctamente", "success");
-      fetchTickets();
-    } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "No se pudo pagar el ticket", "error");
+    const res = await api.post("/pagos/crear-preferencia", {
+      ticketId,
+    });
+
+    if (!res.data?.sandbox_init_point) {
+      throw new Error("No se recibió URL de pago");
     }
+
+    window.location.href = res.data.sandbox_init_point;
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "No se pudo iniciar el pago", "error");
+  }
   };
 
   if (loading) {

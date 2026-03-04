@@ -278,7 +278,9 @@ function PlayerListAsambal() {
                         Becar
                       </button>
                     ) : (
-                      "—"
+                      <span
+              className={"px-3 py-1 rounded-full text-sm font-semibold bg-green-800 text-green-400"}
+            >No requerido</span>
                     )}
                   </td>
 
