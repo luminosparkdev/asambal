@@ -3,30 +3,15 @@ import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import { useAuth } from "../../Auth/AuthContext";
 
 function CreatePlayerClub() {
+
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categorias, setCategorias] = useState([]);
-  const clubId = localStorage.getItem("activeClubId")
 
-const token = localStorage.getItem("token");
-console.log("TOKEN ACTUAL:", token);
-if (!token) {
-  console.error("No hay token en localStorage");
-  return;
-}
-
-try {
-  const payload = JSON.parse(atob(token.split(".")[1]));
-  console.log("Payload del JWT:", payload);
-} catch(e) {
-  console.error("Token inválido", e);
-}
-
-console.log(clubId)
+  const clubId = localStorage.getItem("activeClubId");
 
   const [form, setForm] = useState({
     nombre: "",
@@ -34,17 +19,16 @@ console.log(clubId)
     genero: "",
     email: "",
     clubId: clubId,
+    categoriaPrincipal: "",
     categorias: [],
   });
 
-  // --- Traer clubes del profesor ---
+  // TRAER CATEGORIAS
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
         const res = await api.get("/categories");
-        const categoriasData = res.data;
-
-        setCategorias(categoriasData);
+        setCategorias(res.data);
       } catch (err) {
         console.error("Error al traer categorias:", err);
       }
@@ -53,202 +37,269 @@ console.log(clubId)
     fetchCategorias();
   }, []);
 
-  // --- Manejo de cambios en inputs ---
+  // INPUTS
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setForm(prev => {
-      if (name === "clubId") {
-        const selectCategoria = setCategorias.find(c => c.clubId === value);
-        setCategorias(selectCategoria?.categorias || []);
-        return {
-          ...prev,
-          clubId: value,
-          categorias: selectCategoria?.categorias || []
-        };
-      }
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const toggleCategoria = (categorias) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      categorias: prev.categorias.includes(categorias)
-        ? prev.categorias.filter(c => c !== categorias)
-        : [...prev.categorias, categorias],
+      [name]: value,
     }));
   };
 
-  // --- Envío del formulario ---
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (isSubmitting) return;
+  // CATEGORIA PRINCIPAL
+  const handleCategoriaPrincipal = (e) => {
 
-  if (form.categorias.length === 0) {
-    setMessage("❌ Debe seleccionar al menos una categoría");
-    return;
-  }
+    const value = e.target.value;
 
-  setIsSubmitting(true);
-  setMessage("");
+    setForm((prev) => ({
+      ...prev,
+      categoriaPrincipal: value,
+      categorias: prev.categorias.filter((c) => c !== value),
+    }));
+  };
 
-  try {
-    // La API ya incluye el token y X-club-id gracias al interceptor
-    const res = await api.post("/clubs/create-player", form);
+  // CATEGORIAS SECUNDARIAS
+  const toggleCategoria = (categoriaId) => {
 
-    const { code, message: msg } = res.data || {};
+    if (categoriaId === form.categoriaPrincipal) return;
 
-    switch (code) {
-      case "JUGADOR_CREADO":
-        await Swal.fire({
-          icon: "success",
-          title: "Jugador creado",
-          text: msg,
-          confirmButtonText: "Aceptar",
-          background: "#0f172a",
-          color: "#e5e7eb",
-          confirmButtonColor: "#16a34a",
-        });
-        setForm({ nombre: "", apellido: "", email: "", genero: "", categorias: [] });
-        navigate("/clubs/players");
-        break;
+    setForm((prev) => ({
+      ...prev,
+      categorias: prev.categorias.includes(categoriaId)
+        ? prev.categorias.filter((c) => c !== categoriaId)
+        : [...prev.categorias, categoriaId],
+    }));
+  };
 
-      case "SOLICITUD_PENDIENTE":
-        {
-          const confirm = await Swal.fire({
-            icon: "question",
-            title: "Jugador en otro club",
-            text: msg,
-            showCancelButton: true,
-            confirmButtonText: "Aceptar solicitud de pase",
-            cancelButtonText: "Cancelar",
-          });
+  // SUBMIT
+  const handleSubmit = async (e) => {
 
-          if (confirm.isConfirmed) {
-            Swal.fire("Solicitud enviada al club de origen", "", "success");
-            navigate("/clubs/players");
-          }
-        }
-        break;
+    e.preventDefault();
 
-      case "YA_EXISTE_EN_CLUB":
-        await Swal.fire({
-          icon: "warning",
-          title: "Jugador ya existe en este club",
-          text: msg,
-          confirmButtonText: "Aceptar",
-        });
-        break;
-
-      default:
-        setMessage(msg || "Ocurrió un error desconocido");
-        break;
+    if (!form.categoriaPrincipal) {
+      setMessage("❌ Debe seleccionar una categoría principal");
+      return;
     }
 
-  } catch (err) {
-    console.error(err);
-    setMessage(`❌ ${err.response?.data?.message || "Error al crear el jugador"}`);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    if (isSubmitting) return;
 
+    setIsSubmitting(true);
+    setMessage("");
 
+    try {
+
+      const payload = {
+        ...form,
+        categorias: [form.categoriaPrincipal, ...form.categorias],
+      };
+
+      const res = await api.post("/clubs/create-player", payload);
+
+      const { code, message: msg } = res.data || {};
+
+      switch (code) {
+
+        case "JUGADOR_CREADO":
+
+          await Swal.fire({
+            icon: "success",
+            title: "Jugador creado",
+            text: msg,
+            confirmButtonText: "Aceptar",
+            background: "#0f172a",
+            color: "#e5e7eb",
+            confirmButtonColor: "#16a34a",
+          });
+
+          setForm({
+            nombre: "",
+            apellido: "",
+            genero: "",
+            email: "",
+            clubId: clubId,
+            categoriaPrincipal: "",
+            categorias: [],
+          });
+
+          navigate("/clubs/players");
+
+          break;
+
+        default:
+          setMessage(msg || "Ocurrió un error");
+      }
+
+    } catch (err) {
+
+      console.error(err);
+
+      setMessage(
+        `❌ ${err.response?.data?.message || "Error al crear el jugador"}`
+      );
+
+    } finally {
+
+      setIsSubmitting(false);
+
+    }
+  };
 
   return (
+
     <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.3 }}
         className="w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
       >
-        <h2 className="mb-1 text-2xl font-bold text-gray-200">Crear jugador</h2>
-        <p className="mb-6 text-sm text-gray-300">Registrá un nuevo jugador para tu club</p>
+
+        <h2 className="mb-1 text-2xl font-bold text-gray-200">
+          Crear jugador
+        </h2>
+
+        <p className="mb-6 text-sm text-gray-300">
+          Registrá un nuevo jugador para tu club
+        </p>
 
         {message && (
-          <div className="px-4 py-2 mb-4 text-sm font-medium text-white rounded-md bg-red-700/30">
+          <div className="px-4 py-2 mb-4 text-sm text-white rounded-md bg-red-700/30">
             {message}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {[{ name: "nombre", label: "Nombre", placeholder: "Nombre" },
-            { name: "apellido", label: "Apellido", placeholder: "Apellido" },
-            { name: "genero", label: "Género", placeholder: "Género", type: "text" },
-            { name: "email", label: "Email", placeholder: "Email", type: "email" },
-          ].map(({ name, label, placeholder, type }) => (
+
+          {/* INPUTS */}
+          {[
+            { name: "nombre", label: "Nombre" },
+            { name: "apellido", label: "Apellido" },
+            { name: "genero", label: "Género" },
+            { name: "email", label: "Email", type: "email" },
+          ].map(({ name, label, type }) => (
+
             <div key={name} className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-300">{label}</label>
+
+              <label className="text-sm text-gray-300">{label}</label>
+
               <input
                 required
                 type={type || "text"}
                 name={name}
-                placeholder={placeholder}
                 value={form[name]}
                 onChange={handleChange}
-                className="px-3 py-2 text-gray-200 placeholder-gray-500 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="px-3 py-2 text-gray-200 border border-gray-500 rounded"
               />
+
             </div>
+
           ))}
 
-          {/* CATEGORÍAS */}
+          {/* CATEGORIA PRINCIPAL */}
+          <div className="flex flex-col gap-1">
+
+            <label className="text-sm text-gray-300">
+              Categoría Principal ⭐
+            </label>
+
+            <select
+              value={form.categoriaPrincipal}
+              onChange={handleCategoriaPrincipal}
+              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+            >
+
+              <option value="">
+                Seleccionar categoría
+              </option>
+
+              {categorias.map((cat) => (
+
+                <option
+                  key={cat.id}
+                  value={cat.id}
+                >
+                  {cat.nombre} {cat.genero}
+                </option>
+
+              ))}
+
+            </select>
+
+          </div>
+
+          {/* CATEGORIAS SECUNDARIAS */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-300">Categorías</label>
+
+            <label className="text-sm text-gray-300">
+              Categorías Secundarias
+            </label>
+
             <div className="flex flex-wrap gap-2">
+
               {categorias.map((cat) => {
+
                 const active = form.categorias.includes(cat.id);
+                const isPrincipal = String(form.categoriaPrincipal) === String(cat.id);
 
                 return (
+
                   <button
                     key={cat.id}
                     type="button"
+                    disabled={isPrincipal}
                     onClick={() => toggleCategoria(cat.id)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
-                      ${active ? "bg-green-600/80 border-green-500 text-white" : "border-gray-500 text-gray-300 hover:bg-gray-700/50"}`}
+                    ${
+                      isPrincipal
+                        ? "bg-gray-600 border-gray-600 text-gray-400 cursor-not-allowed"
+                        : active
+                        ? "bg-green-600 border-green-500 text-white"
+                        : "border-gray-500 text-gray-300 hover:bg-gray-700"
+                    }`}
                   >
+
+                    {isPrincipal ? "⭐ " : ""}
                     {cat.nombre} {cat.genero}
+
                   </button>
+
                 );
+
               })}
+
             </div>
+
           </div>
 
+          {/* BOTONES */}
           <div className="flex gap-3 mt-4">
+
             <button
               disabled={isSubmitting}
               type="submit"
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
-                isSubmitting
-                  ? "border border-green-500/80 bg-green-700/80 rounded-md cursor-not-allowed"
-                  : "text-gray-200 border border-green-500/80 bg-green-700/80 rounded-md hover:bg-green-600/80 hover:text-white hover:border-green-600/80"
-              }`}
+              className="flex-1 px-4 py-2 text-gray-200 bg-green-700 border border-green-500 rounded"
             >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
-                  Creando...
-                </span>
-              ) : "Crear"}
+              {isSubmitting ? "Creando..." : "Crear"}
             </button>
 
             <button
-              disabled={isSubmitting}
               type="button"
               onClick={() => navigate("/players")}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                isSubmitting
-                  ? "border border-gray-500/40 text-gray-500 cursor-not-allowed"
-                  : "text-gray-300 border border-gray-500/80 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-600/80"
-              }`}
+              className="flex-1 px-4 py-2 text-gray-300 border border-gray-500 rounded"
             >
               Cancelar
             </button>
+
           </div>
+
         </form>
+
       </motion.div>
+
     </div>
+
   );
 }
 
