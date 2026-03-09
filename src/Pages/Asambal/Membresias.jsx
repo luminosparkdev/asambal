@@ -189,7 +189,7 @@ const updateCuota = (index, field, value) => {
     </div>
 
     {/* STATS */}
-    <div className="grid gap-6 md:grid-cols-3">
+   {/* <div className="grid gap-6 md:grid-cols-3">
       <StatCard
         label="Jugadores"
         value={membresias.stats.totalJugadores}
@@ -202,7 +202,7 @@ const updateCuota = (index, field, value) => {
         label="Habilitados"
         value={membresias.stats.habilitados}
       />
-    </div>
+    </div>*/}
 
   </div>
 )}

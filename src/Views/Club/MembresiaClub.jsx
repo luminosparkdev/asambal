@@ -24,36 +24,40 @@ function MembresiaClub() {
     }
   };
 
-  const pagarMembresia = async (membresia) => {
-    const confirm = await Swal.fire({
-      title: "¿Ir a pagar membresía?",
-      text: "Serás redirigido a MercadoPago",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Ir a pagar",
-      cancelButtonText: "Cancelar",
+  const notificarPago = async (membresia) => {
+
+  const confirm = await Swal.fire({
+    title: "¿Notificar pago?",
+    text: "Se avisará a Asambal para validar la cuota",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Notificar",
+    cancelButtonText: "Cancelar"
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+
+    await api.patch(`/clubs/membresias/ticket/${membresia.ticketId}/notificar`);
+
+    await Swal.fire({
+      icon: "success",
+      title: "Pago notificado",
+      timer: 1500,
+      showConfirmButton: false
     });
 
-    if (!confirm.isConfirmed) return;
+    fetchMembresias();
 
-    try {
-      const res = await api.post("/pagos/crear-preferencia",{
-        tipo: "membresia",
-        userId: membresia.clubId,
-        email: membresia.email,
-        membresiaId: membresia.ticketId
-      });
+  } catch (error) {
 
-      if (!res.data?.init_point) {
-        throw new Error("No se recibió URL del pago");
-      }
+    console.error(error);
 
-      window.location.href = res.data.init_point;
-    } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "No se pudo pagar la membresia", "error");
-    }
-  };
+    Swal.fire("Error", "No se pudo notificar el pago", "error");
+
+  }
+};
 
   if (loading) {
     return (
@@ -77,7 +81,7 @@ function MembresiaClub() {
             <MembresiaCard
               key={membresia.ticketId}
               membresia={membresia}
-              onPay={() => pagarMembresia(membresia)}
+              onNotify={()=> notificarPago(membresia)}
             />
           ))}
         </div>
@@ -86,11 +90,13 @@ function MembresiaClub() {
   );
 }
 
-function MembresiaCard({ membresia, onPay }) {
+function MembresiaCard({ membresia, onNotify }) {
   return (
     <div className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl">
       <p className="text-sm text-gray-600">Año: {membresia.year}</p>
-      <p className="text-lg font-semibold text-gray-800">
+      <p className="text-sm text-gray-600">Cuota: {membresia.cuotaNumber}</p>
+      <p className="text-sm text-gray-600">Vence: {membresia.dueDate}</p>
+      <p className="text-lg font-semibold text-gray-800">Importe:
         ${membresia.amount.toLocaleString("es-AR")}
       </p>
       <p className="text-sm text-gray-600">Estado: {membresia.status}</p>
@@ -104,10 +110,13 @@ function MembresiaCard({ membresia, onPay }) {
         </button>
       )}
 
-      {membresia.status === "pagado" && (
-        <p className="mt-4 text-sm font-semibold text-green-700">
-          Pagado ✔
-        </p>
+      {membresia.status === "adeudada" && (
+        <button
+          onClick={onNotify}
+          className="w-full h-10 mt-4 text-gray-100 bg-blue-700 rounded-lg hover:bg-blue-600"
+        >
+        NOTIFICAR PAGO
+        </button>
       )}
     </div>
   );

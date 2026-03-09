@@ -196,7 +196,7 @@ export const router = createBrowserRouter([
                 ),
             },
             {
-                path: "asambal/membresias",
+                path: "asambal/membresias/crear",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <Membresias />
