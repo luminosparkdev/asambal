@@ -43,7 +43,7 @@ const sections = [
     title: "Afiliaciones",
     color: "border-green-500",
     links: [
-      { name: "Membresías", path: "/asambal/membresias", icon: "🥇" },
+      { name: "Membresías", path: "/asambal/membresias/resumen", icon: "🥇" },
       { name: "Empadronamientos", path: "/asambal/empadronamientos", icon: "📋" },
       { name: "Becados", path: "/asambal/becados", icon: "🎓" },
       { name: "Seguros de profesores", path: "/asambal/seguros", icon: "📄" },

@@ -6,7 +6,11 @@ function Membresias() {
   const [loading, setLoading] = useState(true);
   const [membresias, setMembresias] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [amount, setAmount] = useState("");
+  const [cuotas, setCuotas] = useState([
+    {amount: "", dueDate: ""},
+    {amount: "", dueDate: ""},
+    {amount: "", dueDate: ""}
+  ]);
 
   useEffect(() => {
     fetchMembresiaActivo();
@@ -39,11 +43,18 @@ function Membresias() {
     try {
       await api.post("/asambal/membresia", {
         year,
-        amount: Number(amount),
+        cuotas: cuotas.map((c) => ({
+          amount: Number(c.amount),
+          dueDate: c.dueDate,
+        })),
       });
 
       Swal.fire("Listo", "Membresia creada correctamente", "success");
-      setAmount("");
+      setCuotas([
+        { amount: "", dueDate: "" },
+        { amount: "", dueDate: "" },
+        { amount: "", dueDate: "" },
+      ]);
       fetchMembresiaActivo();
     } catch (error) {
       console.error(error);
@@ -70,6 +81,12 @@ const formatCurrency = (value) => {
 
 const parseCurrency = (value) => {
   return Number(value.replace(/[^\d]/g, ""));
+};
+
+const updateCuota = (index, field, value) => {
+  const nuevasCuotas = [...cuotas];
+  nuevasCuotas[index][field] = value;
+  setCuotas(nuevasCuotas);
 };
 
   return (
@@ -100,46 +117,95 @@ const parseCurrency = (value) => {
                 placeholder="Año"
               />
 
-<input
-  type="text"
-  value={formatCurrency(amount)}
-  onChange={(e) => {
-    const rawValue = parseCurrency(e.target.value);
-    setAmount(rawValue);
-  }}
-  className="h-10 px-3 border border-gray-400 rounded-lg"
-  placeholder="$ 0"
-/>
+              {cuotas.map((cuota, index) => (
+              <div key={index} className="grid grid-cols-3 gap-3">
 
-              <button
-                onClick={crearMembresia}
-                className="h-10 text-gray-100 transition bg-green-700 rounded-lg hover:bg-green-600"
-              >
-                Crear membresia
-              </button>
+              <div className="flex items-center text-sm font-medium text-gray-700">
+                Cuota {index + 1}
+              </div>
+
+              <input
+                type="text"
+                value={formatCurrency(cuota.amount)}
+                onChange={(e) => {
+                  const raw = parseCurrency(e.target.value);
+                updateCuota(index, "amount", raw);
+                }}
+                className="h-10 px-3 border border-gray-400 rounded-lg"
+                placeholder="$ 0"
+              />
+
+              <input
+                type="date"
+                value={cuota.dueDate}
+                onChange={(e) =>
+                  updateCuota(index, "dueDate", e.target.value)
+                }
+                className="h-10 px-3 border border-gray-400 rounded-lg"
+              />
             </div>
+            ))}
+
+            <button
+              onClick={crearMembresia}
+              className="h-10 text-gray-100 transition bg-green-700 rounded-lg hover:bg-green-600"
+            >
+              Crear membresia
+            </button>
           </div>
+        </div>
         )}
 
         {/* Membresia activa */}
         {membresias && (
-          <div className="grid gap-6 mt-6 md:grid-cols-4">
+  <div className="flex flex-col gap-6 mt-6">
 
-            <StatCard
-              label="Jugadores"
-              value={membresia.stats.totalJugadores}
-            />
-            <StatCard
-              label="Pendientes"
-              value={membresia.stats.pendientes}
-            />
-            <StatCard
-              label="Habilitados"
-              value={membresia.stats.habilitados}
-            />
+    {/* CUOTAS */}
+    <div className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl">
+      <h3 className="mb-4 text-lg font-semibold text-gray-800">
+        Membresía {membresias.year}
+      </h3>
 
+      <div className="grid grid-cols-3 gap-4">
+        {membresias.cuotas.map((cuota) => (
+          <div
+            key={cuota.number}
+            className="p-4 border rounded-lg bg-gray-50"
+          >
+            <p className="text-sm text-gray-600">
+              Cuota {cuota.number}
+            </p>
+
+            <p className="text-xl font-bold text-gray-800">
+              {formatCurrency(cuota.amount)}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              Vence: {cuota.dueDate}
+            </p>
           </div>
-        )}
+        ))}
+      </div>
+    </div>
+
+    {/* STATS */}
+    <div className="grid gap-6 md:grid-cols-3">
+      <StatCard
+        label="Jugadores"
+        value={membresias.stats.totalJugadores}
+      />
+      <StatCard
+        label="Pendientes"
+        value={membresias.stats.pendientes}
+      />
+      <StatCard
+        label="Habilitados"
+        value={membresias.stats.habilitados}
+      />
+    </div>
+
+  </div>
+)}
 
       </div>
     </div>

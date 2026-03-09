@@ -47,6 +47,8 @@ import EmpadronamientoJugador from "../Views/Jugadores/EmpadronamientoJugador";
 import ClubSettings from "../Pages/Clubes/ClubSettings";
 import ClubHeroSettings from "../Pages/Clubes/ClubHeroSettings";
 import Membresias from "../Pages/Asambal/Membresias";
+import MembresiasList from "../Pages/Asambal/MembresiasList";
+import AdministrarMembresia from "../Pages/Asambal/AdministrarMembresia"
 import MembresiaClub from "../Views/Club/MembresiaClub";
 import Seguros from "../Pages/Asambal/Seguros";
 import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
@@ -201,7 +203,23 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-                        {
+            {
+                path: "asambal/membresias/resumen",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <MembresiasList />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "asambal/membresias/:clubId/:year",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <AdministrarMembresia />
+                    </ProtectedRoute>
+                )
+            },
+            {
                 path: "asambal/seguros",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
