@@ -6,6 +6,7 @@ function EmpadronamientoJugador() {
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
 
+
   useEffect(() => {
     fetchTickets();
   }, []);
@@ -38,14 +39,18 @@ function EmpadronamientoJugador() {
 
     try {
     const res = await api.post("/pagos/crear-preferencia", {
+      tipo: "empadronamiento",
+      userId: tickets.playerId,
+      email: tickets.email,
       ticketId,
+
     });
 
-    if (!res.data?.sandbox_init_point) {
+    if (!res.data?.init_point) {
       throw new Error("No se recibió URL de pago");
     }
 
-    window.location.href = res.data.sandbox_init_point;
+    window.location.href = res.data.init_point;
   } catch (error) {
     console.error(error);
     Swal.fire("Error", "No se pudo iniciar el pago", "error");

@@ -24,22 +24,31 @@ function MembresiaClub() {
     }
   };
 
-  const pagarMembresia = async (membresiaId) => {
+  const pagarMembresia = async (membresia) => {
     const confirm = await Swal.fire({
-      title: "¿Confirmar pago?",
-      text: "Se actualizará el estado de la membresia a pagado.",
-      icon: "warning",
+      title: "¿Ir a pagar membresía?",
+      text: "Serás redirigido a MercadoPago",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Pagar",
+      confirmButtonText: "Ir a pagar",
       cancelButtonText: "Cancelar",
     });
 
     if (!confirm.isConfirmed) return;
 
     try {
-      await api.post(`/clubs/membresias/${membresiaId}/pay`);
-      Swal.fire("Listo", "Membresia pagada correctamente", "success");
-      fetchMembresias();
+      const res = await api.post("/pagos/crear-preferencia",{
+        tipo: "membresia",
+        userId: membresia.clubId,
+        email: membresia.email,
+        membresiaId: membresia.ticketId
+      });
+
+      if (!res.data?.init_point) {
+        throw new Error("No se recibió URL del pago");
+      }
+
+      window.location.href = res.data.init_point;
     } catch (error) {
       console.error(error);
       Swal.fire("Error", "No se pudo pagar la membresia", "error");
@@ -68,7 +77,7 @@ function MembresiaClub() {
             <MembresiaCard
               key={membresia.ticketId}
               membresia={membresia}
-              onPay={() => pagarMembresia(membresia.ticketId)}
+              onPay={() => pagarMembresia(membresia)}
             />
           ))}
         </div>
