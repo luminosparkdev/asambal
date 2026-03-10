@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
 function CreatePlayerClub() {
-
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,25 +32,18 @@ function CreatePlayerClub() {
         console.error("Error al traer categorias:", err);
       }
     };
-
     fetchCategorias();
   }, []);
 
   // INPUTS
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   // CATEGORIA PRINCIPAL
   const handleCategoriaPrincipal = (e) => {
-
     const value = e.target.value;
-
     setForm((prev) => ({
       ...prev,
       categoriaPrincipal: value,
@@ -61,7 +53,6 @@ function CreatePlayerClub() {
 
   // CATEGORIAS SECUNDARIAS
   const toggleCategoria = (categoriaId) => {
-
     if (categoriaId === form.categoriaPrincipal) return;
 
     setForm((prev) => ({
@@ -74,7 +65,6 @@ function CreatePlayerClub() {
 
   // SUBMIT
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     if (!form.categoriaPrincipal) {
@@ -83,25 +73,20 @@ function CreatePlayerClub() {
     }
 
     if (isSubmitting) return;
-
     setIsSubmitting(true);
     setMessage("");
 
     try {
-
       const payload = {
         ...form,
         categorias: [form.categoriaPrincipal, ...form.categorias],
       };
 
       const res = await api.post("/clubs/create-player", payload);
-
       const { code, message: msg } = res.data || {};
 
       switch (code) {
-
         case "JUGADOR_CREADO":
-
           await Swal.fire({
             icon: "success",
             title: "Jugador creado",
@@ -123,43 +108,30 @@ function CreatePlayerClub() {
           });
 
           navigate("/clubs/players");
-
           break;
 
         default:
           setMessage(msg || "Ocurrió un error");
       }
-
     } catch (err) {
-
       console.error(err);
-
       setMessage(
         `❌ ${err.response?.data?.message || "Error al crear el jugador"}`
       );
-
     } finally {
-
       setIsSubmitting(false);
-
     }
   };
 
   return (
-
     <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
-
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3 }}
         className="w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
       >
-
-        <h2 className="mb-1 text-2xl font-bold text-gray-200">
-          Crear jugador
-        </h2>
-
+        <h2 className="mb-1 text-2xl font-bold text-gray-200">Crear jugador</h2>
         <p className="mb-6 text-sm text-gray-300">
           Registrá un nuevo jugador para tu club
         </p>
@@ -171,19 +143,14 @@ function CreatePlayerClub() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
           {/* INPUTS */}
           {[
             { name: "nombre", label: "Nombre" },
             { name: "apellido", label: "Apellido" },
-            { name: "genero", label: "Género" },
             { name: "email", label: "Email", type: "email" },
           ].map(({ name, label, type }) => (
-
             <div key={name} className="flex flex-col gap-1">
-
               <label className="text-sm text-gray-300">{label}</label>
-
               <input
                 required
                 type={type || "text"}
@@ -192,90 +159,77 @@ function CreatePlayerClub() {
                 onChange={handleChange}
                 className="px-3 py-2 text-gray-200 border border-gray-500 rounded"
               />
-
             </div>
-
           ))}
 
-          {/* CATEGORIA PRINCIPAL */}
+          {/* ------------------ Género como select ------------------ */}
           <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-300">Género</label>
+            <select
+              required
+              name="genero"
+              value={form.genero}
+              onChange={handleChange}
+              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+            >
+              <option value="">Seleccionar género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+            </select>
+          </div>
 
-            <label className="text-sm text-gray-300">
-              Categoría Principal ⭐
-            </label>
-
+          {/* ------------------ Categoría Principal filtrada por género ------------------ */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-300">Categoría Principal ⭐</label>
             <select
               value={form.categoriaPrincipal}
               onChange={handleCategoriaPrincipal}
               className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
             >
-
-              <option value="">
-                Seleccionar categoría
-              </option>
-
-              {categorias.map((cat) => (
-
-                <option
-                  key={cat.id}
-                  value={cat.id}
-                >
-                  {cat.nombre} {cat.genero}
-                </option>
-
-              ))}
-
+              <option value="">Seleccionar categoría</option>
+              {categorias
+                .filter(cat => form.genero && cat.genero === form.genero)
+                .map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre} {cat.genero}
+                  </option>
+                ))}
             </select>
-
           </div>
 
-          {/* CATEGORIAS SECUNDARIAS */}
+          {/* ------------------ Categorías Secundarias filtradas por género ------------------ */}
           <div className="flex flex-col gap-2">
-
-            <label className="text-sm text-gray-300">
-              Categorías Secundarias
-            </label>
-
+            <label className="text-sm text-gray-300">Categorías Secundarias</label>
             <div className="flex flex-wrap gap-2">
-
               {categorias.map((cat) => {
-
                 const active = form.categorias.includes(cat.id);
                 const isPrincipal = String(form.categoriaPrincipal) === String(cat.id);
+                const genderMismatch = form.genero && cat.genero !== form.genero;
 
                 return (
-
                   <button
                     key={cat.id}
                     type="button"
-                    disabled={isPrincipal}
+                    disabled={isPrincipal || genderMismatch}
                     onClick={() => toggleCategoria(cat.id)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
-                    ${
-                      isPrincipal
+                      ${isPrincipal || genderMismatch
                         ? "bg-gray-600 border-gray-600 text-gray-400 cursor-not-allowed"
                         : active
                         ? "bg-green-600 border-green-500 text-white"
                         : "border-gray-500 text-gray-300 hover:bg-gray-700"
-                    }`}
+                      }`}
                   >
-
                     {isPrincipal ? "⭐ " : ""}
                     {cat.nombre} {cat.genero}
-
                   </button>
-
                 );
-
               })}
-
             </div>
-
           </div>
 
           {/* BOTONES */}
           <div className="flex gap-3 mt-4">
-
             <button
               disabled={isSubmitting}
               type="submit"
@@ -286,20 +240,15 @@ function CreatePlayerClub() {
 
             <button
               type="button"
-              onClick={() => navigate("/players")}
+              onClick={() => navigate("/clubs/players")}
               className="flex-1 px-4 py-2 text-gray-300 border border-gray-500 rounded"
             >
               Cancelar
             </button>
-
           </div>
-
         </form>
-
       </motion.div>
-
     </div>
-
   );
 }
 

@@ -70,7 +70,7 @@ const sections = [
 function AdminClubDashboard() {
     const navigate = useNavigate();
     return (
-        <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+        <div className="select-none relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/10" />
 
       <div className="relative z-10 px-4 py-8 mx-auto max-w-7xl">
@@ -102,7 +102,7 @@ function AdminClubDashboard() {
                   <button
                     key={link.name}
                     onClick={() => navigate(link.path)}
-                    className="flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
+                    className="cursor-pointer flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
                   >
                     <span className="text-lg transition-transform group-hover:scale-110">
                       {link.icon}

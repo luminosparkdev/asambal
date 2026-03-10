@@ -6,35 +6,29 @@ import { EyeIcon, CheckCircleIcon, XCircleIcon, PlusIcon } from "@heroicons/reac
 
 function PlayersListClub() {
   const [players, setPlayers] = useState([]);
+  const [categorias, setCategorias] = useState([]); // <-- Nuevo estado para categorías
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
-  // Obtener todas las categorías disponibles del club
-  const categories = [
-    "ALL",
-    ...new Set(
-      players.flatMap(player =>
-        player.clubs?.flatMap(club => club.categorias || []) || []
-      )
-    ),
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
 
-  // Filtrado por búsqueda, estado y categoría
-  const filteredPlayers = players.filter(player => {
-    const matchName = `${player.nombre} ${player.apellido}`.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "ALL" || player.status === statusFilter;
-    const matchCategory = categoryFilter === "ALL" || player.clubs.some(club => club.categorias.includes(categoryFilter));
-    return matchName && matchStatus && matchCategory;
-  });
+  // Traer categorías al cargar el componente
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const res = await api.get("/categories");
+        setCategorias(res.data);
+      } catch (err) {
+        console.error("Error al traer categorias:", err);
+        Swal.fire("Error", "No se pudieron cargar las categorías", "error");
+      }
+    };
 
-  // Actualizar estado local de jugador (optimista)
-  const updatePlayerStatusLocally = (playerId, newStatus) => {
-    setPlayers(prev =>
-      prev.map(p => (p.id === playerId ? { ...p, status: newStatus } : p))
-    );
-  };
+    fetchCategorias();
+  }, []);
 
   // Traer jugadores del club
   const fetchPlayers = async () => {
@@ -50,6 +44,54 @@ function PlayersListClub() {
   useEffect(() => {
     fetchPlayers();
   }, []);
+
+  // Obtener todas las categorías únicas de categoriaPrincipal para el filtro
+  const categories = [
+    "ALL",
+    ...new Set(
+      players.flatMap(player =>
+        player.clubs?.map(club => {
+          // Buscar la categoria completa por ID
+          const cat = categorias.find(c => c.id === club.categoriaPrincipal);
+          if (cat) return `${cat.genero} ${cat.nombre}`;
+          return null;
+        }).filter(Boolean)
+      )
+    ),
+  ];
+
+  // Función auxiliar para mostrar la categoriaPrincipal como "genero nombre"
+  const getCategoriaPrincipalTexto = (club) => {
+    const cat = categorias.find(c => c.id === club.categoriaPrincipal);
+    if (!cat) return "Sin categoría";
+    return `${cat.genero} ${cat.nombre}`;
+  };
+
+  // Filtrado por búsqueda, estado y categoría
+  const filteredPlayers = players.filter(player => {
+    const matchName = `${player.nombre} ${player.apellido}`.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "ALL" || player.status === statusFilter;
+    const matchCategory = categoryFilter === "ALL" || player.clubs.some(club => {
+      const cat = categorias.find(c => c.id === club.categoriaPrincipal);
+      if (!cat) return false;
+      return `${cat.genero} ${cat.nombre}` === categoryFilter;
+    });
+    return matchName && matchStatus && matchCategory;
+  });
+
+  // Paginación
+  const totalItems = filteredPlayers.length;
+  const totalPages = itemsPerPage === "Todos" ? 1 : Math.ceil(totalItems / itemsPerPage);
+  const startIndex = itemsPerPage === "Todos" ? 0 : (currentPage - 1) * itemsPerPage;
+  const endIndex = itemsPerPage === "Todos" ? totalItems : startIndex + itemsPerPage;
+  const paginatedPlayers = filteredPlayers.slice(startIndex, endIndex);
+
+  // Actualizar estado local de jugador (optimista)
+  const updatePlayerStatusLocally = (playerId, newStatus) => {
+    setPlayers(prev =>
+      prev.map(p => (p.id === playerId ? { ...p, status: newStatus } : p))
+    );
+  };
 
   // Toggle estado de jugador (ACTIVO / INACTIVO)
   const togglePlayerStatus = async (player) => {
@@ -96,7 +138,7 @@ function PlayersListClub() {
     "h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800";
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] select-none">
       <div className="px-4 mx-auto max-w-7xl">
         <div className="flex items-center justify-between px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Jugadores de mi club</h2>
@@ -109,20 +151,20 @@ function PlayersListClub() {
           </button>
         </div>
 
-        {/* Filtros */}
+        {/* Filtros + Mostrar por página */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <input
               type="text"
               placeholder="Buscar jugador..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
               className="h-10 px-3 py-2 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             />
 
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
               className={selectClasses}
             >
               <option value="ALL">Todos los estados</option>
@@ -133,7 +175,7 @@ function PlayersListClub() {
 
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
               className={selectClasses}
             >
               {categories.map((cat) => (
@@ -141,6 +183,25 @@ function PlayersListClub() {
                   {cat === "ALL" ? "Todas las categorías" : cat}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Mostrar por página */}
+          <div className="flex items-center gap-2 mt-2 md:mt-0 md:ml-auto">
+            <label className="text-gray-200">Mostrar por página:</label>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                const val = e.target.value === "Todos" ? "Todos" : Number(e.target.value);
+                setItemsPerPage(val);
+                setCurrentPage(1);
+              }}
+              className={selectClasses}
+            >
+              <option value={15}>15</option>
+              <option value={30}>30</option>
+              <option value={60}>60</option>
+              <option value="Todos">Todos</option>
             </select>
           </div>
         </div>
@@ -155,7 +216,6 @@ function PlayersListClub() {
                 <th className="px-4 py-3 text-center">Edad</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
                 <th className="px-4 py-3 text-center">Club</th>
-                <th className="px-4 py-3 text-center">Sexo</th>
                 <th className="px-4 py-3 text-center">Estatura</th>
                 <th className="px-4 py-3 text-center">Posición</th>
                 <th className="px-4 py-3 text-center">Mano hábil</th>
@@ -164,23 +224,28 @@ function PlayersListClub() {
             </thead>
 
             <tbody className="divide-y divide-gray-300">
-              {filteredPlayers.map((player) => (
+              {paginatedPlayers.map((player) => (
                 <tr key={player.id} className="transition-colors hover:bg-white/5">
                   <td className="px-4 py-2 text-center">{player.nombre}</td>
                   <td className="px-4 py-2 text-center">{player.apellido}</td>
-                  <td className="px-4 py-2 text-center">{player.edad}</td>
+                  <td className="px-4 py-2 text-center">{player.edad || "-"}</td>
+
                   <td className="px-4 py-2 text-center">
                     {player.clubs?.map((club, i) => (
-                      <div key={i}>{club.categorias?.join(", ")}</div>
+                      <div key={i}>{getCategoriaPrincipalTexto(club)}</div>
                     ))}
                   </td>
+
                   <td className="px-4 py-2 text-center">
-                    {player.clubs?.map((club, i) => <div key={i}>{club.nombreClub}</div>)}
+                    {player.clubs?.map((club, i) => (
+                      <div key={i}>{club.nombreClub}</div>
+                    ))}
                   </td>
-                  <td className="px-4 py-2 text-center">{player.sexo}</td>
-                  <td className="px-4 py-2 text-center">{player.estatura}</td>
-                  <td className="px-4 py-2 text-center">{player.posicion}</td>
-                  <td className="px-4 py-2 text-center">{player.manohabil}</td>
+
+                  <td className="px-4 py-2 text-center">{player.estatura || "-"}</td>
+                  <td className="px-4 py-2 text-center">{player.posicion || "-"}</td>
+                  <td className="px-4 py-2 text-center">{player.manohabil || "-"}</td>
+
                   <td className="px-4 py-2">
                     <div className="flex items-center justify-center gap-2">
                       <button
@@ -193,7 +258,7 @@ function PlayersListClub() {
 
                       <button
                         onClick={() => togglePlayerStatus(player)}
-                        className={`cursor-pointer flex items-center gap-1 px-3 py-1 text-sm text-white rounded ${player.status === "ACTIVO"
+                        className={`cursor-pointer flex items-center justify-center gap-1 px-3 py-1 text-sm text-white rounded w-32 ${player.status === "ACTIVO"
                           ? "bg-red-700/95 hover:bg-red-500"
                           : "bg-green-700/95 hover:bg-green-500"
                         }`}
@@ -210,6 +275,29 @@ function PlayersListClub() {
             </tbody>
           </table>
         </div>
+
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className={`px-4 py-2 text-green-400 border border-green-400 rounded-md hover:bg-green-400/20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Anterior
+            </button>
+
+            <span className="text-green-400">Página {currentPage} de {totalPages}</span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className={`px-4 py-2 text-green-400 border border-green-400 rounded-md hover:bg-green-400/20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

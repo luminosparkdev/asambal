@@ -15,49 +15,72 @@ function CoachesList() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
+
+  // PAGINACIÓN
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
+
   const categories = [
     "ALL",
     ...new Set(coaches.flatMap(c => c.categorias || []))
   ];
 
   const filteredCoaches = coaches.filter(coach => {
-      const matchName = coach.nombre
-        .toLowerCase()
-        .includes(search.toLowerCase());
+    const matchName = coach.nombre
+      .toLowerCase()
+      .includes(search.toLowerCase());
 
-      const matchStatus =
-        statusFilter === "ALL" || coach.status === statusFilter;
+    const matchStatus =
+      statusFilter === "ALL" || coach.status === statusFilter;
 
-      const matchCategory =
-        categoryFilter === "ALL" || coach.categorias?.includes(categoryFilter);
+    const matchCategory =
+      categoryFilter === "ALL" || coach.categorias?.includes(categoryFilter);
 
-      return matchName && matchStatus && matchCategory;
-    });
+    return matchName && matchStatus && matchCategory;
+  });
 
-    const updateCoachStatusLocally = (coachId, newStatus) => {
-      setCoaches(prev =>
-        prev.map(c =>
-          c.id === coachId
-            ? { ...c, status: newStatus }
-            : c
-        )
-      );
-    };
+  // CÁLCULOS PAGINACIÓN
+  const totalItems = filteredCoaches.length;
 
-    //OBTENER LISTA DE PROFESORES
-    const fetchCoaches = async () => {
-      try {
-        const res = await api.get(`/coaches/club`);
-        setCoaches(res.data);
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  const totalPages =
+    itemsPerPage === "Todos"
+      ? 1
+      : Math.ceil(totalItems / itemsPerPage);
 
-    useEffect(() => {
-      fetchCoaches();
-    }, []);
+  const startIndex =
+    itemsPerPage === "Todos"
+      ? 0
+      : (currentPage - 1) * itemsPerPage;
+
+  const endIndex =
+    itemsPerPage === "Todos"
+      ? totalItems
+      : startIndex + itemsPerPage;
+
+  const paginatedCoaches = filteredCoaches.slice(startIndex, endIndex);
+
+  const updateCoachStatusLocally = (coachId, newStatus) => {
+    setCoaches(prev =>
+      prev.map(c =>
+        c.id === coachId
+          ? { ...c, status: newStatus }
+          : c
+      )
+    );
+  };
+
+  const fetchCoaches = async () => {
+    try {
+      const res = await api.get(`/coaches/club`);
+      setCoaches(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoaches();
+  }, []);
 
   const toggleCoach = async (coach) => {
 
@@ -83,17 +106,12 @@ function CoachesList() {
 
     try {
       updateCoachStatusLocally(coach.id, optimisticStatus);
-
       await api.patch(`/coaches/${coach.id}/toggle`);
 
       Swal.fire({
         icon: "success",
         title: "Estado actualizado",
         timer: 1500,
-        text: 
-          action === "desactivar" 
-          ? "El profesor ha sido desactivado exitosamente" 
-          : "El profesor ha sido activado exitosamente",
         showConfirmButton: false,
       });
     } catch (err) {
@@ -103,78 +121,19 @@ function CoachesList() {
         icon: "error",
         title: "Error",
         text: "No se pudo cambiar el estado del profesor",
-        timer: 1200,
-        showConfirmButton: false,
       });
+
       console.error(err);
     }
   };
 
-  //ACTUALIZAR COACH EN LA LISTA
-  const updateCoachInList = (updatedCoach) => {
-    setCoaches(prev =>
-      prev.map(c =>
-        c.id === updatedCoach.id ? updatedCoach : c
-      )
-    );
-  };
-
-  const formatDate = (date) =>
-  new Date(date).toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="px-2 py-6">
-          <h2 className="text-2xl font-semibold text-gray-200">
-            Profesores registrados
-          </h2>
-        </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      {/* Filtros */}
-      <div className="grid grid-cols-1 gap-3 mt-4 md:grid-cols-4 ">
 
-          {/* Buscar */}
-        <input
-          type="text"
-          placeholder="Buscar profesor..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="h-10 px-3 py-2 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
-        />
-
-        {/* Estado */}
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
-        >
-          <option value="ALL" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Todos los estados</option>
-          <option value="ACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Activo</option>
-          <option value="INACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Inactivo</option>
-          <option value="RECHAZADO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Rechazado</option>
-        </select>
-
-        {/* Categoria */}
-        <select
-          value={categoryFilter}
-          onChange={e => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200 "
-        >
-          {categories.map(category => (
-            <option key={category} value={category} className="text-gray-100 bg-gray-800 hover:bg-gray-700">
-              {category === "ALL" ? "Todas las categorías" : category}
-            </option>
-          ))}
-        </select>
-      </div>
-
+        <div className="flex items-center justify-between px-2 py-6">
+          <h2 className="text-2xl font-semibold text-gray-200">Profesores registrados</h2>
           <button
             onClick={() => navigate("/coaches/nuevo")}
             className="flex items-center h-10 gap-2 px-3 py-1 text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
@@ -184,9 +143,77 @@ function CoachesList() {
           </button>
         </div>
 
-        {/* Tabla */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+
+            <input
+              type="text"
+              placeholder="Buscar profesor..."
+              value={search}
+              onChange={e => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 px-3 py-2 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent"
+            />
+
+            <select
+              value={statusFilter}
+              onChange={e => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
+            >
+              <option value="ALL">Todos los estados</option>
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+              <option value="RECHAZADO">Rechazado</option>
+            </select>
+
+            <select
+              value={categoryFilter}
+              onChange={e => {
+                setCategoryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category === "ALL" ? "Todas las categorías" : category}
+                </option>
+              ))}
+            </select>
+
+          </div>
+
+          <div className="flex items-center gap-2 text-gray-200">
+            <label>Mostrar por página:</label>
+
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                const val = e.target.value === "Todos" ? "Todos" : Number(e.target.value);
+                setItemsPerPage(val);
+                setCurrentPage(1);
+              }}
+              className="h-10 px-3 border border-gray-500 rounded-lg bg-slate-800"
+            >
+              <option value={15}>15</option>
+              <option value={30}>30</option>
+              <option value={60}>60</option>
+              <option value="Todos">Todos</option>
+            </select>
+          </div>
+
+
+        </div>
+
         <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
+
             <thead className="text-gray-100 bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-center">Nombre</th>
@@ -201,25 +228,25 @@ function CoachesList() {
             </thead>
 
             <tbody className="divide-y divide-gray-300">
-              {filteredCoaches.map((p) => (
-                <tr
-                  key={p.id}
-                  className="transition-colors hover:bg-white/5"
-                >
+
+              {paginatedCoaches.map((p) => (
+
+                <tr key={p.id} className="transition-colors hover:bg-white/5">
+
                   <td className="px-4 py-2 text-center">
                     {p.nombre} {p.apellido}
                   </td>
+
                   <td className="px-4 py-2 text-center">{p.dni}</td>
                   <td className="px-4 py-2 text-center">{p.email}</td>
                   <td className="px-4 py-2 text-center">{p.telefono}</td>
-<td
-  className="px-4 py-2 text-center"
-  title={Array.isArray(p.categorias) ? p.categorias.join(", ") : ""}
->
-  {Array.isArray(p.categorias) && p.categorias.length > 0
-    ? p.categorias[0]
-    : "-"}
-</td>
+
+                  <td className="px-4 py-2 text-center">
+                    {Array.isArray(p.categorias) && p.categorias.length > 0
+                      ? p.categorias[0]
+                      : "-"}
+                  </td>
+
                   <td className="px-4 py-2 text-center">{p.enea}</td>
 
                   <td className="px-4 py-2 text-center">
@@ -235,9 +262,10 @@ function CoachesList() {
                   </td>
 
                   <td className="flex items-center gap-2 px-4 py-2">
+
                     <button
                       onClick={() => navigate(`/coaches/${p.id}`)}
-                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100 hover:cursor-pointer"
+                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Ver
@@ -246,9 +274,9 @@ function CoachesList() {
                     <button
                       onClick={() => toggleCoach(p)}
                       className={`flex items-center gap-1 ml-auto px-3 py-1 text-sm text-white rounded w-24 ${
-                    p.status === "ACTIVO"
-                      ? "flex items-center gap-1 ml-auto px-3 py-1 text-sm text-gray-200 bg-red-700/95 rounded-md hover:bg-red-500 hover:text-gray-100 hover:cursor-pointer transition-all"
-                      : "flex items-center gap-1 ml-auto px-3 py-1 text-sm text-gray-200 bg-green-700/95 rounded-md hover:bg-green-500 hover:text-gray-100 hover:cursor-pointer transition-all"
+                        p.status === "ACTIVO"
+                          ? "bg-red-700/95 hover:bg-red-500"
+                          : "bg-green-700/95 hover:bg-green-500"
                       }`}
                     >
                       {p.status === "ACTIVO" ? (
@@ -263,12 +291,43 @@ function CoachesList() {
                         </>
                       )}
                     </button>
+
                   </td>
                 </tr>
+
               ))}
+
             </tbody>
+
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-4">
+
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className="px-4 py-2 text-green-400 border border-green-400 rounded-md hover:bg-green-400/20 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="text-green-400">
+              Página {currentPage} de {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className="px-4 py-2 text-green-400 border border-green-400 rounded-md hover:bg-green-400/20 disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+
+          </div>
+        )}
+
       </div>
     </div>
   );
