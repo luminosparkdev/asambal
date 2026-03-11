@@ -44,9 +44,9 @@ const sections = [
     color: "border-green-500",
     links: [
       { name: "Membresías", path: "/asambal/membresias/resumen", icon: "🥇" },
-      { name: "Empadronamientos", path: "/asambal/empadronamientos", icon: "📋" },
+      { name: "Empadronamientos", path: "/asambal/empadronamiento-jugadores/resumen", icon: "📋" },
       { name: "Becados", path: "/asambal/becados", icon: "🎓" },
-      { name: "Seguros de profesores", path: "/asambal/seguros", icon: "📄" },
+      { name: "Empadronamiento profesores", path: "/asambal/empadronamiento-profesores", icon: "📄" },
     ]
   },
   {

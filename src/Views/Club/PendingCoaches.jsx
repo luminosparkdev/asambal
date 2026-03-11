@@ -51,6 +51,7 @@ function PendingCoaches() {
     try {
       await api.patch(`/clubs/${coachId}/validate-coach`, {
         action,
+        clubId: currentClubId
       });
 
       toast.fire({
