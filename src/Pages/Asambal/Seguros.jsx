@@ -168,7 +168,7 @@ function Seguros() {
 
         {/* Tabla de seguros */}
         {loading ? (
-          <p className="mt-10 text-center text-gray-200">Cargando seguros...</p>
+          <p className="mt-10 text-center text-gray-200">Cargando empadronamientos...</p>
         ) : (
           <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
             <table className="select-none min-w-full text-sm">

@@ -42,7 +42,8 @@ import PlayersListClub from "../Pages/Clubes/PlayersListClub";
 import PendingTransfer from "../Views/Asambal/PendingTransfer";
 import CreatePlayerClub from "../Pages/Clubes/CreatePlayerClub";
 import PendingTransferRequest from "../Views/Jugadores/PendingTransferRequest";
-import Empadronamiento from "../Pages/Asambal/Empadronamiento";
+import EmpadronamientoJugadoresList from "../Pages/Asambal/EmpadronamientoJugadoresList";
+import EmpadronamientoJugadores from "../Pages/Asambal/EmpadronamientoJugadores";
 import EmpadronamientoJugador from "../Views/Jugadores/EmpadronamientoJugador";
 import ClubSettings from "../Pages/Clubes/ClubSettings";
 import ClubHeroSettings from "../Pages/Clubes/ClubHeroSettings";
@@ -188,10 +189,18 @@ export const router = createBrowserRouter([
                 ),
             },
             {
-                path: "asambal/empadronamientos",
+                path: "asambal/empadronamiento-jugadores/resumen",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
-                        <Empadronamiento />
+                        <EmpadronamientoJugadoresList />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "asambal/empadronamiento-jugadores/crear",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
+                        <EmpadronamientoJugadores />
                     </ProtectedRoute>
                 ),
             },
@@ -220,7 +229,7 @@ export const router = createBrowserRouter([
                 )
             },
             {
-                path: "asambal/seguros",
+                path: "asambal/empadronamiento-profesores",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_ASAMBAL]}>
                         <Seguros />
