@@ -10,7 +10,7 @@ import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import ActivateAccount from "../Pages/ActivateAccount";
 import ProfileRouter from "../Pages/ProfileRouter";
-import Unauthorized from "../Pages/Unauthorized";
+import NotFound from "../Pages/NotFound";
 import AdminAsambalDashboard from "../Pages/Asambal/AdminAsambalDashboard";
 import ClubList from "../Pages/Asambal/ClubList";
 import ClubDetails from "../Views/Asambal/ClubDetails";
@@ -53,6 +53,7 @@ import AdministrarMembresia from "../Pages/Asambal/AdministrarMembresia"
 import MembresiaClub from "../Views/Club/MembresiaClub";
 import Seguros from "../Pages/Asambal/Seguros";
 import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
+import UnderConstruction from "../Pages/UnderContruction";
 
 export const router = createBrowserRouter([
     {
@@ -63,8 +64,18 @@ export const router = createBrowserRouter([
             { index: true, element: <Home />, },
             { path: "login", element: <Login />, },
             { path: "activar-cuenta", element: <ActivateAccount /> },
-            { path: "unauthorized", element: <Unauthorized /> },
             { path: "recuperar-clave", element: <RecuperarClave /> },
+
+            //EN CONTRUCCIÓN
+            { path: "asambal/cashflow", element: <UnderConstruction/> },
+            { path: "asambal/ingresos", element: <UnderConstruction/> },
+            { path: "asambal/gastos", element: <UnderConstruction/> },
+            { path: "asambal/novedades", element: <UnderConstruction/> },
+            { path: "asambal/sponsors", element: <UnderConstruction/> },
+            { path: "asambal/auditoria", element: <UnderConstruction/> },
+            { path: "asambal/configuracion", element: <UnderConstruction/> },
+
+            { path: "*", element: <NotFound /> },
 
             //RUTAS PROTEGIDAS SIN ROL ESPECÍFICO
             {

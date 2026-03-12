@@ -53,10 +53,10 @@ const sections = [
     title: "Gestión financiera",
     color: "border-gray-200",
     links: [
-      { name: "Cashflow", path: "asambal/cashflow", icon: "📊" },
-      { name: "Reportes", path: "/balance", icon: "📈" },
-      { name: "Ingresos", path: "/balance", icon: "🏦" },
-      { name: "Gastos", path: "/balance", icon: "💸" },
+      { name: "Cashflow", path: "/asambal/cashflow", icon: "📊" },
+      { name: "Reportes", path: "/asambal/reportes", icon: "📈" },
+      { name: "Ingresos", path: "/asambal/ingresos", icon: "🏦" },
+      { name: "Gastos", path: "/asambal/gastos", icon: "💸" },
     ]
   },
   {
