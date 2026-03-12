@@ -146,7 +146,7 @@ useEffect(() => {
             type="number"
             value={enea}
             onChange={(e) => setEnea(e.target.value)}
-            placeholder="ENEA"
+            placeholder="ENEHA"
             className="input-glass"
           />
         </div>

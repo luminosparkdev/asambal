@@ -35,7 +35,7 @@ function EmpadronamientoJugador() {
     try {
       setLoading(true);
 
-      const res = await api.get("/players/tickets");
+      const res = await api.get("/empadronamiento/tickets");
 
       setTickets(res.data || []);
 
