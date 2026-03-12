@@ -112,9 +112,6 @@ const handleSubmit = async (e) => {
       activationToken: activationToken,
       form: { ...form },
       tutor: Number(form.edad) < 16 ? tutor : null,
-      clubId,
-      nombreClub,
-      categorias,
     };
 
     console.log("Payload enviado:", payload); // 👈 útil para debug

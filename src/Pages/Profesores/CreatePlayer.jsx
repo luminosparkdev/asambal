@@ -4,36 +4,39 @@ import api from "../../Api/Api";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
-function PlayerCreate() {
+function CreatePlayerCoach() {
   const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [allClubs, setAllClubs] = useState([]);
-  const [clubCategorias, setClubCategorias] = useState([]); // categorías del club seleccionado
+
+  const [clubs, setClubs] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
   const [form, setForm] = useState({
     nombre: "",
     apellido: "",
+    genero: "",
     email: "",
     clubId: "",
+    categoriaPrincipal: "",
     categorias: [],
   });
 
-  // --- Traer clubes del profesor ---
+  // TRAER CLUBES DEL PROFESOR
   useEffect(() => {
     const fetchClubs = async () => {
       try {
-        const res = await api.get("/coaches/my-clubs"); 
-        setAllClubs(res.data);
-        console.log(res.data);
+        const res = await api.get("/coaches/my-clubs");
+        const clubsData = res.data || [];
 
-        if (res.data.length > 0) {
-          const firstClub = res.data[0];
-          setForm(prev => ({ 
-            ...prev, 
-            clubId: firstClub.clubId,
+        setClubs(clubsData);
+
+        if (clubsData.length === 1) {
+          setForm((prev) => ({
+            ...prev,
+            clubId: clubsData[0].clubId,
           }));
-          setClubCategorias(firstClub.categorias || []);
         }
       } catch (err) {
         console.error("Error al traer clubes:", err);
@@ -43,135 +46,122 @@ function PlayerCreate() {
     fetchClubs();
   }, []);
 
-  // --- Manejo de cambios en inputs ---
+  // CARGAR CATEGORIAS DEL CLUB SELECCIONADO
+  useEffect(() => {
+    if (!form.clubId) return;
+
+    const clubSeleccionado = clubs.find(
+      (club) => club.clubId === form.clubId
+    );
+
+    if (clubSeleccionado) {
+      setCategorias(clubSeleccionado.categorias || []);
+    }
+  }, [form.clubId, clubs]);
+
+  // INPUTS
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setForm(prev => {
-      if (name === "clubId") {
-        const selectedClub = allClubs.find(c => c.clubId === value);
-        setClubCategorias(selectedClub?.categorias || []);
-        return {
-          ...prev,
-          clubId: value,
-          categorias: selectedClub?.categorias || []
-        };
-      }
-      return { ...prev, [name]: value };
-    });
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // CATEGORIA PRINCIPAL
+  const handleCategoriaPrincipal = (e) => {
+    const value = e.target.value;
+
+    setForm((prev) => ({
+      ...prev,
+      categoriaPrincipal: value,
+      categorias: prev.categorias.filter((c) => c !== value),
+    }));
+  };
+
+  // CATEGORIAS SECUNDARIAS
   const toggleCategoria = (categoria) => {
-    setForm(prev => ({
+    if (categoria === form.categoriaPrincipal) return;
+
+    setForm((prev) => ({
       ...prev,
       categorias: prev.categorias.includes(categoria)
-        ? prev.categorias.filter(c => c !== categoria)
+        ? prev.categorias.filter((c) => c !== categoria)
         : [...prev.categorias, categoria],
     }));
   };
 
-  // --- Envío del formulario ---
+  // FILTRAR CATEGORIAS POR GENERO
+  const categoriasFiltradas = categorias.filter((cat) => {
+    if (!form.genero) return false;
+
+    if (form.genero === "Masculino") {
+      return cat.includes("Masculino");
+    }
+
+    if (form.genero === "Femenino") {
+      return cat.includes("Femenino");
+    }
+
+    return false;
+  });
+
+  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
 
-    if (!form.clubId) {
-      setMessage("❌ Debe seleccionar un club");
+    if (!form.categoriaPrincipal) {
+      setMessage("❌ Debe seleccionar una categoría principal");
       return;
     }
-    if (form.categorias.length === 0) {
-      setMessage("❌ Debe seleccionar al menos una categoría");
-      return;
-    }
+
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     setMessage("");
 
     try {
-      const res = await api.post("/players/create", form);
+      const payload = {
+        ...form,
+        categorias: [form.categoriaPrincipal, ...form.categorias],
+      };
 
-      // --- CASOS SEGÚN CÓDIGO DEL BACK ---
-      if (res.data.code === "PROFESOR_EXISTENTE") {
-        const confirm = await Swal.fire({
-          icon: "question",
-          title: "Profesor existente",
-          text: res.data.message,
-          showCancelButton: true,
-          confirmButtonText: "Enviar solicitud",
-          cancelButtonText: "Cancelar",
+      const res = await api.post("/players/create", payload);
+
+      const { code, message: msg } = res.data || {};
+
+      if (code === "JUGADOR_CREADO") {
+        await Swal.fire({
+          icon: "success",
+          title: "Jugador creado",
+          text: msg,
+          confirmButtonText: "Aceptar",
+          background: "#0f172a",
+          color: "#e5e7eb",
+          confirmButtonColor: "#16a34a",
         });
 
-        if (confirm.isConfirmed) {
-          await api.post("/players/request-join", { email: form.email, clubId: form.clubId, categorias: form.categorias });
-          Swal.fire("Solicitud enviada", "", "success");
-          navigate("/players");
-          return;
-        } else {
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      if (res.data.code === "JUGADOR_EXISTENTE_OTRO_CLUB") {
-        const confirm = await Swal.fire({
-          icon: "question",
-          title: "Jugador existente en otro club",
-          text: res.data.message,
-          showCancelButton: true,
-          confirmButtonText: "Iniciar solicitud de pase",
-          cancelButtonText: "Cancelar",
+        setForm({
+          nombre: "",
+          apellido: "",
+          genero: "",
+          email: "",
+          clubId: form.clubId,
+          categoriaPrincipal: "",
+          categorias: [],
         });
 
-        if (confirm.isConfirmed) {
-          await api.post("/players/request-transfer", { email: form.email, clubId: form.clubId, categorias: form.categorias });
-          Swal.fire("Solicitud enviada", "", "success");
-          navigate("/players");
-          return;
-        } else {
-          setIsSubmitting(false);
-          return;
-        }
+        navigate("/players");
+      } else {
+        setMessage(msg || "Ocurrió un error");
       }
-
-      if (res.data.code === "AGREGAR_CATEGORIAS") {
-        const confirm = await Swal.fire({
-          icon: "question",
-          title: "Agregar categorías",
-          text: res.data.message,
-          showCancelButton: true,
-          confirmButtonText: "Agregar",
-          cancelButtonText: "Cancelar",
-        });
-
-        if (confirm.isConfirmed) {
-          await api.post("/players/add-categories", { userId: res.data.userId, categorias: res.data.categorias, clubId: form.clubId });
-          Swal.fire("Categorías agregadas", "", "success");
-          navigate("/players");
-          return;
-        } else {
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // --- CREACIÓN EXITOSA ---
-      await Swal.fire({
-        icon: "success",
-        title: "Jugador creado",
-        text: "El jugador fue registrado exitosamente. Se envió un mail para que complete su perfil.",
-        confirmButtonText: "Aceptar",
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#16a34a",
-      });
-
-      setForm({ nombre: "", apellido: "", email: "", clubId: allClubs[0]?.clubId || "", categorias: [] });
-      setClubCategorias(allClubs[0]?.categorias || []);
-      navigate("/players");
-
     } catch (err) {
       console.error(err);
-      setMessage(`❌ ${err.response?.data?.message || "Error al crear el jugador"}`);
+
+      setMessage(
+        `❌ ${err.response?.data?.message || "Error al crear el jugador"}`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -182,68 +172,132 @@ function PlayerCreate() {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.3 }}
         className="w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
       >
-        <h2 className="mb-1 text-2xl font-bold text-gray-200">Crear jugador</h2>
-        <p className="mb-6 text-sm text-gray-300">Registrá un nuevo jugador para tu club</p>
+        <h2 className="mb-1 text-2xl font-bold text-gray-200">
+          Crear jugador
+        </h2>
+
+        <p className="mb-6 text-sm text-gray-300">
+          Registrá un nuevo jugador
+        </p>
 
         {message && (
-          <div className="px-4 py-2 mb-4 text-sm font-medium text-white rounded-md bg-red-700/30">
+          <div className="px-4 py-2 mb-4 text-sm text-white rounded-md bg-red-700/30">
             {message}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {[{ name: "nombre", label: "Nombre", placeholder: "Nombre" },
-            { name: "apellido", label: "Apellido", placeholder: "Apellido" },
-            { name: "email", label: "Email", placeholder: "Email", type: "email" },
-          ].map(({ name, label, placeholder, type }) => (
+
+          {/* SELECT CLUB */}
+          {clubs.length > 1 && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm text-gray-300">Club</label>
+
+              <select
+                name="clubId"
+                value={form.clubId}
+                onChange={handleChange}
+                className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+              >
+                <option value="">Seleccionar club</option>
+
+                {clubs.map((club) => (
+                  <option key={club.clubId} value={club.clubId}>
+                    {club.nombreClub}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* INPUTS */}
+          {[
+            { name: "nombre", label: "Nombre" },
+            { name: "apellido", label: "Apellido" },
+            { name: "email", label: "Email", type: "email" },
+          ].map(({ name, label, type }) => (
             <div key={name} className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-300">{label}</label>
+              <label className="text-sm text-gray-300">{label}</label>
+
               <input
                 required
                 type={type || "text"}
                 name={name}
-                placeholder={placeholder}
                 value={form[name]}
                 onChange={handleChange}
-                className="px-3 py-2 text-gray-200 placeholder-gray-500 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="px-3 py-2 text-gray-200 border border-gray-500 rounded"
               />
             </div>
           ))}
 
-          {/* CLUB */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-300">Club</label>
+          {/* GENERO */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-300">Género</label>
+
             <select
               required
-              name="clubId"
-              value={form.clubId}
+              name="genero"
+              value={form.genero}
               onChange={handleChange}
-              className="px-3 py-2 text-gray-200 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
             >
-              {allClubs.map((c) => (
-                <option key={c.clubId} value={c.clubId}>{c.nombre}</option>
+              <option value="">Seleccionar género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+            </select>
+          </div>
+
+          {/* CATEGORIA PRINCIPAL */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-300">
+              Categoría Principal ⭐
+            </label>
+
+            <select
+              value={form.categoriaPrincipal}
+              onChange={handleCategoriaPrincipal}
+              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+            >
+              <option value="">Seleccionar categoría</option>
+
+              {categoriasFiltradas.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
 
-          {/* CATEGORÍAS */}
+          {/* CATEGORIAS SECUNDARIAS */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-300">Categorías</label>
+            <label className="text-sm text-gray-300">
+              Categorías Secundarias
+            </label>
+
             <div className="flex flex-wrap gap-2">
-              {clubCategorias.map((cat) => {
+              {categoriasFiltradas.map((cat) => {
                 const active = form.categorias.includes(cat);
+                const isPrincipal = form.categoriaPrincipal === cat;
 
                 return (
                   <button
                     key={cat}
                     type="button"
+                    disabled={isPrincipal}
                     onClick={() => toggleCategoria(cat)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
-                      ${active ? "bg-green-600/80 border-green-500 text-white" : "border-gray-500 text-gray-300 hover:bg-gray-700/50"}`}
+                      ${
+                        isPrincipal
+                          ? "bg-gray-600 border-gray-600 text-gray-400 cursor-not-allowed"
+                          : active
+                          ? "bg-green-600 border-green-500 text-white"
+                          : "border-gray-500 text-gray-300 hover:bg-gray-700"
+                      }`}
                   >
+                    {isPrincipal ? "⭐ " : ""}
                     {cat}
                   </button>
                 );
@@ -251,41 +305,29 @@ function PlayerCreate() {
             </div>
           </div>
 
+          {/* BOTONES */}
           <div className="flex gap-3 mt-4">
             <button
               disabled={isSubmitting}
               type="submit"
-              className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
-                isSubmitting
-                  ? "border border-green-500/80 bg-green-700/80 rounded-md cursor-not-allowed"
-                  : "text-gray-200 border border-green-500/80 bg-green-700/80 rounded-md hover:bg-green-600/80 hover:text-white hover:border-green-600/80"
-              }`}
+              className="flex-1 px-4 py-2 text-gray-200 bg-green-700 border border-green-500 rounded"
             >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin" />
-                  Creando...
-                </span>
-              ) : "Crear"}
+              {isSubmitting ? "Creando..." : "Crear"}
             </button>
 
             <button
-              disabled={isSubmitting}
               type="button"
               onClick={() => navigate("/players")}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                isSubmitting
-                  ? "border border-gray-500/40 text-gray-500 cursor-not-allowed"
-                  : "text-gray-300 border border-gray-500/80 hover:bg-gray-100 hover:text-gray-700 hover:border-gray-600/80"
-              }`}
+              className="flex-1 px-4 py-2 text-gray-300 border border-gray-500 rounded"
             >
               Cancelar
             </button>
           </div>
+
         </form>
       </motion.div>
     </div>
   );
 }
 
-export default PlayerCreate;
+export default CreatePlayerCoach;

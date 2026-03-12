@@ -60,7 +60,8 @@ const sections = [
     title: "Sistema",
     color: "border-red-500",
     links: [
-      { name: "Solicitudes pendientes", path: "/coaches/pending-coaches", icon: "⏳" },
+      { name: "Solicitudes de profesores pendientes", path: "/coaches/pending-coaches", icon: "⏳" },
+      { name: "Solicitudes de jugadores pendientes", path: "/clubs/pending-players", icon: "⏳" },
       { name: "Configuración", path: "/club/settings", icon: "⚙️" },
     ],
   },
