@@ -101,15 +101,6 @@ function MembresiaCard({ membresia, onNotify }) {
       </p>
       <p className="text-sm text-gray-600">Estado: {membresia.status}</p>
 
-      {membresia.status === "pendiente" && (
-        <button
-          onClick={onPay}
-          className="w-full h-10 mt-4 text-gray-100 bg-green-700 rounded-lg hover:bg-green-600"
-        >
-          PAGAR
-        </button>
-      )}
-
       {membresia.status === "adeudada" && (
         <button
           onClick={onNotify}

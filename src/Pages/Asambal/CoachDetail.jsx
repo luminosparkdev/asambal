@@ -94,7 +94,7 @@ function CoachDetails() {
     coach.clubs.map((club, idx) => (
       <div key={idx} className="space-y-2">
         <h4 className="text-sm font-semibold text-gray-200">
-          {club.nombre || "Club"}
+          {club.nombre || club.nombreClub || "Club"}
         </h4>
 
         <div className="flex flex-wrap gap-2">

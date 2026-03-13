@@ -94,18 +94,9 @@ function CreatePlayerCoach() {
 
   // FILTRAR CATEGORIAS POR GENERO
   const categoriasFiltradas = categorias.filter((cat) => {
-    if (!form.genero) return false;
-
-    if (form.genero === "Masculino") {
-      return cat.includes("Masculino");
-    }
-
-    if (form.genero === "Femenino") {
-      return cat.includes("Femenino");
-    }
-
-    return false;
-  });
+  if (!form.genero) return false;
+  return cat.genero === form.genero;
+});
 
   // SUBMIT
   const handleSubmit = async (e) => {
@@ -264,8 +255,8 @@ function CreatePlayerCoach() {
               <option value="">Seleccionar categoría</option>
 
               {categoriasFiltradas.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat.id} value={cat.id}>
+                  {cat.nombre} {cat.genero}
                 </option>
               ))}
             </select>
@@ -279,15 +270,15 @@ function CreatePlayerCoach() {
 
             <div className="flex flex-wrap gap-2">
               {categoriasFiltradas.map((cat) => {
-                const active = form.categorias.includes(cat);
-                const isPrincipal = form.categoriaPrincipal === cat;
+                const active = form.categorias.includes(cat.id);
+                const isPrincipal = form.categoriaPrincipal === cat.id;
 
                 return (
                   <button
-                    key={cat}
+                    key={cat.id}
                     type="button"
                     disabled={isPrincipal}
-                    onClick={() => toggleCategoria(cat)}
+                    onClick={() => toggleCategoria(cat.id)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
                       ${
                         isPrincipal
@@ -298,7 +289,7 @@ function CreatePlayerCoach() {
                       }`}
                   >
                     {isPrincipal ? "⭐ " : ""}
-                    {cat}
+                    {cat.nombre} {cat.genero}
                   </button>
                 );
               })}

@@ -25,6 +25,7 @@ import CoachesCreate from "../Pages/Clubes/CoachesCreate";
 import CoachesDetail from "../Views/Club/CoachDetail";
 import PendingUsers from "../Views/Asambal/PendingUsers";
 import PendingCoaches from "../Views/Club/PendingCoaches";
+import PendingPlayersClub from "../Views/Club/PendingPlayersClub"
 import CreateClub from "../Pages/Asambal/CreateClub";
 import RecuperarClave from "../Pages/HomeComponents/RecuperarClave";
 import DashboardRouter from "../Pages/DashboardRouter";
@@ -275,6 +276,14 @@ export const router = createBrowserRouter([
                         <PendingCoaches />
                     </ProtectedRoute>
                 ),
+            },
+            {
+                path: "clubs/pending-players",
+                element: (
+                   <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <PendingPlayersClub />
+                    </ProtectedRoute> 
+                )
             },
             {
                 path: "coaches",

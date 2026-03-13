@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/Api";
 import { motion } from "framer-motion";
-// import { useAuth } from "../../context/AuthContext"; // si lo usás
 
 function PendingPlayers() {
   const [players, setPlayers] = useState([]);
@@ -9,34 +8,31 @@ function PendingPlayers() {
   const [clubs, setClubs] = useState([]);
   const [selectedClub, setSelectedClub] = useState("");
 
-  // 👉 Ejemplo: traés los clubes del profe
   useEffect(() => {
     const fetchClubs = async () => {
       const res = await api.get("/coaches/my-clubs");
-      setClubs(res.data); 
-      // [{ clubId, nombre }]
+      setClubs(res.data);
     };
 
     fetchClubs();
   }, []);
 
-const fetchPending = async (clubId) => {
-  setLoading(true);
-  try {
-    const res = await api.get(`/coaches/pending-players/${clubId}`, {
-      headers: {
-        "x-professor-clubs": JSON.stringify(clubs.map(c => c.clubId))
-      },
-    });
-    setPlayers(res.data);
-  } catch (err) {
-    console.error("Error fetching pending players:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchPending = async (clubId) => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/coaches/pending-players/${clubId}`, {
+        headers: {
+          "x-professor-clubs": JSON.stringify(clubs.map(c => c.clubId))
+        },
+      });
+      setPlayers(res.data);
+    } catch (err) {
+      console.error("Error fetching pending players:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // 🚀 SOLO cuando hay club seleccionado
   useEffect(() => {
     if (!selectedClub) return;
     fetchPending(selectedClub);
@@ -59,7 +55,7 @@ const fetchPending = async (clubId) => {
           Jugadores pendientes
         </h1>
 
-        {/* 🔽 SELECT DE CLUBES */}
+        {/* SELECT CLUBES */}
         <div className="max-w-sm mb-6">
           <select
             value={selectedClub}
@@ -69,7 +65,7 @@ const fetchPending = async (clubId) => {
             <option value="">Seleccionar club</option>
             {clubs.map((club) => (
               <option key={club.clubId} value={club.clubId}>
-                {club.nombre}
+                {club.nombreClub || club.nombre}
               </option>
             ))}
           </select>
@@ -90,32 +86,44 @@ const fetchPending = async (clubId) => {
           </div>
         ) : (
           <motion.div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {players.map((p) => (
-              <motion.div
-                key={p.id}
-                className="p-6 border-l-4 border-blue-400 shadow-lg bg-white/80 rounded-2xl"
-              >
-                <p><b>Nombre:</b> {p.nombre}</p>
-                <p><b>Apellido:</b> {p.apellido}</p>
-                <p><b>Email:</b> {p.email}</p>
-                <p><b>Categorías:</b> {p.categorias.join(", ")}</p>
+            {players.map((p) => {
+              const clubData = p.clubs?.find(c => c.clubId === selectedClub);
 
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={() => handleAction(p.id, "APPROVE")}
-                    className="flex-1 px-3 py-2 text-white bg-green-600 rounded-lg"
-                  >
-                    Aprobar
-                  </button>
-                  <button
-                    onClick={() => handleAction(p.id, "REJECT")}
-                    className="flex-1 px-3 py-2 text-white bg-red-600 rounded-lg"
-                  >
-                    Rechazar
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+              const categoriaPrincipal = clubData?.categoriaPrincipal || "";
+              const categoriasSec = clubData?.categoriasSecundarias || [];
+
+              const categoriasTexto = [
+                categoriaPrincipal,
+                ...categoriasSec
+              ].filter(Boolean).join(" - ");
+
+              return (
+                <motion.div
+                  key={p.id}
+                  className="p-6 border-l-4 border-blue-400 shadow-lg bg-white/80 rounded-2xl"
+                >
+                  <p><b>Nombre:</b> {p.nombre}</p>
+                  <p><b>Apellido:</b> {p.apellido}</p>
+                  <p><b>Email:</b> {p.email}</p>
+                  <p><b>Categorías:</b> {categoriasTexto || "-"}</p>
+
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => handleAction(p.id, "APPROVE")}
+                      className="flex-1 px-3 py-2 text-white bg-green-600 rounded-lg"
+                    >
+                      Aprobar
+                    </button>
+                    <button
+                      onClick={() => handleAction(p.id, "REJECT")}
+                      className="flex-1 px-3 py-2 text-white bg-red-600 rounded-lg"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
       </div>
