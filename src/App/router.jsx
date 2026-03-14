@@ -55,6 +55,7 @@ import MembresiaClub from "../Views/Club/MembresiaClub";
 import Seguros from "../Pages/Asambal/Seguros";
 import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
 import UnderConstruction from "../Pages/UnderContruction";
+import Certificado from "../Pages/Jugadores/Certificado";
 
 export const router = createBrowserRouter([
     {
@@ -414,6 +415,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
                         <PlayerDashboard />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/players/alta-medica",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+                        <Certificado />
                     </ProtectedRoute>
                 ),
             },

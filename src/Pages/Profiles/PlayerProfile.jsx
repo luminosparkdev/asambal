@@ -11,15 +11,38 @@ const { id } = useParams();
   const [tutorForm, setTutorForm] = useState({});
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [categorias, setCategorias] = useState({});
 
 useEffect(() => {
-  const endpoint = id ? `/players/${id}` : `/players/me`;
+  const fetchCategorias = async () => {
+    try {
+      const res = await api.get("/categorias");
 
-  api.get(endpoint)
-    .then((res) => {
+      const map = {};
+
+      res.data.forEach((cat) => {
+        map[cat.id] = cat.nombre;
+      });
+
+      console.log("MAPA CATEGORIAS:", map);
+
+      setCategorias(map);
+    } catch (error) {
+      console.error("Error cargando categorias", error);
+    }
+  };
+
+  fetchCategorias();
+}, []);
+
+useEffect(() => {
+  const fetchPlayer = async () => {
+    const endpoint = id ? `/players/${id}` : `/players/me`;
+
+    try {
+      const res = await api.get(endpoint);
       const data = res.data;
 
-      // Normalizo fechas por si vienen en timestamp
       const formatDateFromApi = (date) => {
         if (!date) return null;
         if (date.seconds) {
@@ -27,6 +50,12 @@ useEffect(() => {
         }
         return new Date(date).toISOString().slice(0, 10);
       };
+
+      // 🔹 ID de categoría
+      const categoriaId = data.clubs?.[0]?.categoriaPrincipal;
+
+      console.log("CATEGORIA ID:", categoriaId);
+      console.log("MAPA CATEGORIAS:", categorias);
 
       const normalizedPlayer = {
         id: data.id,
@@ -42,7 +71,10 @@ useEffect(() => {
         email: data.email || "",
         telefono: data.telefono || "",
         instagram: data.instagram || "",
-        categoria: data.categoria || "",
+
+        // 🔹 aquí convertimos ID → nombre
+        categoria: categorias[categoriaId] || categoriaId || "",
+
         fechaAlta: data.fechaAlta || "",
         nivel: data.nivel || "",
         escuela: data.escuela || "",
@@ -65,6 +97,7 @@ useEffect(() => {
 
       setPlayer(normalizedPlayer);
       setForm(normalizedPlayer);
+
       setTutorForm(
         normalizedPlayer.tutor || {
           nombre: "",
@@ -76,12 +109,14 @@ useEffect(() => {
       );
 
       setLoading(false);
-    })
-    .catch(() => {
-      console.error("Error al obtener el jugador");
+    } catch (error) {
+      console.error("Error al obtener jugador", error);
       navigate("/dashboard");
-    });
-}, [id, navigate]);
+    }
+  };
+
+  fetchPlayer();
+}, [id, navigate, categorias]);
 
 
   const formatDisplayDate = (date) => {
@@ -194,7 +229,7 @@ useEffect(() => {
             { title: "Contacto", fields: ["telefono", "instagram", "domicilio", "email"] },
             { title: "Datos educativos", fields: ["escuela", "nivel", "año", "turno"] },
             { title: "Datos de juego", fields: ["posicion", "manohabil"] },
-            { title: "Cobros", fields: ["domiciliocobro", "horariocobro"] },
+            { title: "Cobros", fields: ["domicilio", "horario"] },
           ].map(({ title, fields }) => (
             <div key={title} className="space-y-2">
               <h3 className="pl-2 mb-4 text-lg font-semibold tracking-wider text-gray-800 uppercase rounded-sm bg-gradient-to-r from-gray-200/80 to-transparent">

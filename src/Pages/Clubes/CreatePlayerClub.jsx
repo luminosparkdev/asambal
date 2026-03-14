@@ -9,6 +9,7 @@ function CreatePlayerClub() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categorias, setCategorias] = useState([]);
+  const [coaches, setCoaches] = useState([]);
 
   const clubId = localStorage.getItem("activeClubId");
 
@@ -18,6 +19,7 @@ function CreatePlayerClub() {
     genero: "",
     email: "",
     clubId: clubId,
+    coachId: "",            // <-- nuevo campo
     categoriaPrincipal: "",
     categorias: [],
   });
@@ -34,6 +36,24 @@ function CreatePlayerClub() {
     };
     fetchCategorias();
   }, []);
+
+  // TRAER PROFESORES DEL CLUB
+useEffect(() => {
+  const fetchProfesores = async () => {
+    try {
+      if (!clubId) return;
+
+      const res = await api.get(`/profesores/${clubId}`);
+      const allProfesores = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+      setCoaches(allProfesores);
+    } catch (err) {
+      console.error("Error al traer profesores:", err);
+    }
+  };
+
+  fetchProfesores();
+}, [clubId]);
 
   // INPUTS
   const handleChange = (e) => {
@@ -72,6 +92,11 @@ function CreatePlayerClub() {
       return;
     }
 
+    if (!form.coachId) {
+      setMessage("❌ Debe seleccionar un profesor");
+      return;
+    }
+
     if (isSubmitting) return;
     setIsSubmitting(true);
     setMessage("");
@@ -103,6 +128,7 @@ function CreatePlayerClub() {
             genero: "",
             email: "",
             clubId: clubId,
+            coachId: "",
             categoriaPrincipal: "",
             categorias: [],
           });
@@ -124,7 +150,7 @@ function CreatePlayerClub() {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -144,16 +170,12 @@ function CreatePlayerClub() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* INPUTS */}
-          {[
-            { name: "nombre", label: "Nombre" },
-            { name: "apellido", label: "Apellido" },
-            { name: "email", label: "Email", type: "email" },
-          ].map(({ name, label, type }) => (
+          {["nombre", "apellido", "email"].map((name) => (
             <div key={name} className="flex flex-col gap-1">
-              <label className="text-sm text-gray-300">{label}</label>
+              <label className="text-sm text-gray-300">{name.charAt(0).toUpperCase() + name.slice(1)}</label>
               <input
                 required
-                type={type || "text"}
+                type={name === "email" ? "email" : "text"}
                 name={name}
                 value={form[name]}
                 onChange={handleChange}
@@ -178,6 +200,25 @@ function CreatePlayerClub() {
             </select>
           </div>
 
+          {/* ------------------ Seleccionar Profesor ------------------ */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-300">Profesor</label>
+            <select
+              required
+              name="coachId"
+              value={form.coachId}
+              onChange={handleChange}
+              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+            >
+              <option value="">Seleccionar profesor</option>
+              {coaches.map((coach) => (
+                <option key={coach.id} value={coach.id}>
+                  {coach.nombre} {coach.apellido}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* ------------------ Categoría Principal filtrada por género ------------------ */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Categoría Principal ⭐</label>
@@ -197,7 +238,7 @@ function CreatePlayerClub() {
             </select>
           </div>
 
-          {/* ------------------ Categorías Secundarias filtradas por género ------------------ */}
+          {/* ------------------ Categorías Secundarias ------------------ */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Categorías Secundarias</label>
             <div className="flex flex-wrap gap-2">

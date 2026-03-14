@@ -11,16 +11,34 @@ function PlayerListAsambal() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("none");
   const [filterValue, setFilterValue] = useState("");
+  const [categorias, setCategorias] = useState([]);
 
   const getPlayerClubs = (player) =>
     Array.isArray(player.clubs)
       ? player.clubs.map(c => c.nombreClub).filter(Boolean)
       : [];
 
-  const getPlayerCategories = (player) =>
-    Array.isArray(player.clubs)
-      ? [...new Set(player.clubs.flatMap(c => c.categorias || []))]
-      : [];
+  const fetchCategorias = async () => {
+  try {
+    const res = await api.get("/asambal/categorias");
+    setCategorias(res.data);
+  } catch (err) {
+    console.error("Error fetching categorias:", err);
+  }
+};
+
+const categoriasMap = useMemo(() => {
+  const map = {};
+  categorias.forEach(cat => {
+    map[cat.id] = `${cat.nombre} ${cat.genero}`;
+  });
+  return map;
+}, [categorias]);
+
+const getPlayerCategories = (player) =>
+  Array.isArray(player.clubs)
+    ? player.clubs.map(c => categoriasMap[c.categoriaPrincipal]).filter(Boolean)
+    : [];
 
   const unique = (arr) => [...new Set(arr.filter(Boolean))];
 
@@ -79,6 +97,7 @@ function PlayerListAsambal() {
 
   useEffect(() => {
     fetchPlayers();
+    fetchCategorias();
   }, []);
 
   const fetchPlayers = async () => {
@@ -133,7 +152,7 @@ function PlayerListAsambal() {
 
       if (filterType === "categoria")
         matchFilter = player.clubs?.some(
-          c => (c.categorias || []).includes(filterValue)
+          c => (c.categoriaPrincipal || []).includes(filterValue)
         );
 
       if (filterType === "sexo")

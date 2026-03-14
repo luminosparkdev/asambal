@@ -9,7 +9,6 @@ function JugadorProfileForm({ userId, activationToken }) {
   const [readonlyData, setReadonlyData] = useState(null);
 
   const [form, setForm] = useState({
-    sexo: "",
     fechanacimiento: "",
     edad: "",
     dni: "",
@@ -67,25 +66,30 @@ function JugadorProfileForm({ userId, activationToken }) {
     fetchPlayer();
   }, []);*/}
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+
+  setForm((prev) => ({
+    ...prev,
+    [name]: type === "checkbox" ? checked : value,
+  }));
+
+  if (name === "fechanacimiento") {
+    const birthDate = new Date(value);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      edad: age,
     }));
-
-    if (name === "fechanacimiento") {
-      const birthDate = new Date(value);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-
-      setForm((prev) => ({
-        ...prev,
-        edad: Number(age),
-      }));
-    }
-  };
+  }
+};
 
   const handleTutorChange = (e) => {
     const { name, value } = e.target;
@@ -136,8 +140,6 @@ const handleSubmit = async (e) => {
 };
 
   const showTutor = Number(form.edad) < 16;
-
-  const SEXOS = ["Masculino", "Femenino"];
 
   const TURNOS = ["Mañana", "Tarde", "Noche"];
 
@@ -209,14 +211,6 @@ const handleSubmit = async (e) => {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input name="dni" placeholder="DNI" onChange={handleChange} className={inputClass} />
-        <select name="sexo" onChange={handleChange} className={selectClass} value={form.sexo}>
-            <option value="">Seleccionar sexo</option>
-            {SEXOS.map((sexo) => (
-                <option key={sexo} value={sexo}>
-                    {sexo}
-                </option>
-            ))}
-        </select>
         <input type="date" name="fechanacimiento" onChange={handleChange} className={inputClass} />
         <input name="edad" placeholder="Edad" value={form.edad} disabled className={`${inputClass} opacity-60`} />
         <input name="estatura" placeholder="Estatura (cm)" value={form.estatura} onChange={handleChange} className={inputClass} />

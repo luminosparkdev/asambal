@@ -33,7 +33,7 @@ const sections = [
     title: "Mi Club",
     color: "border-blue-500",
     links: [
-      { name: "Alta médica", path: "/players/me/alta-medica", icon: "🏢" },
+      { name: "Alta médica", path: "/players/alta-medica", icon: "🏢" },
       { name: "Inscripciones", path: "/players/me/inscripciones", icon: "📝" },
       { name: "Cuotas", path: "/players/me/cuotas", icon: "💰" },
       { name: "Viajes", path: "/players/me/viajes", icon: "✈️" },

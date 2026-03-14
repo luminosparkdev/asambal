@@ -6,33 +6,13 @@ import { EyeIcon, CheckCircleIcon, XCircleIcon, PlusIcon } from "@heroicons/reac
 
 function PlayersList() {
   const [players, setPlayers] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]); // Lista de todas las categorías
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
-  const categories = [
-  "ALL",
-  ...new Set(
-    players.flatMap(player =>
-      player.clubs?.flatMap(club => club.categorias || []) || []
-    )
-  ),
-];
-
-  const filteredPlayers = players.filter(player => {
-    const matchName = `${player.nombre} ${player.apellido}`.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "ALL" || player.status === statusFilter;
-    const matchCategory = categoryFilter === "ALL" || player.clubs.some(club => club.categorias.includes(categoryFilter));
-    return matchName && matchStatus && matchCategory;
-  });
-
-  const updatePlayerStatusLocally = (playerId, newStatus) => {
-    setPlayers(prev =>
-      prev.map(p => (p.id === playerId ? { ...p, status: newStatus } : p))
-    );
-  };
-
+  // Traer jugadores
   const fetchPlayers = async () => {
     try {
       const res = await api.get("/players/by-coach");
@@ -42,9 +22,52 @@ function PlayersList() {
     }
   };
 
+  // Traer categorías
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get("/categories"); // Endpoint que devuelve todas las categorías
+      setCategoriesList(res.data); // [{id: "cat1", nombre: "Sub 12"}, ...]
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   useEffect(() => {
     fetchPlayers();
+    fetchCategories();
   }, []);
+
+  // Armar opciones de filtro
+  const categoryOptions = [
+    "ALL",
+    ...new Set(
+      players.flatMap(player =>
+        player.clubs?.map(club => {
+          const catObj = categoriesList.find(c => c.id === club.categoriaPrincipal);
+          return catObj?.nombre || null;
+        }).filter(Boolean) || []
+      )
+    )
+  ];
+
+  // Filtrar jugadores
+  const filteredPlayers = players.filter(player => {
+    const matchName = `${player.nombre} ${player.apellido}`.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "ALL" || player.status === statusFilter;
+    const matchCategory =
+      categoryFilter === "ALL" ||
+      player.clubs.some(club => {
+        const catObj = categoriesList.find(c => c.id === club.categoriaPrincipal);
+        return catObj?.nombre === categoryFilter;
+      });
+    return matchName && matchStatus && matchCategory;
+  });
+
+  const updatePlayerStatusLocally = (playerId, newStatus) => {
+    setPlayers(prev =>
+      prev.map(p => (p.id === playerId ? { ...p, status: newStatus } : p))
+    );
+  };
 
   const togglePlayerStatus = async (player) => {
     const isActive = player.status === "ACTIVO";
@@ -86,17 +109,9 @@ function PlayersList() {
     }
   };
 
-  const formatDate = (date) =>
-    new Date(date).toLocaleDateString("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
   return (
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
-        {/* Título */}
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Jugadores registrados</h2>
         </div>
@@ -117,10 +132,10 @@ function PlayersList() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
-              <option value="ALL" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Todos los estados</option>
-              <option value="ACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Activo</option>
-              <option value="INACTIVO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Inactivo</option>
-              <option value="RECHAZADO" className="text-gray-100 bg-gray-800 hover:bg-gray-700">Rechazado</option>
+              <option value="ALL">Todos los estados</option>
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+              <option value="RECHAZADO">Rechazado</option>
             </select>
 
             <select
@@ -128,8 +143,8 @@ function PlayersList() {
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
-              {categories.map((cat) => (
-                <option key={cat} value={cat} className="text-gray-100 bg-gray-800 hover:bg-gray-700">
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>
                   {cat === "ALL" ? "Todas las categorías" : cat}
                 </option>
               ))}
@@ -139,7 +154,6 @@ function PlayersList() {
           <button
             onClick={() => navigate("/profesor/jugadores/crear")}
             className="flex items-center h-10 gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md cursor-pointer border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
-            title="Agregar nuevo jugador"
           >
             <PlusIcon className="w-5 h-5" />
             Nuevo jugador
@@ -170,41 +184,39 @@ function PlayersList() {
                   <td className="px-4 py-2 text-center">{player.nombre}</td>
                   <td className="px-4 py-2 text-center">{player.apellido}</td>
                   <td className="px-4 py-2 text-center">{player.edad}</td>
-                  <td className="px-4 py-2 text-center">  {player.clubs?.map((club, i) => (
-                    <div key={i}>
-                      {club.categorias?.join(", ")}
-                    </div>
-                  ))}</td>
-                  <td className="px-4 py-2 text-center">  {player.clubs?.map((club, i) => (
-                    <div key={i}>{club.nombreClub}</div>
-                  ))}</td>
+                  <td className="px-4 py-2 text-center">
+                    {player.clubs?.map((club, i) => {
+                      const catObj = categoriesList.find(c => c.id === club.categoriaPrincipal);
+                      return <div key={i}>
+  {catObj ? `${catObj.nombre} ${catObj.genero}` : club.categoriaPrincipal}
+</div>
+                    })}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {player.clubs?.map((club, i) => <div key={i}>{club.nombreClub}</div>)}
+                  </td>
                   <td className="px-4 py-2 text-center">{player.sexo}</td>
                   <td className="px-4 py-2 text-center">{player.estatura}</td>
                   <td className="px-4 py-2 text-center">{player.posicion}</td>
                   <td className="px-4 py-2 text-center">{player.manohabil}</td>
-                  <td className="px-4 py-2 align-middle">
-                      <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => navigate(`/profesor/jugadores/${player.id}`)}
-                      className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md cursor-pointer hover:bg-blue-500 hover:text-gray-100"
-                      title="Ver detalles"
-                    >
-                      <EyeIcon className="w-5 h-5" /> Ver
-                    </button>
+                  <td className="px-4 py-2 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => navigate(`/profesor/jugadores/${player.id}`)}
+                        className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md cursor-pointer hover:bg-blue-500 hover:text-gray-100"
+                      >
+                        <EyeIcon className="w-5 h-5" /> Ver
+                      </button>
 
-                    <button
-                      onClick={() => togglePlayerStatus(player)}
-                      className={`cursor-pointer flex items-center gap-1 px-3 py-1 text-sm text-white rounded w-full ${player.status === "ACTIVO"
-                          ? "bg-red-700/95 hover:bg-red-500"
-                          : "bg-green-700/95 hover:bg-green-500"
+                      <button
+                        onClick={() => togglePlayerStatus(player)}
+                        className={`flex items-center gap-1 px-3 py-1 text-sm text-white rounded w-full ${
+                          player.status === "ACTIVO" ? "bg-red-700/95 hover:bg-red-500" : "bg-green-700/95 hover:bg-green-500"
                         }`}
-                      title={player.status === "ACTIVO" ? "Desactivar jugador" : "Activar jugador"}
-                    >
-                      {player.status === "ACTIVO"
-                        ? <><XCircleIcon className="w-5 h-5 text-gray-200" /> Desactivar</>
-                        : <><CheckCircleIcon className="w-5 h-5 text-gray-200" /> Activar</>}
-                    </button>
-                      </div>
+                      >
+                        {player.status === "ACTIVO" ? <><XCircleIcon className="w-5 h-5 text-gray-200" /> Desactivar</> : <><CheckCircleIcon className="w-5 h-5 text-gray-200" /> Activar</>}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -49,7 +49,7 @@ const showHomeSections = isHome && !isAuthenticated;
   };
 
   return (
-    <nav className="text-white bg-gradient-to-b from-[#334353] to-[#0F1317] shadow-md border-b-2 border-[#334353]">
+    <nav className="select-none text-white bg-gradient-to-b from-[#334353] to-[#0F1317] shadow-md border-b-2 border-[#334353]">
       <div className="mx-auto max-w-7xl">
 
         {/* Top Navbar */}
