@@ -3,6 +3,7 @@ import { useAuth } from "../../Auth/AuthContext";
 import { ArrowLeftIcon, BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect, useRef } from "react";
 import { div } from "framer-motion/client";
+import logo from "../../Assets/Asambal/logosinfondo.png"
 
 function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -56,8 +57,8 @@ const showHomeSections = isHome && !isAuthenticated;
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
-          <Link to="/" className="text-xl font-bold tracking-wide hover:text-blue-200">
-            <span className="text-xl font-bold text-white">AsAmBal</span>
+          <Link to="/" className="text-xl font-bold tracking-wide hover:text-blue-200 w-[50px]">
+            <img src= {logo} href= "/" alt= "logo asambal"></img>
           </Link>
 
           {/* Secciones del Home (solo público) */}

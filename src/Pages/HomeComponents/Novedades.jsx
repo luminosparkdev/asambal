@@ -1,31 +1,36 @@
 import { useState } from "react";
-import hero from "../../../src/Assets/hero.png";
+import costos from "../../../src/Assets/costos.jpeg";
+import comunicado from "../../../src/Assets/comunicado.jpeg";
+import torneo from "../../../src/Assets/torneos.jpeg";
 import { main } from "framer-motion/client";
 
 const novedades = [
     {
         id: 1,
         title: "Comienza el Torneo Apertura 2026",
-        image: hero,
-        text: "Este fin de semana comienza el Torneo Apertura de ASAMBAL con la participación de más de 20 clubes..."
+        image: torneo,
+        text: "Arranca el torneo apertura 2026. Conocé el fixture",
+        link: "https://www.instagram.com/p/DV4wol9kekD/?img_index=1"
     },
     {
         id: 2,
-        title: "Capacitación para árbitros",
-        image: hero,
-        text: "Se realizó una nueva jornada de capacitación para árbitros federados con disertantes nacionales..."
+        title: "Costos federativos 2026",
+        image: costos,
+        text: "Conocé los costos de la federación para el año 2026",
+        link: "https://www.instagram.com/p/DV4fLGJESqD/"
     },
     {
         id: 3,
-        title: "Inscripción a viajes",
-        image: hero,
-        text: "Nueva forma de inscribirte..."
+        title: "Comunicado oficial",
+        image: comunicado,
+        text: "Comunicado oficial sobre la inscripción al torneo apertura 2026",
+        link: "https://www.instagram.com/p/DVhHXdbEaDC"
     }
 ];
 
 function Novedades() {
     return (
-        <main className="bg-gradient-to-b from-white to-[#334353]">
+        <main className="bg-gradient-to-b from-white to-[#334353]" id= "novedades">
         <section className="px-4 py-16 mx-auto max-w-7xl">
             <h2 className="mb-10 text-3xl font-bold text-center">
                 Novedades
@@ -41,7 +46,7 @@ function Novedades() {
     );
 }
 
-function NovedadCard({ title, image, text }) {
+function NovedadCard({ title, image, text, link }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -61,12 +66,14 @@ function NovedadCard({ title, image, text }) {
                     {text}
                 </p>
 
-                <button
-                    onClick={() => setOpen(!open)}
-                    className="mt-3 text-sm font-medium text-blue-700 hover:underline"
+                <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-3 text-sm font-medium text-blue-700 hover:underline"
                 >
-                    {open ? "Mostrar menos" : "Seguir leyendo"}
-                </button>
+                Seguir leyendo
+                </a>
             </div>
         </article>
     );

@@ -1,11 +1,16 @@
 import { motion as Motion } from "framer-motion";
-import logo from "../../../src/Assets/Asambal/logo.png"
+import sponsor1 from "../../../src/Assets/Asambal/Sponsors/ch1.webp"
+import sponsor2 from "../../../src/Assets/Asambal/Sponsors/go7.png"
+import sponsor3 from "../../../src/Assets/Asambal/Sponsors/sciarresi.png"
 
-const sponsors = Array(10).fill(logo);
-
+const sponsors = [
+    sponsor1,
+    sponsor2,
+    sponsor3
+]
 function Sponsors() {
     return (
-        <main className="bg-gradient-to-b from-[#334353] to-[#0F1317]">
+        <main className="bg-gradient-to-b from-[#334353] to-[#0F1317]" id= "sponsors">
         <section className="py-10 overflow-hidden text-black mx-auto max-w-7xl">
             <h2 className="mb-12 text-3xl font-bold text-center">
                 Sponsors oficiales

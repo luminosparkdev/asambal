@@ -16,7 +16,7 @@ const isUnlocked = (activationDate) => {
   if (!activationDate) return true;
 
   const date =
-    activationDate._seconds
+    activationDate?._seconds
       ? new Date(activationDate._seconds * 1000)
       : new Date(activationDate);
 
@@ -38,7 +38,6 @@ function EmpadronamientoJugador() {
       const res = await api.get("/players/empadronamiento/tickets");
 
       setTickets(res.data || []);
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -47,7 +46,6 @@ function EmpadronamientoJugador() {
   };
 
   const pagarCuota = async (ticket, cuota) => {
-
     const confirm = await Swal.fire({
       title: "¿Ir a pagar la cuota?",
       text: `Cuota ${cuota.number} - ${formatMoney(cuota.amount)}`,
@@ -60,11 +58,10 @@ function EmpadronamientoJugador() {
     if (!confirm.isConfirmed) return;
 
     try {
-
       const res = await api.post("/pagos/crear-preferencia", {
         tipo: "empadronamiento",
         ticketId: ticket.ticketId,
-        cuotaNumber: cuota.number,
+        cuotaNumero: cuota.number
       });
 
       if (!res.data?.init_point) {
@@ -134,7 +131,7 @@ function TicketTimeline({ ticket, onPay }) {
         {cuotas.map((cuota) => {
 
           const unlocked = isUnlocked(cuota.activationDate);
-          const isPaid = ticket.status === "pagado";
+          const isPaid = cuota.status === "acreditado";
           const isBecado = ticket.becado;
 
           return (
