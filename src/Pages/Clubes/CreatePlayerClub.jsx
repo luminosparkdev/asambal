@@ -43,7 +43,7 @@ useEffect(() => {
     try {
       if (!clubId) return;
 
-      const res = await api.get(`/profesores/${clubId}`);
+      const res = await api.get("/coaches/club");
       const allProfesores = Array.isArray(res.data) ? res.data : res.data.data || [];
 
       setCoaches(allProfesores);
