@@ -56,6 +56,7 @@ import Seguros from "../Pages/Asambal/Seguros";
 import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
 import UnderConstruction from "../Pages/UnderContruction";
 import Certificado from "../Pages/Jugadores/Certificado";
+import PendingCertificados from "../Views/Profesores/PendingCertificados";
 
 export const router = createBrowserRouter([
     {
@@ -407,6 +408,14 @@ export const router = createBrowserRouter([
                 <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
                     <ProfeSeguros />
                 </ProtectedRoute>
+                ),
+            },
+                        {
+                path: "/profesor/alta-medica",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <PendingCertificados />
+                    </ProtectedRoute>
                 ),
             },
             // JUGADOR

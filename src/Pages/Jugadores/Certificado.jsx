@@ -2,28 +2,35 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import Swal from "sweetalert2";
-import { CheckCircleIcon, ExclamationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/solid";
 import api from "../../Api/Api";
 
 const allowedTypes = ["application/pdf", "image/jpeg", "image/jpg"];
 
 function Certificado() {
-  const [certificados, setCertificados] = useState([]); // todos los certificados cargados
+  const [certificados, setCertificados] = useState([]);
   const [showUploader, setShowUploader] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Traer certificados del jugador al montar
   useEffect(() => {
-    const fetchCertificados = async () => {
-      try {
-        const res = await api.get("/certificados/my"); // endpoint que devuelve todos los certificados del jugador
-        setCertificados(res.data || []);
-      } catch (err) {
-        console.error(err);
-      }
-    };
     fetchCertificados();
   }, []);
+
+  const fetchCertificados = async () => {
+    try {
+      const res = await api.get("/certificados/my");
+      setCertificados(res.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -53,154 +60,205 @@ function Certificado() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      Swal.fire({
-        icon: "success",
-        title: "Certificado cargado",
-        text: res.data.message,
-      });
-
+      Swal.fire("Listo", res.data.message, "success");
+      setCertificados((prev) => [...prev, res.data.certificado]);
       setUploadFile(null);
       setShowUploader(false);
-      setCertificados((prev) => [...prev, res.data.certificado]);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al subir certificado",
-        text: err.response?.data?.message || "Ocurrió un error",
-      });
+      Swal.fire(
+        "Error",
+        err.response?.data?.message || "No se pudo subir el archivo",
+        "error"
+      );
     }
-  };
-
-  const handleReplace = (cert) => {
-    if (cert.status === "APROBADO") {
-      Swal.fire("No permitido", "Ya tenés un certificado aprobado cargado.", "info");
-      return;
-    }
-    if (cert.status === "RECHAZADO") {
-      Swal.fire("No permitido", "Tu certificado fue rechazado. Contactá al club.", "warning");
-      return;
-    }
-    // status pendiente -> permitir reemplazar
-    setUploadFile(null);
-    setShowUploader(true);
   };
 
   const handleDelete = async (cert) => {
-    if (cert.status !== "PENDIENTE") {
-      Swal.fire("No permitido", "Solo se pueden eliminar certificados pendientes.", "info");
-      return;
-    }
-
-    const result = await Swal.fire({
+    const confirm = await Swal.fire({
       icon: "question",
       title: "Eliminar certificado",
-      text: "¿Estás seguro que querés eliminar este certificado?",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
     });
 
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/certificados/${cert.id}`);
-        Swal.fire("Eliminado", "Certificado eliminado", "success");
-        setCertificados((prev) => prev.filter((c) => c.id !== cert.id));
-      } catch (err) {
-        Swal.fire("Error", "No se pudo eliminar el certificado", "error");
-      }
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await api.delete(`/certificados/${cert.id}`);
+      setCertificados((prev) => prev.filter((c) => c.id !== cert.id));
+      Swal.fire("Eliminado", "Certificado eliminado", "success");
+    } catch {
+      Swal.fire("Error", "No se pudo eliminar", "error");
     }
   };
 
+  const handleOpenUploader = () => {
+    const currentYear = new Date().getFullYear();
+    const currentCerts = certificados.filter(cert => cert.year === currentYear);
+
+    if (currentCerts.some(cert => cert.status === "APROBADO")) {
+      Swal.fire(
+        "No permitido",
+        "Ya tienes un certificado aprobado para este año.",
+        "info"
+      );
+      return;
+    }
+
+    if (currentCerts.some(cert => cert.status === "PENDIENTE")) {
+      Swal.fire(
+        "No permitido",
+        "Ya tienes un certificado cargado pendiente de aprobación.",
+        "info"
+      );
+      return;
+    }
+
+    setShowUploader(true);
+  };
+
+  const handleReplace = (cert) => {
+    // Solo PENDIENTE permite reemplazar
+    if (cert.status !== "PENDIENTE") return;
+    setShowUploader(true);
+  };
+
+  if (loading) {
+    return (
+      <p className="mt-10 text-center text-gray-200">
+        Cargando certificados...
+      </p>
+    );
+  }
+
   return (
-    <div className="p-6 min-h-screen bg-gray-900 text-gray-200">
-      <h1 className="text-3xl font-bold mb-4">Mis Certificados Médicos</h1>
+    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+      <div className="px-4 mx-auto max-w-7xl">
 
-      <button
-        onClick={() => setShowUploader(true)}
-        className="mb-4 px-4 py-2 bg-green-600 rounded hover:bg-green-500"
-      >
-        Cargar certificado
-      </button>
+        <div className="px-2 py-6 flex justify-between items-center">
+          <h2 className="text-2xl font-semibold text-gray-200">
+            Mis <span className="text-yellow-600">Certificados Médicos</span>
+          </h2>
 
-      {showUploader && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 p-6 bg-gray-800 rounded shadow"
-        >
-          <div
-            {...getRootProps()}
-            className={`p-6 border-2 border-dashed rounded cursor-pointer ${
-              isDragActive ? "border-yellow-400" : "border-gray-600"
-            }`}
+          <button
+            onClick={handleOpenUploader}
+            className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
           >
-            <input {...getInputProps()} />
-            <p>{uploadFile ? uploadFile.name : "Arrastrá un archivo o hacé click"}</p>
-          </div>
+            Cargar certificado
+          </button>
+        </div>
 
-          {uploadFile && (
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={handleUpload}
-                className="px-4 py-2 bg-green-600 rounded hover:bg-green-500"
-              >
-                Subir certificado
-              </button>
-              <button
-                onClick={() => setUploadFile(null)}
-                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-              >
-                Cancelar
-              </button>
+        {showUploader && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 mb-6 bg-white/90 backdrop-blur rounded-xl shadow-lg"
+          >
+            <div
+              {...getRootProps()}
+              className={`p-8 border-2 border-dashed rounded-lg text-center cursor-pointer
+              ${isDragActive ? "border-yellow-500 bg-yellow-50" : "border-gray-300"}`}
+            >
+              <input {...getInputProps()} />
+              <p className="text-gray-600">
+                {uploadFile
+                  ? uploadFile.name
+                  : "Arrastrá tu certificado o hacé click para subirlo"}
+              </p>
             </div>
-          )}
-        </motion.div>
-      )}
 
-      {/* Tabla de certificados */}
-      <table className="w-full text-left border border-gray-700">
-        <thead>
-          <tr className="bg-gray-800">
-            <th className="px-4 py-2 border-b border-gray-700">Año</th>
-            <th className="px-4 py-2 border-b border-gray-700">Archivo</th>
-            <th className="px-4 py-2 border-b border-gray-700">Estado</th>
-            <th className="px-4 py-2 border-b border-gray-700">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
+            {uploadFile && (
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={handleUpload}
+                  className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
+                >
+                  Subir
+                </button>
+
+                <button
+                  onClick={() => setUploadFile(null)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        <div className="grid gap-6 md:grid-cols-2">
           {certificados.map((cert) => (
-            <tr key={cert.id} className="hover:bg-gray-700">
-              <td className="px-4 py-2">{cert.year}</td>
-              <td className="px-4 py-2">{cert.fileName}</td>
-              <td className="px-4 py-2">
-                {cert.status === "APROBADO" && (
-                  <span className="text-green-400">{cert.status}</span>
-                )}
-                {cert.status === "PENDIENTE" && (
-                  <span className="text-yellow-400">{cert.status}</span>
-                )}
-                {cert.status === "RECHAZADO" && (
-                  <span className="text-red-400">{cert.status}</span>
-                )}
-              </td>
-              <td className="px-4 py-2 flex gap-2">
-                <button
-                  onClick={() => handleReplace(cert)}
-                  className="px-2 py-1 bg-blue-600 rounded hover:bg-blue-500"
-                >
-                  Reemplazar
-                </button>
-                <button
-                  onClick={() => handleDelete(cert)}
-                  className="px-2 py-1 bg-red-600 rounded hover:bg-red-500"
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
+            <CertCard
+              key={cert.id}
+              cert={cert}
+              onDelete={handleDelete}
+              onReplace={handleReplace}
+            />
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CertCard({ cert, onDelete, onReplace }) {
+  const statusConfig = {
+    APROBADO: {
+      color: "text-green-600",
+      icon: CheckCircleIcon,
+      label: "Aprobado",
+    },
+    PENDIENTE: {
+      color: "text-yellow-600",
+      icon: ExclamationCircleIcon,
+      label: "Cargado pendiente de aprobación",
+    },
+    RECHAZADO: {
+      color: "text-red-600",
+      icon: XCircleIcon,
+      label: "Rechazado, comunicarse con el club",
+    },
+  };
+
+  const config = statusConfig[cert.status];
+  const Icon = config.icon;
+
+  return (
+    <div className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <p className="text-sm text-gray-600">Certificado</p>
+          <p className="text-xl font-semibold text-gray-800">{cert.year}</p>
+        </div>
+        <div className={`flex items-center gap-1 ${config.color}`}>
+          <Icon className="w-5 h-5" />
+          <span className="font-semibold text-sm">{config.label}</span>
+        </div>
+      </div>
+
+      <p className="text-gray-600 text-md font-semibold mb-4">Documento cargado:</p>
+      <p className="text-gray-600 text-sm mb-4">{cert.fileName?.split("/").pop()}</p>
+
+      {/* ✅ Solo mostrar botones si el status es PENDIENTE */}
+      {cert.status === "PENDIENTE" && (
+        <div className="pt-4 justify-center flex gap-10">
+          <button
+            onClick={() => onReplace(cert)}
+            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+          >
+            Reemplazar
+          </button>
+
+          <button
+            onClick={() => onDelete(cert)}
+            className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
+          >
+            Eliminar
+          </button>
+        </div>
+      )}
     </div>
   );
 }

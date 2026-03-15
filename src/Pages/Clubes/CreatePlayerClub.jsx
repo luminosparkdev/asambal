@@ -19,12 +19,12 @@ function CreatePlayerClub() {
     genero: "",
     email: "",
     clubId: clubId,
-    coachId: "",            // <-- nuevo campo
+    coachId: "",
     categoriaPrincipal: "",
     categorias: [],
   });
 
-  // TRAER CATEGORIAS
+  // Traer categorías
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -37,31 +37,26 @@ function CreatePlayerClub() {
     fetchCategorias();
   }, []);
 
-  // TRAER PROFESORES DEL CLUB
-useEffect(() => {
-  const fetchProfesores = async () => {
-    try {
-      if (!clubId) return;
+  // Traer profesores
+  useEffect(() => {
+    const fetchProfesores = async () => {
+      try {
+        if (!clubId) return;
+        const res = await api.get("/coaches/club");
+        const allProfesores = Array.isArray(res.data) ? res.data : res.data.data || [];
+        setCoaches(allProfesores);
+      } catch (err) {
+        console.error("Error al traer profesores:", err);
+      }
+    };
+    fetchProfesores();
+  }, [clubId]);
 
-      const res = await api.get("/coaches/club");
-      const allProfesores = Array.isArray(res.data) ? res.data : res.data.data || [];
-
-      setCoaches(allProfesores);
-    } catch (err) {
-      console.error("Error al traer profesores:", err);
-    }
-  };
-
-  fetchProfesores();
-}, [clubId]);
-
-  // INPUTS
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // CATEGORIA PRINCIPAL
   const handleCategoriaPrincipal = (e) => {
     const value = e.target.value;
     setForm((prev) => ({
@@ -71,10 +66,8 @@ useEffect(() => {
     }));
   };
 
-  // CATEGORIAS SECUNDARIAS
   const toggleCategoria = (categoriaId) => {
     if (categoriaId === form.categoriaPrincipal) return;
-
     setForm((prev) => ({
       ...prev,
       categorias: prev.categorias.includes(categoriaId)
@@ -83,20 +76,40 @@ useEffect(() => {
     }));
   };
 
-  // SUBMIT
+  const selectedCoach = coaches.find((c) => c.id === form.coachId);
+
+const isDisabledCategoria = (cat) => {
+  const isPrincipal = cat.id === form.categoriaPrincipal;
+
+  // Permite género igual o mixto
+  const genderMismatch =
+    form.genero && cat.genero !== form.genero && cat.genero !== "Mixto";
+
+  if (!selectedCoach) return isPrincipal || genderMismatch;
+
+  // Normalizamos los nombres del coach
+  const coachSet = new Set(
+    selectedCoach.categorias.map((c) => c.trim().toLowerCase())
+  );
+
+  const catNameNormalized = cat.nombre.trim().toLowerCase();
+
+  // Bloquea solo si la categoría NO está en las que dirige el coach
+  const coachMismatch = !coachSet.has(catNameNormalized);
+
+  return isPrincipal || genderMismatch || coachMismatch;
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!form.categoriaPrincipal) {
       setMessage("❌ Debe seleccionar una categoría principal");
       return;
     }
-
     if (!form.coachId) {
       setMessage("❌ Debe seleccionar un profesor");
       return;
     }
-
     if (isSubmitting) return;
     setIsSubmitting(true);
     setMessage("");
@@ -106,7 +119,6 @@ useEffect(() => {
         ...form,
         categorias: [form.categoriaPrincipal, ...form.categorias],
       };
-
       const res = await api.post("/clubs/create-player", payload);
       const { code, message: msg } = res.data || {};
 
@@ -121,7 +133,6 @@ useEffect(() => {
             color: "#e5e7eb",
             confirmButtonColor: "#16a34a",
           });
-
           setForm({
             nombre: "",
             apellido: "",
@@ -132,10 +143,8 @@ useEffect(() => {
             categoriaPrincipal: "",
             categorias: [],
           });
-
           navigate("/clubs/players");
           break;
-
         default:
           setMessage(msg || "Ocurrió un error");
       }
@@ -169,10 +178,12 @@ useEffect(() => {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* INPUTS */}
+          {/* Inputs */}
           {["nombre", "apellido", "email"].map((name) => (
             <div key={name} className="flex flex-col gap-1">
-              <label className="text-sm text-gray-300">{name.charAt(0).toUpperCase() + name.slice(1)}</label>
+              <label className="text-sm text-gray-300">
+                {name.charAt(0).toUpperCase() + name.slice(1)}
+              </label>
               <input
                 required
                 type={name === "email" ? "email" : "text"}
@@ -184,7 +195,7 @@ useEffect(() => {
             </div>
           ))}
 
-          {/* ------------------ Género como select ------------------ */}
+          {/* Género */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Género</label>
             <select
@@ -200,7 +211,7 @@ useEffect(() => {
             </select>
           </div>
 
-          {/* ------------------ Seleccionar Profesor ------------------ */}
+          {/* Profesor */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Profesor</label>
             <select
@@ -219,7 +230,7 @@ useEffect(() => {
             </select>
           </div>
 
-          {/* ------------------ Categoría Principal filtrada por género ------------------ */}
+          {/* Categoría Principal */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Categoría Principal ⭐</label>
             <select
@@ -229,7 +240,7 @@ useEffect(() => {
             >
               <option value="">Seleccionar categoría</option>
               {categorias
-                .filter(cat => form.genero && cat.genero === form.genero)
+                .filter((cat) => form.genero && (cat.genero === form.genero))
                 .map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.nombre} {cat.genero}
@@ -238,30 +249,29 @@ useEffect(() => {
             </select>
           </div>
 
-          {/* ------------------ Categorías Secundarias ------------------ */}
+          {/* Categorías Secundarias */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Categorías Secundarias</label>
             <div className="flex flex-wrap gap-2">
               {categorias.map((cat) => {
                 const active = form.categorias.includes(cat.id);
-                const isPrincipal = String(form.categoriaPrincipal) === String(cat.id);
-                const genderMismatch = form.genero && cat.genero !== form.genero;
+                const disabled = isDisabledCategoria(cat);
 
                 return (
                   <button
                     key={cat.id}
                     type="button"
-                    disabled={isPrincipal || genderMismatch}
+                    disabled={disabled}
                     onClick={() => toggleCategoria(cat.id)}
                     className={`px-3 py-1.5 text-xs font-medium rounded-full border transition w-48
-                      ${isPrincipal || genderMismatch
+                      ${disabled
                         ? "bg-gray-600 border-gray-600 text-gray-400 cursor-not-allowed"
                         : active
                         ? "bg-green-600 border-green-500 text-white"
                         : "border-gray-500 text-gray-300 hover:bg-gray-700"
                       }`}
                   >
-                    {isPrincipal ? "⭐ " : ""}
+                    {cat.id === form.categoriaPrincipal ? "⭐ " : ""}
                     {cat.nombre} {cat.genero}
                   </button>
                 );
@@ -269,7 +279,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* BOTONES */}
+          {/* Botones */}
           <div className="flex gap-3 mt-4">
             <button
               disabled={isSubmitting}

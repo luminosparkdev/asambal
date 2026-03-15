@@ -54,7 +54,7 @@ const sections = [
     links: [
       { name: "Solicitudes de jugadores pendientes", path: "/pending-players", icon: "👨‍🏫" },
       { name: "Solicitudes de clubes pendientes", path: "/pending-club-requests", icon: "👨‍🏫" },
-      { name: "Alta médica", path: "/admin/alta-medica", icon: "🏥" },
+      { name: "Alta médica", path: "/profesor/alta-medica", icon: "🏥" },
     ],
   },
   {
