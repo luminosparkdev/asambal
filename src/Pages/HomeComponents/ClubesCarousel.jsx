@@ -1,11 +1,39 @@
 import { motion as Motion } from "framer-motion";
-import logo from "../../../src/Assets/Asambal/logo.png"
+import Alsina from "../../../src/Assets/Asambal/Logos/AlsinaChivilcoy.png"
+import Tapalque from "../../../src/Assets/Asambal/Logos/AtleticoTapalque.png"
+import Azul from "../../../src/Assets/Asambal/Logos/AzulHandball.png"
+import Nuevedejulio from "../../../src/Assets/Asambal/Logos/CDyS9dejulioChacabuco.png"
+import EmhChacabuco from "../../../src/Assets/Asambal/Logos/EMHChacabuco.png"
+import EmhMercedes from "../../../src/Assets/Asambal/Logos/EmhMercedes.png"
+import EmhMonte from "../../../src/Assets/Asambal/Logos/EscMunHandballMonte.png"
+import Olavarria from "../../../src/Assets/Asambal/Logos/EstudiantesOlavarria.png"
+import Veinticinco from "../../../src/Assets/Asambal/Logos/Handball25DEMAYO.png"
+import Independiente from "../../../src/Assets/Asambal/Logos/Independiente.png"
+import Bragado from "../../../src/Assets/Asambal/Logos/MarianomorenoBragado.png"
+import Riestra from "../../../src/Assets/Asambal/Logos/Riestra.png"
+import Lincoln from "../../../src/Assets/Asambal/Logos/RivadaviaLincoln.png"
+import RoquePerez from "../../../src/Assets/Asambal/Logos/Roqueperez.png"
 
-const clubes = Array(12).fill(logo);
+const clubes = [
+  Alsina,
+  Tapalque,
+  Azul,
+  Nuevedejulio,
+  EmhChacabuco,
+  EmhMercedes,
+  EmhMonte,
+  Olavarria,
+  Veinticinco,
+  Independiente,
+  Bragado,
+  Riestra,
+  Lincoln,
+  RoquePerez
+]
 
 function ClubesCarousel() {
   return (
-    <main className="bg-gradient-to-b from-[#334353] to-white">
+    <main className="bg-gradient-to-b from-[#334353] to-white" id="clubes">
     <section className="py-16 overflow-hidden mx-auto max-w-7xl">
       <h2 className="mb-8 text-4xl font-bold text-center">
         CLUBES
