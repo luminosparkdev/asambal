@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://asambal-api-303270276070.southamerica-east1.run.app/",
   withCredentials: true,
 });
 
@@ -42,7 +42,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // SEPARAMOS 401 DE LOS OTROS ERRORES
-    if (error.response.status !== 401) {
+    if (!error.response || error.response.status !== 401) {
       return Promise.reject(error);
     }
 

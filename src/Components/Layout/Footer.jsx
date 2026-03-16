@@ -11,7 +11,7 @@ import {
   FaWhatsapp,
   FaTiktok,
 } from "react-icons/fa6";
-import logo from "../../Assets/Asambal/logo.png";
+import logo from "../../../public/Assets/Asambal/logo.png";
 
 function Footer() {
   const { isAuthenticated } = useAuth();

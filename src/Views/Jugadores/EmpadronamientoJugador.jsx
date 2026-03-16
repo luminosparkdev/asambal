@@ -85,7 +85,7 @@ function EmpadronamientoJugador() {
   }
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="min-h-screen bg-[url('../public/Assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
 
         <div className="px-2 py-6">

@@ -72,7 +72,7 @@ function ProfesorDashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative min-h-screen p-8 bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/10" />
       <div className="relative z-10 px-4 py-8 mx-auto max-w-7xl">
         <h2 className="mb-2 text-3xl font-bold text-gray-100">

@@ -134,7 +134,7 @@ function Seguros() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="min-h-screen bg-[url('../public/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título y controles */}
         <div className="px-2 py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">

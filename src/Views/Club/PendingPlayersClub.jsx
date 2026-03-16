@@ -84,7 +84,7 @@ function PendingPlayersClub() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative min-h-screen bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative z-10 max-w-6xl px-4 py-8 mx-auto">

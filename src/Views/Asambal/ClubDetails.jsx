@@ -155,7 +155,7 @@ function ClubDetails() {
   if (!club) return <div>Club no encontrado</div>;
 
 return (
-  <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+  <div className="relative min-h-screen p-8 bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
     <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative z-10 max-w-4xl mx-auto">

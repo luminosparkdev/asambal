@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import hero from "../../../src/Assets/heroasambal.webp";
+import hero from "../../../public/Assets/heroasambal.webp";
 import { useState, useEffect } from "react";
 
 function Hero() {
