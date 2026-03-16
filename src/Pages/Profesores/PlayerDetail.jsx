@@ -145,7 +145,7 @@ function PlayerDetails() {
   if (!player) return null;
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="relative min-h-screen bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl px-4 py-8 mx-auto">

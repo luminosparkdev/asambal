@@ -82,7 +82,7 @@ function AdminAsambalDashboard() {
 
   return (
 
-    <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative min-h-screen p-8 bg-[url('..//public/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
 
       <div className="absolute inset-0 bg-black/10" />
       <div className="relative z-10 px-4 py-8 mx-auto max-w-7xl">

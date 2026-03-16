@@ -107,7 +107,7 @@ function CoachesList() {
   ===================== */
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="min-h-screen bg-[url('../public/assets/Asambal/fondodashboard.webp')]">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}

@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import imgUnderConstruction from "../../public/Assets/enConstruccion.png";
 
 function UnderConstruction() {
     const navigate = useNavigate();
 
     return (
-        <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+        <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
 
             {/* overlay */}
             <div className="absolute inset-0 bg-black/20" />
@@ -17,7 +18,7 @@ function UnderConstruction() {
                 className="relative z-10 flex flex-col items-center max-w-lg p-10 text-center border shadow-2xl bg-gray-900/70 backdrop-blur-md rounded-2xl border-gray-700"
             >
                 <motion.img
-                    src="/src/assets/enConstruccion.png"
+                    src={imgUnderConstruction}
                     alt="En construcción"
                     className="w-140 mb-6"
                     initial={{ scale: 0.9 }}

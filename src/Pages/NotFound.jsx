@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import img404 from "../../public/Assets/404.png";
 
 function Unauthorized() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
 
       {/* overlay */}
       <div className="absolute inset-0 bg-black/20" />
@@ -18,7 +19,7 @@ function Unauthorized() {
       >
         {/* Imagen 404 */}
         <motion.img
-          src="/src/assets/404.png"
+          src={img404}
           alt="404"
           className="w-64 mb-6"
           initial={{ scale: 0.9 }}

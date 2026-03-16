@@ -52,7 +52,7 @@ function Login() {
   return (
     <div
       className="relative flex items-center justify-center min-h-screen px-4 bg-cover bg-[67%_67%]"
-      style={{ backgroundImage: "url('/src/assets/fondologin.webp')" }}
+      style={{ backgroundImage: "url('../public/Assets/fondologin.webp')" }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60" />

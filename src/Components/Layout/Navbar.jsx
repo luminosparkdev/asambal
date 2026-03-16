@@ -3,7 +3,7 @@ import { useAuth } from "../../Auth/AuthContext";
 import { ArrowLeftIcon, BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect, useRef } from "react";
 import { div } from "framer-motion/client";
-import logo from "../../Assets/Asambal/logosinfondo.png"
+import logo from "../../../Public/Assets/Asambal/logosinfondo.png"
 
 function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
