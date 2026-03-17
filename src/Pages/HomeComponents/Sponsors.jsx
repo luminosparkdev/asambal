@@ -1,7 +1,7 @@
 import { motion as Motion } from "framer-motion";
-import sponsor1 from "../../../public/Assets/Asambal/Sponsors/ch1.webp"
-import sponsor2 from "../../../public/Assets/Asambal/Sponsors/go7.png"
-import sponsor3 from "../../../public/Assets/Asambal/Sponsors/sciarresi.png"
+import sponsor1 from "../../Assets/Asambal/Sponsors/ch1.webp"
+import sponsor2 from "../../Assets/Asambal/Sponsors/go7.png"
+import sponsor3 from "../../Assets/Asambal/Sponsors/sciarresi.png"
 
 const sponsors = [
     sponsor1,

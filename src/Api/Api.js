@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://asambal-api-303270276070.southamerica-east1.run.app/",
+  baseURL: "https://asambal-api-303270276070.southamerica-east1.run.app/api",
   withCredentials: true,
 });
 

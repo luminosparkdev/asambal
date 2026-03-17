@@ -403,7 +403,7 @@ export const router = createBrowserRouter([
                 ),
             },
             {
-                path: "profesor/seguros",
+                path: "profesor/empadronamientos",
                 element: (
                 <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
                     <ProfeSeguros />
