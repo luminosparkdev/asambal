@@ -190,7 +190,7 @@ function CoachCreate() {
 
 
   return (
-    <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('../public/assets/Asambal/fondodashboard.webp')]">
+    <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -21,13 +21,13 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (loading) return;
 
     setLoading(true);
     setError("");
 
     try {
+      // Enviamos email y password
       const data = await loginService(email, password);
 
       login(data.user);
@@ -39,11 +39,8 @@ function Login() {
       const redirectPath = roleRedirectMap[userRoles[0]] || "/perfil";
 
       navigate(redirectPath);
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Usuario o contraseña incorrectos."
-      );
+    } catch (err) {
+      setError(err.response?.data?.message || "Usuario o contraseña incorrectos.");
     } finally {
       setLoading(false);
     }
@@ -52,103 +49,63 @@ function Login() {
   return (
     <div
       className="relative flex items-center justify-center min-h-screen px-4 bg-cover bg-[67%_67%]"
-      style={{ backgroundImage: "url('../public/Assets/fondologin.webp')" }}
+      style={{ backgroundImage: "url('/src/Assets/fondologin.webp')" }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60" />
 
-      {/* Card */}
       <div className="relative z-10 w-full max-w-md p-8 border shadow-xl bg-white/10 backdrop-blur-md rounded-2xl border-white/20">
         <h2 className="mb-6 text-3xl font-bold text-center text-white">
           Iniciar sesión
         </h2>
 
-        {error && (
-          <p className="mb-4 text-sm text-center text-red-400">
-            {error}
-          </p>
-        )}
+        {error && <p className="mb-4 text-sm text-center text-red-400">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
           <div>
-            <label className="block mb-1 text-sm text-gray-200">
-              Email
-            </label>
+            <label className="block mb-1 text-sm text-gray-200">Email</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
               required
               className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="correo@ejemplo.com"
             />
           </div>
 
-          {/* Password */}
           <div>
-            <label className="block mb-1 text-sm text-gray-200">
-              Contraseña
-            </label>
+            <label className="block mb-1 text-sm text-gray-200">Contraseña</label>
             <input
               type="password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
               required
               className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="••••••••"
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
             className={`w-full py-2 mt-4 font-semibold text-white transition-all rounded-lg flex items-center justify-center gap-2
-            ${
-              loading
-                ? "bg-blue-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"
-            }`}
+            ${loading ? "bg-blue-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"}`}
           >
-            {loading && (
+            {loading ? (
               <svg
                 className="w-4 h-4 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="white"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="white"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                />
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" />
+                <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
               </svg>
-            )}
-
-            {loading ? "Ingresando..." : "Iniciar sesión"}
+            ) : "Iniciar sesión"}
           </button>
 
-          {/* Forgot */}
           <div className="text-center">
-            <Link
-              to="/recuperar-clave"
-              className="text-sm text-blue-300 hover:underline"
-            >
+            <Link to="/recuperar-clave" className="text-sm text-blue-300 hover:underline">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>

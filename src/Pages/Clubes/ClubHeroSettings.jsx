@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../Api/Api";
-import defaultHero from "../../../public/Assets/Hero.png";
+import defaultHero from "../../Assets/Hero.png";
 import { useAuth } from "../../Auth/AuthContext";
 
 const cardVariants = {
@@ -83,7 +83,7 @@ if (!activeClubId) {
 }
 
   return (
-    <div className="relative min-h-screen p-8 bg-[url('../public/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="relative min-h-screen p-8 bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative z-10 max-w-4xl mx-auto">

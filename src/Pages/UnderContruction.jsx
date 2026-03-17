@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import imgUnderConstruction from "../../public/Assets/enConstruccion.png";
+import imgUnderConstruction from "../Assets/enConstruccion.png";
 
 function UnderConstruction() {
     const navigate = useNavigate();
 
     return (
-        <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('../public/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+        <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
 
             {/* overlay */}
             <div className="absolute inset-0 bg-black/20" />

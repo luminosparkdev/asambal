@@ -138,7 +138,7 @@ function PlayersListClub() {
     "h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800";
 
   return (
-    <div className="min-h-screen bg-[url('../public/assets/Asambal/fondodashboard.webp')] select-none">
+    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] select-none">
       <div className="px-4 mx-auto max-w-7xl">
         <div className="flex items-center justify-between px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Jugadores de mi club</h2>

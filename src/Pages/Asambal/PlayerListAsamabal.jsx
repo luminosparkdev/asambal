@@ -182,7 +182,7 @@ const getPlayerCategories = (player) =>
     "cursor-pointer px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200";
 
   return (
-    <div className="min-h-screen bg-[url('../public/assets/Asambal/fondodashboard.webp')]">
+    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título */}
         <div className="px-2 py-6">

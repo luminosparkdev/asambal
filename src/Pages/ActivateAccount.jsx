@@ -66,7 +66,7 @@ function ActivateAccount() {
   return (
     <div
       className="relative flex items-center justify-center min-h-screen p-4 bg-top bg-cover"
-      style={{ backgroundImage: "url('../public/Assets/fondoactivacion.webp')" }}
+      style={{ backgroundImage: "url('/src/Assets/fondoactivacion.webp')" }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />

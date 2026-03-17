@@ -1,7 +1,7 @@
 import { useState } from "react";
-import costos from "../../../public/Assets/costos.jpeg";
-import comunicado from "../../../public/Assets/comunicado.jpeg";
-import torneo from "../../../public/Assets/torneos.jpeg";
+import costos from "../../Assets/costos.jpeg";
+import comunicado from "../../Assets/comunicado.jpeg";
+import torneo from "../../Assets/torneos.jpeg";
 import { main } from "framer-motion/client";
 
 const novedades = [
