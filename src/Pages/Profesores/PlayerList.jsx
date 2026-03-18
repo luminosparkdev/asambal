@@ -203,14 +203,14 @@ function PlayersList() {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => navigate(`/profesor/jugadores/${player.id}`)}
-                        className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md cursor-pointer hover:bg-blue-500 hover:text-gray-100"
+                        className="cursor-pointer flex justify-center  gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500 hover:text-gray-100"
                       >
                         <EyeIcon className="w-5 h-5" /> Ver
                       </button>
 
                       <button
                         onClick={() => togglePlayerStatus(player)}
-                        className={`flex items-center gap-1 px-3 py-1 text-sm text-white rounded w-full ${
+                        className={`cursor-pointer flex justify-center gap-1 px-3 py-1 text-sm text-white rounded w-full ${
                           player.status === "ACTIVO" ? "bg-red-700/95 hover:bg-red-500" : "bg-green-700/95 hover:bg-green-500"
                         }`}
                       >

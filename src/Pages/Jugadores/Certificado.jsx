@@ -143,7 +143,7 @@ function Certificado() {
 
           <button
             onClick={handleOpenUploader}
-            className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
+            className="cursor-pointer px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
           >
             Cargar certificado
           </button>
@@ -246,14 +246,14 @@ function CertCard({ cert, onDelete, onReplace }) {
         <div className="pt-4 justify-center flex gap-10">
           <button
             onClick={() => onReplace(cert)}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
+            className="cursor-pointer px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
           >
             Reemplazar
           </button>
 
           <button
             onClick={() => onDelete(cert)}
-            className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
+            className="cursor-pointer px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
           >
             Eliminar
           </button>

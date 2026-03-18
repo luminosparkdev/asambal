@@ -17,6 +17,7 @@ function PendingCertificados() {
   }, []);
 
   const fetchCertificados = async () => {
+    setLoading(true);
     try {
       const res = await api.get("/certificados/pending");
       setCertificados(res.data || []);
@@ -65,7 +66,6 @@ function PendingCertificados() {
     }
   };
 
-  // ✅ Abrir certificado usando signed URL temporal
   const openCertificado = async (cert) => {
     try {
       const res = await api.get(`/certificados/${cert.id}/file`);
@@ -75,34 +75,43 @@ function PendingCertificados() {
     }
   };
 
-  if (loading) {
-    return (
-      <p className="mt-10 text-center text-gray-200">
-        Cargando certificados pendientes...
-      </p>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
-      <div className="px-4 mx-auto max-w-7xl">
+    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+      
+      {/* Overlay corregido */}
+      <div className="absolute inset-0 bg-black/20 pointer-events-none z-0" />
+
+      <div className="relative z-10 px-4 mx-auto max-w-7xl">
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Certificados <span className="text-yellow-600">Pendientes</span>
           </h2>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {certificados.map((cert) => (
-            <CertCardProfesor
-              key={cert.id}
-              cert={cert}
-              aprobar={aprobar}
-              rechazar={rechazar}
-              openCertificado={openCertificado} // <-- pasar prop correcta
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p className="mt-10 text-center text-gray-200">
+            Cargando certificados pendientes...
+          </p>
+        ) : certificados.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100/10 rounded-xl gap-4">
+            <div className="text-6xl">✅</div>
+            <p className="text-xl font-semibold text-center text-gray-200">
+              No hay certificados pendientes
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {certificados.map((cert) => (
+              <CertCardProfesor
+                key={cert.id}
+                cert={cert}
+                aprobar={aprobar}
+                rechazar={rechazar}
+                openCertificado={openCertificado}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -115,21 +124,25 @@ function CertCardProfesor({ cert, aprobar, rechazar, openCertificado }) {
       animate={{ opacity: 1, y: 0 }}
       className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl"
     >
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-sm text-gray-600">Certificado</p>
           <p className="text-xl font-semibold text-gray-800">{cert.year}</p>
         </div>
-        <span className="text-yellow-600 font-semibold text-sm">Pendiente</span>
+        <span className="text-sm font-semibold text-yellow-600">Pendiente</span>
       </div>
 
-      <p className="text-gray-600 text-md font-semibold mb-2">Documento cargado:</p>
-      <p className="text-gray-600 text-sm mb-4">{cert.fileName?.split("/").pop()}</p>
+      <p className="mb-2 font-semibold text-gray-600 text-md">
+        Documento cargado:
+      </p>
+      <p className="mb-4 text-sm text-gray-600">
+        {cert.fileName?.split("/").pop()}
+      </p>
 
       <div className="flex justify-center mb-6">
         <button
-          onClick={() => openCertificado(cert)} // <-- usar la prop correcta
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700"
+          onClick={() => openCertificado(cert)}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700"
         >
           <DocumentArrowDownIcon className="w-5 h-5" />
           Ver / Descargar
@@ -139,7 +152,7 @@ function CertCardProfesor({ cert, aprobar, rechazar, openCertificado }) {
       <div className="flex justify-center gap-6">
         <button
           onClick={() => aprobar(cert)}
-          className="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
+          className="flex items-center gap-2 px-4 py-2 text-white bg-green-700 rounded-lg hover:bg-green-600"
         >
           <CheckCircleIcon className="w-5 h-5" />
           Aprobar
@@ -147,7 +160,7 @@ function CertCardProfesor({ cert, aprobar, rechazar, openCertificado }) {
 
         <button
           onClick={() => rechazar(cert)}
-          className="flex items-center gap-2 px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-600"
+          className="flex items-center gap-2 px-4 py-2 text-white bg-red-700 rounded-lg hover:bg-red-600"
         >
           <XCircleIcon className="w-5 h-5" />
           Rechazar

@@ -69,7 +69,7 @@ export const router = createBrowserRouter([
             { path: "activar-cuenta", element: <ActivateAccount /> },
             { path: "recuperar-clave", element: <RecuperarClave /> },
 
-            //EN CONTRUCCIÓN
+            //EN CONTRUCCIÓN ASAMBAL
             { path: "asambal/cashflow", element: <UnderConstruction/> },
             { path: "asambal/ingresos", element: <UnderConstruction/> },
             { path: "asambal/gastos", element: <UnderConstruction/> },
@@ -77,6 +77,33 @@ export const router = createBrowserRouter([
             { path: "asambal/sponsors", element: <UnderConstruction/> },
             { path: "asambal/auditoria", element: <UnderConstruction/> },
             { path: "asambal/configuracion", element: <UnderConstruction/> },
+
+            //EN CONTRUCCIÓN CLUBES
+            { path: "asambal/cashflow", element: <UnderConstruction/> },
+            { path: "asambal/ingresos", element: <UnderConstruction/> },
+            { path: "asambal/gastos", element: <UnderConstruction/> },
+            { path: "asambal/novedades", element: <UnderConstruction/> },
+            { path: "asambal/sponsors", element: <UnderConstruction/> },
+            { path: "asambal/auditoria", element: <UnderConstruction/> },
+            { path: "asambal/configuracion", element: <UnderConstruction/> },
+
+            //EN CONTRUCCIÓN PROFESORES
+            { path: "admin/liberados", element: <UnderConstruction/> },
+            { path: "admin/categorias", element: <UnderConstruction/> },
+            { path: "admin/lesiones", element: <UnderConstruction/> },
+            { path: "admin/pagos", element: <UnderConstruction/> },
+            { path: "admin/inscripciones", element: <UnderConstruction/> },
+            { path: "profesor/seguros", element: <UnderConstruction/> },
+            { path: "admin/viajes", element: <UnderConstruction/> },
+            { path: "admin/arbitrajes", element: <UnderConstruction/> },
+
+            //EN CONTRUCCIÓN JUGADORES
+            { path: "players/me/inscripciones", element: <UnderConstruction/> },
+            { path: "players/me/cuotas", element: <UnderConstruction/> },
+            { path: "players/me/viajes", element: <UnderConstruction/> },
+            { path: "players/me/lesiones", element: <UnderConstruction/> },
+            { path: "players/me/tutor", element: <UnderConstruction/> },
+            { path: "players/me/configuracion", element: <UnderConstruction/> },
 
             { path: "*", element: <NotFound /> },
 

@@ -93,7 +93,7 @@ function PlayerDashboard() {
                   <button
                     key={link.name}
                     onClick={() => navigate(link.path)}
-                    className="flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
+                    className="cursor-pointer flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
                   >
                     <span className="text-lg transition-transform group-hover:scale-110">
                       {link.icon}

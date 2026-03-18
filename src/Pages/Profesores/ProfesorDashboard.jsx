@@ -45,7 +45,7 @@ const sections = [
     links: [
       { name: "Pagos y cuotas", path: "/admin/pagos", icon: "💰" },
       { name: "Inscripciones", path: "/admin/inscripciones", icon: "📝" },
-      { name: "Empadronamientos", path: "/profesor/empadronamientos", icon: "📑" },
+      { name: "Seguros", path: "/profesor/seguros", icon: "📄" },
     ],
   },
   {
@@ -63,7 +63,6 @@ const sections = [
     links: [
       { name: "Viajes", path: "/admin/viajes", icon: "✈️" },
       { name: "Arbitrajes", path: "/admin/arbitrajes", icon: "🏐" },
-      { name: "Seguros", path: "/profesor/seguros", icon: "📄" },
     ],
   },
 ];
@@ -100,7 +99,7 @@ function ProfesorDashboard() {
                   <button
                     key={link.name}
                     onClick={() => navigate(link.path)}
-                    className="flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
+                    className="cursor-pointer flex items-center gap-3 px-4 py-2 text-gray-200 transition-all rounded-lg group bg-gradient-to-r from-gray-800/80 to-transparent hover:from-gray-700/90"
                   >
                     <span className="text-lg transition-transform group-hover:scale-110">
                       {link.icon}
