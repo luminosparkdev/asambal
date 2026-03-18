@@ -14,6 +14,7 @@ function ActivateAccount() {
 
   const email = searchParams.get("email");
   const token = searchParams.get("token");
+  const clubIdFromUrl = searchParams.get("clubId"); // 🔥 NUEVO
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,8 +24,8 @@ function ActivateAccount() {
   const [clubId, setClubId] = useState(null);
   const [activationToken, setActivationToken] = useState(null);
 
-
-  if (!email || !token ) {
+  // 🔥 VALIDACIÓN CORRECTA
+  if (!token || (!email && !clubIdFromUrl)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-red-500">Link inválido o incompleto.</p>
@@ -38,18 +39,32 @@ function ActivateAccount() {
     setLoading(true);
 
     try {
+      const payload = {
+        token,
+        password,
+      };
+
+      // 👇 solo mandamos email si existe
+      if (email) {
+        payload.email = email;
+      }
+
       const res = await api.post(
         "/auth/activate-account",
-        { email, password, token }
+        payload
       );
 
       setRoles(res.data.roles);
       setUserId(res.data.userId);
-      setClubId(res.data.clubId);
+
+      // 🔥 CLAVE: usar clubId del backend o fallback del link
+      setClubId(res.data.clubId || clubIdFromUrl);
+
       setActivationToken(token);      
       setStep("PROFILE");
       console.log(res.data);
       setSuccess(true);
+
     } catch (err) {
       if (err.response?.status === 401) {
         setError("Token inválido o expirado. Solicite un nuevo link de activación.");
@@ -68,13 +83,9 @@ function ActivateAccount() {
       className="relative flex items-center justify-center min-h-screen p-4 bg-top bg-cover"
       style={{ backgroundImage: "url('/src/Assets/fondoactivacion.webp')" }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />
 
-      {/* Card */}
-      <div
-        className="relative z-10 w-full max-w-md p-8 border shadow-2xl  bg-slate-900/70 backdrop-blur-md border-cyan-400/20 rounded-xl text-slate-100"
-      >
+      <div className="relative z-10 w-full max-w-md p-8 border shadow-2xl  bg-slate-900/70 backdrop-blur-md border-cyan-400/20 rounded-xl text-slate-100">
 
         {step === "PASSWORD" && (
           <>
@@ -85,12 +96,14 @@ function ActivateAccount() {
           <p className="mb-6 text-sm text-center text-slate-400">
               Estás a un paso de completar tu registro
           </p>
+
           <form onSubmit={handleSubmit} className="space-y-4">
+
             <div>
               <label className="block mb-1 text-sm text-slate-300">Email</label>
               <input
                 type="email"
-                value={email}
+                value={email || ""}
                 readOnly
                 className="block w-full px-3 py-2 border rounded-md cursor-not-allowed bg-slate-800/70 border-slate-700 text-slate-400"
               />
@@ -117,12 +130,26 @@ function ActivateAccount() {
             >
               {loading ? "Activando..." : "Activar cuenta"}
             </button>
+
           </form>
           </>
         )}
-        {step === "PROFILE" && roles.includes("admin_club") && (<AdminClubProfileForm userId={userId} clubId={clubId} activationToken={activationToken} />)}
-        {step === "PROFILE" && roles.includes("profesor") && (<ProfesorProfileForm userId={userId} activationToken={activationToken} />)}
-        {step === "PROFILE" && roles.includes("jugador") && (<JugadorProfileForm userId={userId} activationToken={activationToken} />)}
+
+        {step === "PROFILE" && roles.includes("admin_club") && (
+          <AdminClubProfileForm
+            userId={userId}
+            clubId={clubId}
+            activationToken={activationToken}
+          />
+        )}
+
+        {step === "PROFILE" && roles.includes("profesor") && (
+          <ProfesorProfileForm userId={userId} activationToken={activationToken} />
+        )}
+
+        {step === "PROFILE" && roles.includes("jugador") && (
+          <JugadorProfileForm userId={userId} activationToken={activationToken} />
+        )}
 
       </div>
     </div>
