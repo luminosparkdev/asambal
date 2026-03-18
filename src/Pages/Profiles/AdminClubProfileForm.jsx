@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../Api/Api";
 
-function AdminClubProfileForm({ userId, clubId, activationToken }) {
+function AdminClubProfileForm({ userId, clubId: propClubId, activationToken: propToken }) {
+
+  const [params] = useSearchParams();
+
+  // 🔥 fallback inteligente
+  const clubId = propClubId || params.get("clubId");
+  const activationToken = propToken || params.get("token");
+
   const [nombre, setNombre] = useState("");
   const [responsable, setResponsable] = useState("");
   const [sede, setSede] = useState("");
@@ -12,15 +19,6 @@ function AdminClubProfileForm({ userId, clubId, activationToken }) {
   const [canchasAlternativas, setCanchasAlternativas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const PISOS = [
-  "cemento_crudo",
-  "cemento_pintado",
-  "parquet",
-  "caucho",
-  "baldosa_cruda",
-  "baldosa_pintada",
-];
 
   const [canchas, setCanchas] = useState({
     ancho: "",
@@ -33,45 +31,60 @@ function AdminClubProfileForm({ userId, clubId, activationToken }) {
   const navigate = useNavigate();
 
   const getClubData = async () => {
-  const res = await api.get(`/clubs/${clubId}`);
+    try {
+      if (!clubId) return;
 
-  setNombre(res.data.nombre);
-  setCiudad(res.data.ciudad);
-};
+      const res = await api.get(`/clubs/public/${clubId}`); // 🔥 endpoint público
 
-useEffect(() => {
-  getClubData();
-}, [clubId]);
+      setNombre(res.data.nombre);
+      setCiudad(res.data.ciudad);
+
+    } catch (err) {
+      console.log("Error trayendo club:", err?.response?.status);
+    }
+  };
+
+  useEffect(() => {
+    getClubData();
+  }, [clubId]);
 
   const submitProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    await api.post(`/clubs/${clubId}/complete-profile`, {
-      activationToken,
-      responsable,
-      sede,
-      telefono,
-      canchas,
-      canchasAlternativas,
-    });
+    try {
+      await api.post(`/clubs/${clubId}/complete-profile`, {
+        activationToken,
+        responsable,
+        sede,
+        telefono,
+        canchas,
+        canchasAlternativas,
+      });
 
-    console.log("ENVIANDO:", { canchas, canchasAlternativas });
+      console.log("ENVIANDO:", { canchas, canchasAlternativas });
+
+      setSuccess(true);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Datos enviados correctamente",
+        text: "El perfil del club quedó pendiente de validación por ASAMBAL.",
+        confirmButtonText: "ir al inicio",
+      });
+
+      navigate("/");
+    } catch (err) {
+      Swal.fire("Error", "Falló activación", "error");
+    }
+
     setLoading(false);
-    setSuccess(true);
-    
-    await Swal.fire({
-      icon: "success",
-      title: "Datos enviados correctamente",
-      text: "El perfil del club quedó pendiente de validación por ASAMBAL.",
-      confirmButtonText: "ir al inicio",
-    });
-
-    navigate("/");
   };
 
   return (
     <form onSubmit={submitProfile} className="space-y-8">
+
+      {/* TODO TU JSX EXACTO SIN CAMBIOS */}
       <div className="text-center">
         <h2 className="text-2xl font-semibold text-white">
           Completar perfil del club
