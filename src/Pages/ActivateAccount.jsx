@@ -79,10 +79,7 @@ function ActivateAccount() {
   };
 
   return (
-    <div
-      className="relative flex items-center justify-center min-h-screen p-4 bg-top bg-cover"
-      style={{ backgroundImage: "url('/src/Assets/fondoactivacion.webp')" }}
-    >
+    <div className="relative flex items-center justify-center min-h-screen p-4 bg-top bg-cover bg-[url('/src/Assets/fondoactivacion.webp')]">
       <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />
 
       <div className="relative z-10 w-full max-w-md p-8 border shadow-2xl  bg-slate-900/70 backdrop-blur-md border-cyan-400/20 rounded-xl text-slate-100">

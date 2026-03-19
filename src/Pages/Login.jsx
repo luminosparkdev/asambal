@@ -32,8 +32,8 @@ function Login() {
 
       login(data.user);
 
+      // Guardamos sólo el access token, el refresh token va en cookie HttpOnly
       localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
 
       const userRoles = data.user.roles;
       const redirectPath = roleRedirectMap[userRoles[0]] || "/perfil";
@@ -47,10 +47,7 @@ function Login() {
   };
 
   return (
-    <div
-      className="relative flex items-center justify-center min-h-screen px-4 bg-cover bg-[67%_67%]"
-      style={{ backgroundImage: "url('/src/Assets/fondologin.webp')" }}
-    >
+    <div className="relative flex items-center justify-center min-h-screen px-4 bg-cover bg-[67%_67%] bg-[url('/src/Assets/fondologin.webp')]">
       <div className="absolute inset-0 bg-black/60" />
 
       <div className="relative z-10 w-full max-w-md p-8 border shadow-xl bg-white/10 backdrop-blur-md rounded-2xl border-white/20">
@@ -66,7 +63,10 @@ function Login() {
             <input
               type="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
               required
               className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="correo@ejemplo.com"
@@ -78,7 +78,10 @@ function Login() {
             <input
               type="password"
               value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
               required
               className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
               placeholder="••••••••"
@@ -89,7 +92,11 @@ function Login() {
             type="submit"
             disabled={loading}
             className={`w-full py-2 mt-4 font-semibold text-white transition-all rounded-lg flex items-center justify-center gap-2
-            ${loading ? "bg-blue-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"}`}
+              ${
+                loading
+                  ? "bg-blue-500 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"
+              }`}
           >
             {loading ? (
               <svg
@@ -98,14 +105,30 @@ function Login() {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" />
-                <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="white"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="white"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
               </svg>
-            ) : "Iniciar sesión"}
+            ) : (
+              "Iniciar sesión"
+            )}
           </button>
 
           <div className="text-center">
-            <Link to="/recuperar-clave" className="text-sm text-blue-300 hover:underline">
+            <Link
+              to="/recuperar-clave"
+              className="text-sm text-blue-300 hover:underline"
+            >
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
