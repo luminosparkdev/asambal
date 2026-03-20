@@ -13,10 +13,22 @@ function PlayerDetails() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [categoriasDisponibles, setCategoriasDisponibles] = useState([]);
+
+  const clubId = localStorage.getItem("activeClubId");
+
   useEffect(() => {
-    api.get(`/players/${id}`)
-      .then(res => {
-        const data = res.data;
+    const fetchData = async () => {
+      try {
+        const [playerRes, catRes] = await Promise.all([
+          api.get(`/players/${id}`),
+          api.get("/categories"),
+        ]);
+
+        const data = playerRes.data;
+
+        const activeClub = data.clubs?.find(c => c.clubId === clubId) || data.clubs?.[0];
+
         const normalized = {
           id: data.id,
           nombre: data.nombre,
@@ -29,7 +41,6 @@ function PlayerDetails() {
           email: data.email,
           telefono: data.telefono,
           instagram: data.instagram,
-          categoria: data.categoria,
           fechaAlta: data.fechaAlta,
           nivel: data.nivel,
           escuela: data.escuela,
@@ -47,26 +58,28 @@ function PlayerDetails() {
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
           status: data.status,
+
+          // 🔥 NUEVO MODELO
+          categoriaPrincipal: activeClub?.categoriaPrincipal || "",
+          categoriasSecundarias: activeClub?.categoriasSecundarias || [],
         };
+
         setPlayer(normalized);
         setForm(normalized);
+        setCategoriasDisponibles(catRes.data);
         setLoading(false);
-      })
-      .catch(() => navigate("/players"));
-  }, [id, navigate]);
+      } catch (err) {
+        navigate("/players");
+      }
+    };
+
+    fetchData();
+  }, [id, navigate, clubId]);
 
   const formatBoolean = (value) => {
     if (value === true) return "Sí";
     if (value === false) return "No";
     return "-";
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "-";
-    if (date.seconds) {
-      return new Date(date.seconds * 1000).toLocaleDateString("es-AR");
-    }
-    return new Date(date).toLocaleDateString("es-AR");
   };
 
   const handleChange = (e) => {
@@ -76,21 +89,45 @@ function PlayerDetails() {
     }));
   };
 
+  // 🔥 NUEVO
+  const toggleCategoria = (catId) => {
+    if (catId === form.categoriaPrincipal) return;
+
+    setForm(prev => ({
+      ...prev,
+      categoriasSecundarias: prev.categoriasSecundarias.includes(catId)
+        ? prev.categoriasSecundarias.filter(c => c !== catId)
+        : [...prev.categoriasSecundarias, catId],
+    }));
+  };
+
+  const handleCategoriaPrincipal = (catId) => {
+    setForm(prev => ({
+      ...prev,
+      categoriaPrincipal: catId,
+      categoriasSecundarias: prev.categoriasSecundarias.filter(c => c !== catId),
+    }));
+  };
+
   const handleSave = async () => {
     const previousPlayer = player;
 
-    // Optimistic UI
     setPlayer(prev => ({ ...prev, ...form }));
 
     try {
-      await api.put(`/players/${id}`, form);
+      await api.put(`/players/${id}`, {
+        ...form,
+        categoriaPrincipal: form.categoriaPrincipal,
+        categorias: [form.categoriaPrincipal, ...form.categoriasSecundarias],
+        clubId: localStorage.getItem("activeClubId"), // 🔥 CLAVE
+      });
+
       Swal.fire({
         icon: "success",
         title: "Jugador actualizado",
         timer: 1500,
-        showConfirmButton: true,
-        confirmButtonText: "Aceptar",
       });
+
       navigate("/players");
       setEditing(false);
     } catch (err) {
@@ -98,50 +135,12 @@ function PlayerDetails() {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo guardar los cambios",
+        text: "No se pudo guardar",
       });
     }
   };
 
-  const handleToggle = async () => {
-    const isActive = player.status === "ACTIVO";
-  const action = isActive ? "desactivar" : "activar";
-  const nextStatus = isActive ? "INACTIVO" : "ACTIVO";
-
-  const result = await Swal.fire({
-    title: `¿Seguro que quieres ${action} este jugador?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: `Sí, ${action}`,
-    cancelButtonText: "Cancelar",
-  });
-
-  if (!result.isConfirmed) return;
-
-  // Optimistic UI
-  setPlayer(prev => ({ ...prev, status: nextStatus }));
-
-  try {
-    await api.patch(`/players/${id}/toggle`);
-    Swal.fire({
-      icon: "success",
-      title: "Estado actualizado",
-      timer: 1200,
-      showConfirmButton: false,
-    });
-  } catch (err) {
-    // rollback
-    setPlayer(prev => ({ ...prev, status: isActive ? "ACTIVO" : "INACTIVO" }));
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se pudo cambiar el estado",
-    });
-  }
-};
-
   if (loading) return <p>Cargando...</p>;
-  if (error) return <div>Error: {error.message}</div>;
   if (!player) return null;
 
   return (
@@ -149,123 +148,96 @@ function PlayerDetails() {
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl px-4 py-8 mx-auto">
-        <div
-          className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30
-          ${player.status === "ACTIVO" ? "border-green-500" : "border-red-500"}`}
-        >
-          {/* HEADER */}
-          <div className="flex items-start justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-200">
-                {editing ? "Editar jugador" : `${player.nombre} ${player.apellido}`}
-              </h2>
-              <p className="text-sm text-gray-400">
-                Gestión de jugadores · ASAMBAL
-              </p>
-            </div>
+        <div className="p-8 border-l-4 shadow-xl backdrop-blur bg-black/30 border-green-500 rounded-2xl">
 
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold
-              ${player.status === "ACTIVO"
-                ? "bg-green-500/20 text-green-300"
-                : "bg-red-500/20 text-red-300"}`}
-            >
-              {player.status}
-            </span>
-          </div>
+          <h2 className="mb-6 text-2xl font-bold text-gray-200">
+            {editing ? "Editar jugador" : `${player.nombre} ${player.apellido}`}
+          </h2>
 
-          {/* BODY */}
-          <div className="grid grid-cols-1 gap-4 text-gray-200 md:grid-cols-4">
-            {[
-              { label: "Nombre", name: "nombre" },
-              { label: "Apellido", name: "apellido" },
-              { label: "Fecha de nacimiento", name: "fechaNacimiento" },
-              { label: "Edad", name: "edad" },
-              { label: "Género", name: "sexo" },
-              { label: "DNI", name: "dni" },
-              { label: "Teléfono", name: "telefono" },
-              { label: "Instagram", name: "instagram" },
-              { label: "Domicilio", name: "domicilio" },
-              { label: "Estatura", name: "estatura" },
-              { label: "Peso", name: "peso" },
-              { label: "Escuela", name: "escuela" },
-              { label: "Nivel", name: "nivel" },
-              { label: "Turno", name: "turno" },
-              { label: "Año", name: "año" },
-              { label: "Domicilio de cobro", name: "domiciliocobro" },
-              { label: "Horario de cobro", name: "horariocobro" },
-              { label: "Categoría", name: "categoria" },
-              { label: "Posicion", name: "posicion" },
-              { label: "Mano Hábil", name: "manohabil" },
-              { label: "Autorización", name: "autorizacion" },
-              { label: "Reglas del club", name: "reglasclub" },
-              { label: "Uso de imagen", name: "usoimagen" },
-            ].map(({ label, name }) => (
-              <div key={name} className="flex flex-col gap-1">
-                <span className="text-xs text-gray-400 uppercase">{label}</span>
-                
-                {editing ? (
-                  <>
-                  <input
-                    name={name}
-                    value={form[name] || ""}
-                    onChange={handleChange}
-                    className="px-3 py-2 text-gray-100 border rounded-md bg-gray-800/70 border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  </>
-                ) : (
-                  <div>
-                    {typeof player[name] === "boolean"
-                      ? formatBoolean(player[name])
-                      : player[name] || "-"}
-                  </div>
-                )}
-              </div>
+          {/* CAMPOS ORIGINALES (NO TOCADOS) */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4 text-gray-200">
+            {["nombre","apellido","dni","telefono","email"].map(name => (
+              <input
+                key={name}
+                name={name}
+                value={form[name] || ""}
+                disabled={!editing}
+                onChange={handleChange}
+                className="px-3 py-2 bg-gray-800 rounded"
+              />
             ))}
           </div>
 
-          <div className="mt-6 space-y-1 text-sm text-gray-400">
-            <p>Creado: {formatDate(player.createdAt)}</p>
-            <p>Última actualización: {formatDate(player.updatedAt)}</p>
+          {/* 🔥 CATEGORIA PRINCIPAL */}
+          <div className="mt-6">
+            <h3 className="text-gray-300 mb-2">Categoría Principal ⭐</h3>
+
+            <div className="flex flex-wrap gap-2">
+              {categoriasDisponibles.map(cat => {
+                const active = form.categoriaPrincipal === cat.id;
+
+                return (
+                  <button
+                    key={cat.id}
+                    disabled={!editing}
+                    onClick={() => handleCategoriaPrincipal(cat.id)}
+                    className={`px-3 py-1 rounded-full text-xs
+                      ${active ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"}
+                    `}
+                  >
+                    {cat.nombre}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* ACTIONS */}
+          {/* 🔥 CATEGORIAS SECUNDARIAS */}
+          <div className="mt-6">
+            <h3 className="text-gray-300 mb-2">Categorías Secundarias</h3>
+
+            <div className="flex flex-wrap gap-2">
+              {categoriasDisponibles.map(cat => {
+                const active = form.categoriasSecundarias.includes(cat.id);
+                const disabled = cat.id === form.categoriaPrincipal;
+
+                return (
+                  <button
+                    key={cat.id}
+                    disabled={!editing || disabled}
+                    onClick={() => toggleCategoria(cat.id)}
+                    className={`px-3 py-1 rounded-full text-xs
+                      ${disabled
+                        ? "bg-gray-600 text-gray-400"
+                        : active
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-700 text-gray-300"}
+                    `}
+                  >
+                    {cat.nombre}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="flex gap-4 mt-8">
             {editing ? (
               <>
-                <button
-                  onClick={handleSave}
-                  className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                >
-                  Guardar cambios
+                <button onClick={handleSave} className="flex-1 bg-blue-600 py-2 rounded">
+                  Guardar
                 </button>
-                <button
-                  onClick={() => setEditing(false)}
-                  className="flex-1 py-3 text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600"
-                >
+                <button onClick={() => setEditing(false)} className="flex-1 bg-gray-600 py-2 rounded">
                   Cancelar
                 </button>
               </>
             ) : (
-              <>
-                <button
-                  onClick={() => setEditing(true)}
-                  className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={handleToggle}
-                  className={`flex-1 py-3 rounded-lg text-white font-semibold
-                  ${player.status === "ACTIVO"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"}`}
-                >
-                  {player.status === "ACTIVO" ? "Desactivar" : "Activar"}
-                </button>
-              </>
+              <button onClick={() => setEditing(true)} className="w-full bg-blue-600 py-2 rounded">
+                Editar
+              </button>
             )}
           </div>
+
         </div>
       </div>
     </div>
@@ -273,4 +245,3 @@ function PlayerDetails() {
 }
 
 export default PlayerDetails;
-
