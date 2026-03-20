@@ -78,24 +78,34 @@ function CreatePlayerClub() {
 
   const selectedCoach = coaches.find((c) => c.id === form.coachId);
 
+  // 🔥 Obtener categorías del coach para ESTE club
+  const coachCategorias = selectedCoach?.categorias || [];
+
+  // 🔥 Normalización robusta
+const normalize = (str) =>
+  str
+    ?.toLowerCase()
+    .replace("maculino", "masculino") // parche anti-bug 😂
+    .trim();
+
 const isDisabledCategoria = (cat) => {
   const isPrincipal = cat.id === form.categoriaPrincipal;
 
-  // Permite género igual o mixto
   const genderMismatch =
-    form.genero && cat.genero !== form.genero && cat.genero !== "Mixto";
+    form.genero &&
+    cat.genero !== form.genero &&
+    cat.genero !== "Mixto";
 
   if (!selectedCoach) return isPrincipal || genderMismatch;
 
-  // Normalizamos los nombres del coach
-  const coachSet = new Set(
-    selectedCoach.categorias.map((c) => c.trim().toLowerCase())
+  const catNameNormalized = normalize(cat.nombre);
+
+  // 🔥 ACA ESTA EL FIX IMPORTANTE
+  const coachMatch = coachCategorias.some((coachCat) =>
+    normalize(coachCat).includes(catNameNormalized)
   );
 
-  const catNameNormalized = cat.nombre.trim().toLowerCase();
-
-  // Bloquea solo si la categoría NO está en las que dirige el coach
-  const coachMismatch = !coachSet.has(catNameNormalized);
+  const coachMismatch = !coachMatch;
 
   return isPrincipal || genderMismatch || coachMismatch;
 };
@@ -178,7 +188,6 @@ const isDisabledCategoria = (cat) => {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Inputs */}
           {["nombre", "apellido", "email"].map((name) => (
             <div key={name} className="flex flex-col gap-1">
               <label className="text-sm text-gray-300">
@@ -195,7 +204,6 @@ const isDisabledCategoria = (cat) => {
             </div>
           ))}
 
-          {/* Género */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Género</label>
             <select
@@ -211,7 +219,6 @@ const isDisabledCategoria = (cat) => {
             </select>
           </div>
 
-          {/* Profesor */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Profesor</label>
             <select
@@ -230,7 +237,6 @@ const isDisabledCategoria = (cat) => {
             </select>
           </div>
 
-          {/* Categoría Principal */}
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Categoría Principal ⭐</label>
             <select
@@ -240,16 +246,30 @@ const isDisabledCategoria = (cat) => {
             >
               <option value="">Seleccionar categoría</option>
               {categorias
-                .filter((cat) => form.genero && (cat.genero === form.genero))
-                .map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre} {cat.genero}
-                  </option>
-                ))}
+                .filter((cat) => {
+                if (!form.genero) return false;
+
+                const genderOk =
+                cat.genero === form.genero || cat.genero === "Mixto";
+
+                if (!selectedCoach) return genderOk;
+
+                const catNameNormalized = normalize(cat.nombre);
+
+                const coachMatch = coachCategorias.some((coachCat) =>
+                normalize(coachCat).includes(catNameNormalized)
+                );
+
+                return genderOk && coachMatch;
+              })
+              .map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nombre} {cat.genero}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Categorías Secundarias */}
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-300">Categorías Secundarias</label>
             <div className="flex flex-wrap gap-2">
@@ -279,7 +299,6 @@ const isDisabledCategoria = (cat) => {
             </div>
           </div>
 
-          {/* Botones */}
           <div className="flex gap-3 mt-4">
             <button
               disabled={isSubmitting}

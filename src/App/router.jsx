@@ -57,6 +57,7 @@ import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
 import UnderConstruction from "../Pages/UnderContruction";
 import Certificado from "../Pages/Jugadores/Certificado";
 import PendingCertificados from "../Views/Profesores/PendingCertificados";
+import PlayerDetailClub from "../Pages/Clubes/PlayerDetailsClub"
 
 export const router = createBrowserRouter([
     {
@@ -347,6 +348,14 @@ export const router = createBrowserRouter([
                         <PlayersListClub />
                     </ProtectedRoute>
                 ),
+            },
+            {
+                path: "clubs/players/:id",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <PlayerDetailClub />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "club/settings",

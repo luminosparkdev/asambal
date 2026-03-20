@@ -249,7 +249,7 @@ function PlayersListClub() {
                   <td className="px-4 py-2">
                     <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() => navigate(`/club/jugadores/${player.id}`)}
+                        onClick={() => navigate(`/clubs/players/${player.id}`)}
                         className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 transition-all bg-blue-600 rounded-md cursor-pointer hover:bg-blue-500 hover:text-gray-100"
                         title="Ver detalles"
                       >
