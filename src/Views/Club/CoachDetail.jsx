@@ -18,7 +18,7 @@ function CoachDetails() {
     const fetchCoachAndCategories = async () => {
       try {
         // Traigo profe
-        const res = await api.get(`/coaches/${id}`);
+        const res = await api.get(`/clubs/coaches/${id}`);
         const data = res.data;
         setCoach(data);
 
@@ -60,7 +60,7 @@ function CoachDetails() {
     }
 
     try {
-      await api.put(`/coaches/${id}`, { categorias: normalizedCurrent });
+      await api.put(`/clubs/coaches/${id}`, { categorias: normalizedCurrent });
       setCategorias(normalizedCurrent);
       setInitialCategorias(normalizedCurrent);
       setEditing(false);
