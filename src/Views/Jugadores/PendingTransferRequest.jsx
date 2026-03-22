@@ -68,7 +68,7 @@ const handleAction = async (transferId, action) => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/30" />
       <div className="relative z-10 max-w-5xl px-4 py-8 mx-auto">
         <h1 className="mb-6 text-2xl font-bold text-gray-200">

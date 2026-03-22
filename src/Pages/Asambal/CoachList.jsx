@@ -107,18 +107,18 @@ function CoachesList() {
   ===================== */
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-        <div className="px-2 py-6">
+        <div className="mx-4 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Profesores registrados
           </h2>
         </div>
 
         {/* Filtros */}
-        <div className="grid grid-cols-1 gap-3 mt-4 md:grid-cols-4">
+        <div className="mx-4 grid grid-cols-1 gap-3 mt-4 md:grid-cols-4">
 
             {/* Buscar */}
             <input
@@ -180,7 +180,7 @@ function CoachesList() {
 
 
         {/* Tabla */}
-        <div className="mt-6 overflow-x-auto rounded-2xl shadow-xl bg-white/90 backdrop-blur">
+        <div className="mx-4 mt-6 overflow-x-auto rounded-2xl shadow-xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-800 text-gray-100">
               <tr>
@@ -230,7 +230,7 @@ function CoachesList() {
                     <td className="px-4 py-2 text-center">
                       <button
                         onClick={() => navigate(`/asambal/profesores/${p.id}`)}
-                        className="inline-flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500 transition"
+                        className="cursor-pointer inline-flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500 transition"
                       >
                         <EyeIcon className="w-4 h-4" />
                         Ver

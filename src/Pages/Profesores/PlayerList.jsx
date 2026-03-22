@@ -110,7 +110,7 @@ function PlayersList() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
         <div className="px-2 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Jugadores registrados</h2>
@@ -132,10 +132,10 @@ function PlayersList() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
-              <option value="ALL">Todos los estados</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
-              <option value="RECHAZADO">Rechazado</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="ALL">Todos los estados</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="ACTIVO">Activo</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="INACTIVO">Inactivo</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="RECHAZADO">Rechazado</option>
             </select>
 
             <select
@@ -144,7 +144,7 @@ function PlayersList() {
               className="h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg cursor-pointer bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>
+                <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" key={cat} value={cat}>
                   {cat === "ALL" ? "Todas las categorías" : cat}
                 </option>
               ))}

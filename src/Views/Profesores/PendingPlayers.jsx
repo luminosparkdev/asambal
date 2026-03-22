@@ -47,7 +47,7 @@ function PendingPlayers() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative z-10 max-w-6xl px-4 py-8 mx-auto">
@@ -60,11 +60,11 @@ function PendingPlayers() {
           <select
             value={selectedClub}
             onChange={(e) => setSelectedClub(e.target.value)}
-            className="w-full px-4 py-2 text-gray-800 bg-white rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="cursor-pointer h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200"
           >
-            <option value="">Seleccionar club</option>
+            <option className="text-gray-200 bg-gray-800" value="">Seleccionar club</option>
             {clubs.map((club) => (
-              <option key={club.clubId} value={club.clubId}>
+              <option className="text-gray-200 bg-gray-800" key={club.clubId} value={club.clubId}>
                 {club.nombreClub || club.nombre}
               </option>
             ))}

@@ -10,43 +10,21 @@ const sponsors = [
 ]
 function Sponsors() {
     return (
-        <main className="bg-gradient-to-b from-[#334353] to-[#0F1317]" id= "sponsors">
-        <section className="py-10 overflow-hidden text-black mx-auto max-w-7xl">
-            <h2 className="mb-12 text-3xl font-bold text-center">
-                Sponsors oficiales
-            </h2>
+        <main className="bg-gradient-to-b from-[#334353] to-[#0F1317]" id="sponsors">
+            <section className="py-10 overflow-hidden text-black mx-auto max-w-7xl">
+                <h2 className="text-gray-200 mb-12 text-3xl font-bold text-center">
+                    Sponsors oficiales
+                </h2>
 
-            {/* Línea superior */}
-            <Motion.div
-                className="flex gap-10 mb-8"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{
-                    repeat: Infinity,
-                    duration: 40,
-                    ease: "linear",
-                }}
-            >
-                {[...sponsors, ...sponsors].map((logo, i) => (
-                    <SponsorItem key={i} logo={logo} />
-                ))}
-            </Motion.div>
+                <div className="flex justify-center gap-10">
+                    {sponsors.map((logo, i) => (
+                        <SponsorItem key={i} logo={logo} />
+                    ))}
+                </div>
 
-            {/* Línea inferior (más rápida y sentido contrario) */}
-            <Motion.div
-                className="flex gap-10"
-                animate={{ x: ["-50%", "0%"] }}
-                transition={{
-                    repeat: Infinity,
-                    duration: 25,
-                    ease: "linear",
-                }}
-            >
-                {[...sponsors, ...sponsors].map((logo, i) => (
-                    <SponsorItem key={i} logo={logo} />
-                ))}
-            </Motion.div>
-        </section>
-    </main>
+
+            </section>
+        </main>
     );
 }
 

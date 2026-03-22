@@ -71,7 +71,7 @@ function PendingClubRequests() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       {/* overlay */}
       <div className="absolute inset-0 bg-black/20" />
 

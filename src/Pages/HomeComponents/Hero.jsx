@@ -27,7 +27,7 @@ function Hero() {
     <main>
       {/* HERO */}
       <section
-        className="relative flex items-center justify-center h-[85vh] bg-cover bg-center"
+        className="relative flex items-center justify-center h-[80vh] bg-cover bg-center"
         style={{
           backgroundImage: `url(${hero})`,
           backgroundPosition: "center 55%",
@@ -121,7 +121,7 @@ function Hero() {
             window.scrollTo({ top: window.innerHeight, behavior: "smooth" })
           }
         >
-          <ChevronDownIcon className="w-10 h-10 text-gray-900" />
+          <ChevronDownIcon className="w-10 h-10 text-gray-200" />
         </motion.div>
       </section>
     </main>

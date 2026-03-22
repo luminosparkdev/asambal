@@ -95,11 +95,10 @@ const filteredPlayers = players.filter((player) => {
 });
 
 const selectClasses =
-    "h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-700";
-
+    "cursor-pointer px-3 py-2 bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 border border-gray-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-200 h-10";
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
 
         {/* Título */}
@@ -162,48 +161,63 @@ const selectClasses =
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-300">
-                {filteredPlayers.map((player) => (
-                  <tr key={player.id}>
-                    <td className="px-4 py-2 text-center">
-                      {player.nombre} {player.apellido}
-                    </td>
+<tbody className="divide-y divide-gray-300">
+  {filteredPlayers.map((player) => {
 
-                    <td className="px-4 py-2 text-center max-w-40">
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                        {player.clubs?.[0]?.nombreClub || "—"}
-                      </div>
-                    </td>
+    const firstClubName = player.clubs && player.clubs.length > 0
+      ? player.clubs[0].nombreClub || "—"
+      : "—";
 
-                    <td className="px-4 py-2 text-center max-w-64">
-                      <div className="flex flex-wrap justify-center gap-1">
-                        {(player.clubs || [])
-                          .flatMap(c => c.categorias || [])
-                          .map((cat, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
-                            >
-                              {cat}
-                            </span>
-                          ))}
-                      </div>
-                    </td>
+    const allCategories = (player.clubs || [])
+      .reduce((acc, club) => {
+        if (club.categorias && club.categorias.length > 0) {
+          return acc.concat(club.categorias.filter(Boolean));
+        }
+        return acc;
+      }, []);
 
-                    <td className="px-4 py-2">
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => revokeScholarship(player.id)}
-                          className="flex items-center gap-1 px-3 py-1 w-32 text-sm text-gray-200 bg-red-700/95 rounded-md hover:bg-red-500 transition-all"
-                        >
-                          <XCircleIcon className="w-4 h-4" />
-                          <span>Quitar beca</span>  
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+    return (
+      <tr key={player.id}>
+        <td className="px-4 py-2 text-center">{player.nombre} {player.apellido}</td>
+
+        <td className="px-4 py-2 text-center max-w-40">
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {firstClubName}
+          </div>
+        </td>
+
+        <td className="px-4 py-2 text-center max-w-64">
+          <div className="flex flex-wrap justify-center gap-1">
+            {allCategories.length > 0 ? (
+              allCategories.map((cat, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
+                >
+                  {cat}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-400">—</span>
+            )}
+          </div>
+        </td>
+
+        <td className="px-4 py-2">
+          <div className="flex justify-center">
+            <button
+              onClick={() => revokeScholarship(player.id)}
+              className="cursor-pointer flex items-center gap-1 px-3 py-1 w-32 text-sm text-gray-200 bg-red-700/95 rounded-md hover:bg-red-500 transition-all"
+            >
+              <XCircleIcon className="w-4 h-4" />
+              <span>Quitar beca</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
 
             </table>
           </div>

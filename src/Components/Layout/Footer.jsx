@@ -21,7 +21,7 @@ function Footer() {
   const showFullFooter = isHome && !isAuthenticated;
 
   return (
-    <footer className="bg-gradient-to-t from-[#0F1317] to-[#334353] text-gray-300 border-t border-[#334353] border-t-2 border-[#334353]">
+    <footer className="select-none bg-gradient-to-t from-[#0F1317] to-[#334353] text-gray-300 border-t border-[#334353] border-t-2 border-[#334353]">
       <div className="px-4 py-10 mx-auto max-w-7xl">
 
         {/* FOOTER COMPLETO (home sin sesión) */}

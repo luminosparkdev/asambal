@@ -159,12 +159,12 @@ function CreatePlayerCoach() {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
+        className="my-4 w-full max-w-md p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
       >
         <h2 className="mb-1 text-2xl font-bold text-gray-200">
           Crear jugador
@@ -191,7 +191,7 @@ function CreatePlayerCoach() {
                 name="clubId"
                 value={form.clubId}
                 onChange={handleChange}
-                className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+                className="cursor-pointer px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
               >
                 <option value="">Seleccionar club</option>
 
@@ -233,7 +233,7 @@ function CreatePlayerCoach() {
               name="genero"
               value={form.genero}
               onChange={handleChange}
-              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+              className="cursor-pointer px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
             >
               <option value="">Seleccionar género</option>
               <option value="Masculino">Masculino</option>
@@ -250,7 +250,7 @@ function CreatePlayerCoach() {
             <select
               value={form.categoriaPrincipal}
               onChange={handleCategoriaPrincipal}
-              className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
+              className="cursor-pointer px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
             >
               <option value="">Seleccionar categoría</option>
 
@@ -301,7 +301,7 @@ function CreatePlayerCoach() {
             <button
               disabled={isSubmitting}
               type="submit"
-              className="flex-1 px-4 py-2 text-gray-200 bg-green-700 border border-green-500 rounded"
+              className="cursor-pointer flex-1 px-4 py-2 text-gray-200 bg-green-700 border border-green-500 rounded"
             >
               {isSubmitting ? "Creando..." : "Crear"}
             </button>
@@ -309,7 +309,7 @@ function CreatePlayerCoach() {
             <button
               type="button"
               onClick={() => navigate("/players")}
-              className="flex-1 px-4 py-2 text-gray-300 border border-gray-500 rounded"
+              className="cursor-pointer flex-1 px-4 py-2 text-gray-300 border border-gray-500 rounded"
             >
               Cancelar
             </button>

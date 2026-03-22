@@ -133,7 +133,7 @@ function Certificado() {
   }
 
   return (
-    <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
 
         <div className="px-2 py-6 flex justify-between items-center">
@@ -143,7 +143,7 @@ function Certificado() {
 
           <button
             onClick={handleOpenUploader}
-            className="cursor-pointer px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-600"
+            className="cursor-pointer flex items-center h-10 gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
           >
             Cargar certificado
           </button>

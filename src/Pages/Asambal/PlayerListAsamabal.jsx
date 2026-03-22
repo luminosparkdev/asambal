@@ -20,7 +20,7 @@ function PlayerListAsambal() {
 
   const fetchCategorias = async () => {
   try {
-    const res = await api.get("/asambal/categorias");
+    const res = await api.get("/categories");
     setCategorias(res.data);
   } catch (err) {
     console.error("Error fetching categorias:", err);
@@ -179,19 +179,19 @@ const getPlayerCategories = (player) =>
   };
 
   const selectClasses =
-    "cursor-pointer px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200";
+    "cursor-pointer h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200";
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título */}
-        <div className="px-2 py-6">
+        <div className="mx-4 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Listado de jugadores
           </h2>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mx-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           {/* Filtros */}
           <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-4 ">
             <input
@@ -210,14 +210,14 @@ const getPlayerCategories = (player) =>
               }}
               className={selectClasses}
             >
-              <option value="none">Seleccionar filtro</option>
-              <option value="estado">Estado</option>
-              <option value="habilitadoAsambal">Habilitado</option>
-              <option value="club">Club</option>
-              <option value="categoria">Categoría</option>
-              <option value="sexo">Sexo</option>
-              <option value="posicion">Posición</option>
-              <option value="manoHabil">Mano hábil</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="none">Seleccionar filtro</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="estado">Estado</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="habilitadoAsambal">Habilitado</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="club">Club</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="categoria">Categoría</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="sexo">Sexo</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="posicion">Posición</option>
+              <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="manoHabil">Mano hábil</option>
             </select>
           </div>
           {filterType !== "none" && (
@@ -239,7 +239,7 @@ const getPlayerCategories = (player) =>
 
 
         {/* Tabla */}
-        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+        <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
             <thead className="text-gray-100 bg-gray-800">
               <tr>
@@ -292,7 +292,7 @@ const getPlayerCategories = (player) =>
                     ) : !player.habilitadoAsambal ? (
                       <button
                         onClick={() => handleGrantScholarship(player)}
-                        className="px-3 py-1 text-xs font-medium text-white bg-purple-600 rounded hover:bg-purple-500"
+                        className="cursor-pointer px-3 py-1 text-xs font-medium text-white bg-purple-600 rounded hover:bg-purple-500"
                       >
                         Becar
                       </button>
@@ -308,7 +308,7 @@ const getPlayerCategories = (player) =>
                       onClick={() =>
                         navigate(`/asambal/jugadores/${player.id}`)
                       }
-                      className="flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500"
+                      className="cursor-pointer flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Ver

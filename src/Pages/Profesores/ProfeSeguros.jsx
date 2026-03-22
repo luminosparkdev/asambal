@@ -96,19 +96,19 @@ function ProfeSeguros() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título y controles */}
-        <div className="px-2 py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div className="mx-4 py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <h2 className="text-2xl font-semibold text-gray-200">
             Mis Seguros <span className="text-yellow-600">Profesores</span>
           </h2>
 
-          <div className="flex gap-2">
+          <div className="mx-4 flex gap-2">
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(Number(e.target.value))}
-              className="h-10 px-3 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-200"
+              className="cursor-pointer h-10 px-3 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               {availableYears.map((year) => (
                 <option key={year} value={year} className="bg-gray-800 text-gray-100">
@@ -123,13 +123,13 @@ function ProfeSeguros() {
         {loading ? (
           <p className="mt-10 text-center text-gray-200">Cargando seguros...</p>
         ) : (
-          <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+          <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
             <table className="select-none min-w-full text-sm">
               <thead className="text-gray-100 bg-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-center">Monto</th>
                   <th className="px-4 py-3 text-center">Año</th>
-                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Estado</th>
                   <th className="px-4 py-3 text-center">Acción</th>
                 </tr>
               </thead>
@@ -146,14 +146,14 @@ function ProfeSeguros() {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {seguro.status}
+                        {seguro.status.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-center">
                       {seguro.status !== "activo" && (
                         <button
                           onClick={() => pagarSeguro(seguro)}
-                          className="text-sm text-blue-500 hover:text-blue-700 underline"
+                          className="cursor-pointer h-9 px-4 text-gray-100 bg-green-700 rounded-lg hover:bg-green-600"
                         >
                           Pagar
                         </button>

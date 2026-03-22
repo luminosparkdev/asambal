@@ -72,7 +72,7 @@ const sections = [
     color: "border-red-500",
     links: [
       { name: "Auditoría", path: "/asambal/auditoria", icon: "🔍" },
-      { name: "Configuración", path: "/configuracion", icon: "⚙️" },
+      { name: "Configuración", path: "/asambal/configuracion", icon: "⚙️" },
     ]
   },
 ];

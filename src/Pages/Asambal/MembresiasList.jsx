@@ -84,11 +84,11 @@ function MembresiasList() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
 
       <div className="pb-6 mx-auto max-w-7xl">
 
-        <div className="px-2 py-6">
+        <div className="mx-4 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Membresías de clubes
           </h2>
@@ -98,7 +98,7 @@ function MembresiasList() {
 
           {/* filtros */}
 
-          <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-3">
+          <div className="mx-4 grid grid-cols-1 gap-3 mt-6 md:grid-cols-3">
 
             <input
               type="text"
@@ -130,7 +130,7 @@ function MembresiasList() {
 
           <button
             onClick={handleCrearMembresia}
-            className="flex items-center gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
+            className="cursor-pointer mx-4 flex items-center gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
           >
             <PlusIcon className="w-5 h-5" />
             Crear membresía
@@ -140,7 +140,7 @@ function MembresiasList() {
 
         {/* tabla */}
 
-        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+        <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
 
           <table className="min-w-full text-sm select-none">
 
@@ -173,7 +173,7 @@ function MembresiasList() {
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(c.status)}`}
                       >
-                        {c.status}
+                        {c.status.toUpperCase()}
                       </span>
 
                     </td>
@@ -183,7 +183,7 @@ function MembresiasList() {
 
                     <button
                       onClick={() => navigate(`/asambal/membresias/${row.clubId}/${row.year}`)}
-                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
+                      className="cursor-pointer flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Administrar
