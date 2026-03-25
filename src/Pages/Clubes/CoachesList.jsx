@@ -221,7 +221,7 @@ function CoachesList() {
                 <th className="px-4 py-3 text-center">Email</th>
                 <th className="px-4 py-3 text-center">Teléfono</th>
                 <th className="px-4 py-3 text-center">Categorías</th>
-                <th className="px-4 py-3 text-center">ENEA</th>
+                <th className="px-4 py-3 text-center">ENEHA</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
               </tr>

@@ -45,46 +45,42 @@ function ProfeSeguros() {
   };
 
   const pagarSeguro = async (seguro) => {
-    if (seguro.status === "activo") return;
+  if (seguro.status === "activo") return;
 
-    const confirm = await Swal.fire({
-      icon: "question",
-      title: "Confirmar pago",
-      text: `Desea marcar como pagado el seguro de ${seguro.year}?`,
-      showCancelButton: true,
-      confirmButtonText: "Sí, pagar",
-      cancelButtonText: "Cancelar",
-      background: "#0f172a",
-      color: "#e5e7eb",
-      confirmButtonColor: "#16a34a",
-      cancelButtonColor: "#dc2626",
+  const confirm = await Swal.fire({
+    icon: "question",
+    title: "Confirmar pago",
+    text: `Vas a pagar el seguro ${seguro.year} con MercadoPago`,
+    showCancelButton: true,
+    confirmButtonText: "Ir a pagar",
+    cancelButtonText: "Cancelar",
+    background: "#0f172a",
+    color: "#e5e7eb",
+    confirmButtonColor: "#16a34a",
+    cancelButtonColor: "#dc2626",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await api.post("/pagos/crear-preferencia", {
+      tipo: "seguro",
+      ticketId: seguro.id,
     });
 
-    if (!confirm.isConfirmed) return;
-
-    try {
-      await api.patch(`/coaches/seguros/${seguro.id}/pagar`);
-      Swal.fire({
-        icon: "success",
-        title: "Pago registrado",
-        text: `El seguro de ${seguro.year} ahora está activo.`,
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#16a34a",
-      });
-      fetchSeguros(); // Refrescar la lista de seguros después del pago
-    } catch (error) {
-      console.error("Error al procesar el pago:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo procesar el pago",
-        background: "#0f172a",
-        color: "#e5e7eb",
-        confirmButtonColor: "#dc2626",
-      });
-    }
-  };
+    window.location.href = res.data.init_point;
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo iniciar el pago",
+      background: "#0f172a",
+      color: "#e5e7eb",
+      confirmButtonColor: "#dc2626",
+    });
+  }
+};
 
   const formatCurrency = (value) => {
     if (!value) return "";

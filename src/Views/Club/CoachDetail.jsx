@@ -149,7 +149,7 @@ function CoachDetails() {
               { label: "Email", value: coach.email },
               { label: "Teléfono", value: coach.telefono },
               { label: "Domicilio", value: coach.domicilio },
-              { label: "ENEA", value: coach.enea },
+              { label: "ENEHA", value: coach.enea },
             ].map(({ label, value }) => (
               <div key={label} className="flex flex-col gap-1">
                 <span className="text-xs uppercase text-gray-400">{label}</span>

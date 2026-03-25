@@ -45,7 +45,7 @@ const sections = [
     links: [
       { name: "Pagos y cuotas", path: "/admin/pagos", icon: "💰" },
       { name: "Inscripciones", path: "/admin/inscripciones", icon: "📝" },
-      { name: "Seguros", path: "/profesor/seguros", icon: "📄" },
+      { name: "Seguros", path: "/profesor/empadronamientos", icon: "📄" },
     ],
   },
   {
