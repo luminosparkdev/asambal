@@ -44,7 +44,7 @@ const fetchBecas = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-6xl">
 
         <div className="px-2 py-6">

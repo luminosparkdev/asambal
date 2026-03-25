@@ -114,14 +114,33 @@ function CoachDetails() {
   if (loading) return <p>Cargando...</p>;
   if (!coach) return null;
 
+  const formatDateTime = (timestamp) => {
+    if (!timestamp) return "-";
+
+    let date;
+
+    if (timestamp.toDate) {
+      date = timestamp.toDate(); // Firestore
+    } else {
+      date = new Date(timestamp); // fallback
+    }
+
+    return date.toLocaleString("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         <div
-          className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30 ${
-            coach.status === "ACTIVO" ? "border-green-500" : "border-red-500"
-          }`}
+          className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30 ${coach.status === "ACTIVO" ? "border-green-500" : "border-red-500"
+            }`}
         >
           {/* HEADER */}
           <div className="flex justify-between items-start mb-8">
@@ -132,9 +151,8 @@ function CoachDetails() {
               <p className="text-sm text-gray-400">Gestión de profesores · ASAMBAL</p>
             </div>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                coach.status === "ACTIVO" ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"
-              }`}
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${coach.status === "ACTIVO" ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"
+                }`}
             >
               {coach.status}
             </span>
@@ -171,11 +189,10 @@ function CoachDetails() {
                         key={cat.id}
                         type="button"
                         onClick={() => toggleCategoria(nombreCompleto)}
-                        className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors ${
-                          isActive
+                        className={`cursor-pointer px-3 py-1 rounded-full border text-sm font-medium transition-colors ${isActive
                             ? "bg-green-700 text-white border-green-500"
                             : "bg-gray-800/50 text-gray-200 border-gray-600"
-                        }`}
+                          }`}
                       >
                         {nombreCompleto}
                       </button>
@@ -189,8 +206,8 @@ function CoachDetails() {
           </div>
 
           <div className="mt-6 text-sm text-gray-400 space-y-1">
-            <p>Creado: {coach.createdAt || "-"}</p>
-            <p>Última actualización: {coach.updatedAt || "-"}</p>
+            <p>Creado: {formatDateTime(coach.createdAt)}</p>
+            <p>Última actualización: {formatDateTime(coach.updatedAt)}</p>
           </div>
 
           {/* ACTIONS */}
@@ -199,13 +216,13 @@ function CoachDetails() {
               <>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                 >
                   Guardar categorías
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200"
+                  className="cursor-pointer flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200"
                 >
                   Cancelar
                 </button>
@@ -214,15 +231,14 @@ function CoachDetails() {
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                 >
                   Editar categorías
                 </button>
                 <button
                   onClick={handleToggle}
-                  className={`flex-1 py-3 rounded-lg text-white font-semibold ${
-                    coach.status === "ACTIVO" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
-                  }`}
+                  className={`cursor-pointer flex-1 py-3 rounded-lg text-white font-semibold ${coach.status === "ACTIVO" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+                    }`}
                 >
                   {coach.status === "ACTIVO" ? "Desactivar" : "Activar"}
                 </button>

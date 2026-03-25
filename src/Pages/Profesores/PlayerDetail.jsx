@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import Swal from "sweetalert2";
@@ -12,74 +12,97 @@ function PlayerDetails() {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+const [categorias, setCategorias] = useState([]);
+const [rawPlayer, setRawPlayer] = useState(null);
 
-  const [categoriasDisponibles, setCategoriasDisponibles] = useState([]);
+useEffect(() => {
+  api.get(`/players/${id}`)
+    .then(res => {
+      setRawPlayer(res.data);
+      setLoading(false);
+    })
+    .catch(() => navigate("/players"));
+}, [id, navigate]);
 
-  const clubId = localStorage.getItem("activeClubId");
+useEffect(() => {
+  api.get("/categories")
+    .then(res => setCategorias(res.data))
+    .catch(err => console.error("Error fetching categorias:", err));
+}, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [playerRes, catRes] = await Promise.all([
-          api.get(`/players/${id}`),
-          api.get("/categories"),
-        ]);
+const categoriasMap = useMemo(() => {
+  const map = {};
 
-        const data = playerRes.data;
+  categorias.forEach(cat => {
+    map[cat.id] = `${cat.nombre} ${cat.genero}`;
+  });
 
-        const activeClub = data.clubs?.find(c => c.clubId === clubId) || data.clubs?.[0];
+  return map;
+}, [categorias]);
 
-        const normalized = {
-          id: data.id,
-          nombre: data.nombre,
-          apellido: data.apellido,
-          dni: data.dni,
-          fechaNacimiento: data.fechanacimiento,
-          edad: data.edad,
-          sexo: data.sexo,
-          domicilio: data.domicilio,
-          email: data.email,
-          telefono: data.telefono,
-          instagram: data.instagram,
-          fechaAlta: data.fechaAlta,
-          nivel: data.nivel,
-          escuela: data.escuela,
-          turno: data.turno,
-          año: data.año,
-          peso: data.peso,
-          estatura: data.estatura,
-          domiciliocobro: data.domiciliocobro,
-          horariocobro: data.horariocobro,
-          manohabil: data.manohabil,
-          posicion: data.posicion,
-          usoimagen: data.imageAuthorization ?? false,
-          autorizacion: data.isAuthorized ?? false,
-          reglasclub: data.reglasclub ?? false,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-          status: data.status,
+const getPlayerCategories = (data) =>
+  Array.isArray(data.clubs)
+    ? data.clubs
+        .map(c => categoriasMap[c.categoriaPrincipal])
+        .filter(Boolean)
+    : [];
 
-          // 🔥 NUEVO MODELO
-          categoriaPrincipal: activeClub?.categoriaPrincipal || "",
-          categoriasSecundarias: activeClub?.categoriasSecundarias || [],
-        };
+useEffect(() => {
+  if (!rawPlayer || categorias.length === 0) return;
 
-        setPlayer(normalized);
-        setForm(normalized);
-        setCategoriasDisponibles(catRes.data);
-        setLoading(false);
-      } catch (err) {
-        navigate("/players");
-      }
-    };
+  const data = rawPlayer;
 
-    fetchData();
-  }, [id, navigate, clubId]);
+  const normalized = {
+    id: data.id,
+    nombre: data.nombre,
+    apellido: data.apellido,
+    dni: data.dni,
+    fechaNacimiento: data.fechanacimiento,
+    edad: data.edad,
+    sexo: data.sexo,
+    domicilio: data.domicilio,
+    email: data.email,
+    telefono: data.telefono,
+    instagram: data.instagram,
+
+    // ✅ ACA FUNCIONA BIEN
+    categoria: getPlayerCategories(data),
+
+    fechaAlta: data.fechaAlta,
+    nivel: data.nivel,
+    escuela: data.escuela,
+    turno: data.turno,
+    año: data.año,
+    peso: data.peso,
+    estatura: data.estatura,
+    domiciliocobro: data.domiciliocobro,
+    horariocobro: data.horariocobro,
+    manohabil: data.manohabil,
+    posicion: data.posicion,
+    usoimagen: data.imageAuthorization ?? false,
+    autorizacion: data.isAuthorized ?? false,
+    reglasclub: data.reglasclub ?? false,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+    status: data.status,
+  };
+
+  setPlayer(normalized);
+  setForm(normalized);
+}, [rawPlayer, categoriasMap]);
 
   const formatBoolean = (value) => {
     if (value === true) return "Sí";
     if (value === false) return "No";
     return "-";
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+    if (date.seconds) {
+      return new Date(date.seconds * 1000).toLocaleDateString("es-AR");
+    }
+    return new Date(date).toLocaleDateString("es-AR");
   };
 
   const handleChange = (e) => {
@@ -89,45 +112,21 @@ function PlayerDetails() {
     }));
   };
 
-  // 🔥 NUEVO
-  const toggleCategoria = (catId) => {
-    if (catId === form.categoriaPrincipal) return;
-
-    setForm(prev => ({
-      ...prev,
-      categoriasSecundarias: prev.categoriasSecundarias.includes(catId)
-        ? prev.categoriasSecundarias.filter(c => c !== catId)
-        : [...prev.categoriasSecundarias, catId],
-    }));
-  };
-
-  const handleCategoriaPrincipal = (catId) => {
-    setForm(prev => ({
-      ...prev,
-      categoriaPrincipal: catId,
-      categoriasSecundarias: prev.categoriasSecundarias.filter(c => c !== catId),
-    }));
-  };
-
   const handleSave = async () => {
     const previousPlayer = player;
 
+    // Optimistic UI
     setPlayer(prev => ({ ...prev, ...form }));
 
     try {
-      await api.put(`/players/${id}`, {
-        ...form,
-        categoriaPrincipal: form.categoriaPrincipal,
-        categorias: [form.categoriaPrincipal, ...form.categoriasSecundarias],
-        clubId: localStorage.getItem("activeClubId"), // 🔥 CLAVE
-      });
-
+      await api.put(`/players/${id}`, form);
       Swal.fire({
         icon: "success",
         title: "Jugador actualizado",
         timer: 1500,
+        showConfirmButton: true,
+        confirmButtonText: "Aceptar",
       });
-
       navigate("/players");
       setEditing(false);
     } catch (err) {
@@ -135,109 +134,186 @@ function PlayerDetails() {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo guardar",
+        text: "No se pudo guardar los cambios",
+      });
+    }
+  };
+
+  const handleToggle = async () => {
+    const isActive = player.status === "ACTIVO";
+    const action = isActive ? "desactivar" : "activar";
+    const nextStatus = isActive ? "INACTIVO" : "ACTIVO";
+
+    const result = await Swal.fire({
+      title: `¿Seguro que quieres ${action} este jugador?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Sí, ${action}`,
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
+    // Optimistic UI
+    setPlayer(prev => ({ ...prev, status: nextStatus }));
+
+    try {
+      await api.patch(`/players/${id}/toggle`);
+      Swal.fire({
+        icon: "success",
+        title: "Estado actualizado",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      // rollback
+      setPlayer(prev => ({ ...prev, status: isActive ? "ACTIVO" : "INACTIVO" }));
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo cambiar el estado",
       });
     }
   };
 
   if (loading) return <p>Cargando...</p>;
+  if (error) return <div>Error: {error.message}</div>;
   if (!player) return null;
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl px-4 py-8 mx-auto">
-        <div className="p-8 border-l-4 shadow-xl backdrop-blur bg-black/30 border-green-500 rounded-2xl">
+        <div
+          className={`p-8 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30
+          ${player.status === "ACTIVO" ? "border-green-500" : "border-red-500"}`}
+        >
+          {/* HEADER */}
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-200">
+                {editing ? "Editar jugador" : `${player.nombre} ${player.apellido}`}
+              </h2>
+              <p className="text-sm text-gray-400">
+                Gestión de jugadores · ASAMBAL
+              </p>
+            </div>
 
-          <h2 className="mb-6 text-2xl font-bold text-gray-200">
-            {editing ? "Editar jugador" : `${player.nombre} ${player.apellido}`}
-          </h2>
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold
+              ${player.status === "ACTIVO"
+                  ? "bg-green-500/20 text-green-300"
+                  : "bg-red-500/20 text-red-300"}`}
+            >
+              {player.status}
+            </span>
+          </div>
 
-          {/* CAMPOS ORIGINALES (NO TOCADOS) */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4 text-gray-200">
-            {["nombre","apellido","dni","telefono","email"].map(name => (
-              <input
-                key={name}
-                name={name}
-                value={form[name] || ""}
-                disabled={!editing}
-                onChange={handleChange}
-                className="px-3 py-2 bg-gray-800 rounded"
-              />
+          {/* BODY */}
+          <div className="grid grid-cols-1 gap-4 text-gray-200 md:grid-cols-4">
+            {[
+              { label: "Nombre", name: "nombre" },
+              { label: "Apellido", name: "apellido" },
+              { label: "Fecha de nacimiento", name: "fechaNacimiento" },
+              { label: "Edad", name: "edad" },
+              { label: "Género", name: "sexo" },
+              { label: "DNI", name: "dni" },
+              { label: "Teléfono", name: "telefono" },
+              { label: "Instagram", name: "instagram" },
+              { label: "Domicilio", name: "domicilio" },
+              { label: "Estatura", name: "estatura" },
+              { label: "Peso", name: "peso" },
+              { label: "Escuela", name: "escuela" },
+              { label: "Nivel", name: "nivel" },
+              { label: "Turno", name: "turno" },
+              { label: "Año", name: "año" },
+              { label: "Domicilio de cobro", name: "domiciliocobro" },
+              { label: "Horario de cobro", name: "horariocobro" },
+              { label: "Categoría", name: "categoria" },
+              { label: "Posicion", name: "posicion" },
+              { label: "Mano Hábil", name: "manohabil" },
+              { label: "Autorización", name: "autorizacion", type: "checkbox" },
+              { label: "Reglas del club", name: "reglasclub", type: "checkbox" },
+              { label: "Uso de imagen", name: "usoimagen", type: "checkbox" },
+            ].map(({ label, name, type }) => (
+              <div key={name} className="flex flex-col gap-1">
+                <span className="text-xs text-gray-400 uppercase">{label}</span>
+
+                {editing ? (
+                  type === "checkbox" ? (
+                    <input
+                      type="checkbox"
+                      name={name}
+                      checked={!!form[name]}
+                      onChange={(e) =>
+                        handleChange({
+                          target: { name, value: e.target.checked },
+                        })
+                      }
+                      className="w-5 h-5 accent-blue-500 cursor-pointer"
+                    />
+                  ) : (
+                    <input
+                      name={name}
+                      value={form[name] || ""}
+                      onChange={handleChange}
+                      className="px-3 py-2 text-gray-100 border rounded-md bg-gray-800/70 border-white/10"
+                    />
+                  )
+                ) : (
+                  <div>
+                    {typeof player[name] === "boolean"
+                      ? formatBoolean(player[name])
+                      : player[name] || "-"}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
-          {/* 🔥 CATEGORIA PRINCIPAL */}
-          <div className="mt-6">
-            <h3 className="text-gray-300 mb-2">Categoría Principal ⭐</h3>
-
-            <div className="flex flex-wrap gap-2">
-              {categoriasDisponibles.map(cat => {
-                const active = form.categoriaPrincipal === cat.id;
-
-                return (
-                  <button
-                    key={cat.id}
-                    disabled={!editing}
-                    onClick={() => handleCategoriaPrincipal(cat.id)}
-                    className={`px-3 py-1 rounded-full text-xs
-                      ${active ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"}
-                    `}
-                  >
-                    {cat.nombre}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="mt-6 space-y-1 text-sm text-gray-400">
+            <p>Creado: {formatDate(player.createdAt)}</p>
+            <p>Última actualización: {formatDate(player.updatedAt)}</p>
           </div>
 
-          {/* 🔥 CATEGORIAS SECUNDARIAS */}
-          <div className="mt-6">
-            <h3 className="text-gray-300 mb-2">Categorías Secundarias</h3>
-
-            <div className="flex flex-wrap gap-2">
-              {categoriasDisponibles.map(cat => {
-                const active = form.categoriasSecundarias.includes(cat.id);
-                const disabled = cat.id === form.categoriaPrincipal;
-
-                return (
-                  <button
-                    key={cat.id}
-                    disabled={!editing || disabled}
-                    onClick={() => toggleCategoria(cat.id)}
-                    className={`px-3 py-1 rounded-full text-xs
-                      ${disabled
-                        ? "bg-gray-600 text-gray-400"
-                        : active
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-700 text-gray-300"}
-                    `}
-                  >
-                    {cat.nombre}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
+          {/* ACTIONS */}
           <div className="flex gap-4 mt-8">
             {editing ? (
               <>
-                <button onClick={handleSave} className="flex-1 bg-blue-600 py-2 rounded">
-                  Guardar
+                <button
+                  onClick={handleSave}
+                  className="cursor-pointer flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                  Guardar cambios
                 </button>
-                <button onClick={() => setEditing(false)} className="flex-1 bg-gray-600 py-2 rounded">
+                <button
+                  onClick={() => setEditing(false)}
+                  className="cursor-pointer flex-1 py-3 text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600"
+                >
                   Cancelar
                 </button>
               </>
             ) : (
-              <button onClick={() => setEditing(true)} className="w-full bg-blue-600 py-2 rounded">
-                Editar
-              </button>
+              <>
+                <button
+                  onClick={() => setEditing(true)}
+                  className="cursor-pointer flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={handleToggle}
+                  className={`cursor-pointer flex-1 py-3 rounded-lg text-white font-semibold
+                  ${player.status === "ACTIVO"
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"}`}
+                >
+                  {player.status === "ACTIVO" ? "Desactivar" : "Activar"}
+                </button>
+              </>
             )}
           </div>
-
         </div>
       </div>
     </div>

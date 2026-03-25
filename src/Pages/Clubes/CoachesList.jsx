@@ -128,22 +128,22 @@ function CoachesList() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="mx-auto max-w-7xl">
 
 
-        <div className="flex items-center justify-between px-2 py-6">
+        <div className="mx-4 flex items-center justify-between py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Profesores registrados</h2>
           <button
             onClick={() => navigate("/coaches/nuevo")}
-            className="flex items-center h-10 gap-2 px-3 py-1 text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
+            className="cursor-pointer flex items-center h-10 gap-2 px-3 py-1 text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200 w-fit"
           >
             <PlusIcon className="w-5 h-5" />
             Nuevo profesor
           </button>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mx-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
 
@@ -164,7 +164,7 @@ function CoachesList() {
                 setStatusFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
+              className="cursor-pointer h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
             >
               <option value="ALL">Todos los estados</option>
               <option value="ACTIVO">Activo</option>
@@ -178,7 +178,7 @@ function CoachesList() {
                 setCategoryFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
+              className="cursor-pointer h-10 px-3 text-gray-200 border border-gray-500 rounded-lg bg-slate-800"
             >
               {categories.map(category => (
                 <option key={category} value={category}>
@@ -199,7 +199,7 @@ function CoachesList() {
                 setItemsPerPage(val);
                 setCurrentPage(1);
               }}
-              className="h-10 px-3 border border-gray-500 rounded-lg bg-slate-800"
+              className="cursor-pointer h-10 px-3 border border-gray-500 rounded-lg bg-slate-800"
             >
               <option value={15}>15</option>
               <option value={30}>30</option>
@@ -211,7 +211,7 @@ function CoachesList() {
 
         </div>
 
-        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+        <div className="mx-4 mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
 
             <thead className="text-gray-100 bg-gray-800">
@@ -261,38 +261,38 @@ function CoachesList() {
                     </span>
                   </td>
 
-                  <td className="flex items-center gap-2 px-4 py-2">
+<td className="flex justify-center gap-2 px-4 py-2 min-w-[280px]">
+  {/* Botón Ver */}
+  <button
+    onClick={() => navigate(`/coaches/${p.id}`)}
+    className="cursor-pointer flex items-center gap-1 px-3 py-1 text-sm text-gray-200 bg-blue-600 rounded-md hover:bg-blue-500"
+  >
+    <EyeIcon className="w-4 h-4" />
+    Ver
+  </button>
 
-                    <button
-                      onClick={() => navigate(`/coaches/${p.id}`)}
-                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
-                    >
-                      <EyeIcon className="w-4 h-4" />
-                      Ver
-                    </button>
-
-                    <button
-                      onClick={() => toggleCoach(p)}
-                      className={`flex items-center gap-1 ml-auto px-3 py-1 text-sm text-white rounded w-24 ${
-                        p.status === "ACTIVO"
-                          ? "bg-red-700/95 hover:bg-red-500"
-                          : "bg-green-700/95 hover:bg-green-500"
-                      }`}
-                    >
-                      {p.status === "ACTIVO" ? (
-                        <>
-                          <XCircleIcon className="w-4 h-4" />
-                          Desactivar
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircleIcon className="w-4 h-4" />
-                          Activar
-                        </>
-                      )}
-                    </button>
-
-                  </td>
+  {/* Botón Activar / Desactivar */}
+  <button
+    onClick={() => toggleCoach(p)}
+    className={`cursor-pointer w-40 flex justify-center items-center gap-1 px-3 py-1 text-sm text-white rounded w-24 ${
+      p.status === "ACTIVO"
+        ? "bg-red-700/95 hover:bg-red-500"
+        : "bg-green-700/95 hover:bg-green-500"
+    }`}
+  >
+    {p.status === "ACTIVO" ? (
+      <>
+        <XCircleIcon className="w-4 h-4" />
+        Desactivar
+      </>
+    ) : (
+      <>
+        <CheckCircleIcon className="w-4 h-4" />
+        Activar
+      </>
+    )}
+  </button>
+</td>
                 </tr>
 
               ))}

@@ -134,10 +134,10 @@ function Seguros() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título y controles */}
-        <div className="px-2 py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div className="mx-4 px-2 py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <h2 className="text-2xl font-semibold text-gray-200">
             Seguros <span className="text-yellow-600">Profesores</span>
           </h2>
@@ -146,7 +146,7 @@ function Seguros() {
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(Number(e.target.value))}
-              className="h-10 px-3 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-200"
+              className="cursor-pointer h-10 px-3 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-200"
             >
               {availableYears.map((year) => (
                 <option key={year} value={year} className="bg-gray-800 text-gray-100">
@@ -170,14 +170,14 @@ function Seguros() {
         {loading ? (
           <p className="mt-10 text-center text-gray-200">Cargando empadronamientos...</p>
         ) : (
-          <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+          <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
             <table className="select-none min-w-full text-sm">
               <thead className="text-gray-100 bg-gray-800">
                 <tr>
                   <th className="px-4 py-3 text-center">Profesor</th>
                   <th className="px-4 py-3 text-center">Monto</th>
                   <th className="px-4 py-3 text-center">Año</th>
-                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Estado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-300">
@@ -195,7 +195,7 @@ function Seguros() {
                             : "bg-red-100 text-red-700"
                           }`}
                       >
-                        {seguro.status}
+                        {seguro.status.toUpperCase()}
                       </span>
                     </td>
                   </tr>

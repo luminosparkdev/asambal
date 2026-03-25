@@ -127,11 +127,11 @@ function ClubsList() {
     <div className="min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
         {/* Título */}
-        <div className="px-2 py-6">
+        <div className="mx-4 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">Clubes registrados</h2>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mx-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           {/* Filtros */}
           <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-4 ">
 
@@ -182,7 +182,7 @@ function ClubsList() {
         </div>
 
         {/* TABLA */}
-        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+        <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="select-none min-w-full text-sm">
             <thead className="text-gray-100 bg-gray-800">
               <tr>

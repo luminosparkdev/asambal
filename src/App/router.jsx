@@ -72,6 +72,7 @@ export const router = createBrowserRouter([
 
             //EN CONTRUCCIÓN ASAMBAL
             { path: "asambal/cashflow", element: <UnderConstruction/> },
+            { path: "asambal/reportes", element: <UnderConstruction/> },
             { path: "asambal/ingresos", element: <UnderConstruction/> },
             { path: "asambal/gastos", element: <UnderConstruction/> },
             { path: "asambal/novedades", element: <UnderConstruction/> },
@@ -80,13 +81,13 @@ export const router = createBrowserRouter([
             { path: "asambal/configuracion", element: <UnderConstruction/> },
 
             //EN CONTRUCCIÓN CLUBES
-            { path: "asambal/cashflow", element: <UnderConstruction/> },
-            { path: "asambal/ingresos", element: <UnderConstruction/> },
-            { path: "asambal/gastos", element: <UnderConstruction/> },
-            { path: "asambal/novedades", element: <UnderConstruction/> },
+            { path: "/categories", element: <UnderConstruction/> },
+            { path: "/injuries", element: <UnderConstruction/> },
+            { path: "/fees", element: <UnderConstruction/> },
+            { path: "/balance", element: <UnderConstruction/> },
             { path: "asambal/sponsors", element: <UnderConstruction/> },
-            { path: "asambal/auditoria", element: <UnderConstruction/> },
-            { path: "asambal/configuracion", element: <UnderConstruction/> },
+            { path: "/club/profile", element: <UnderConstruction/> },
+            { path: "/club/contact", element: <UnderConstruction/> },
 
             //EN CONTRUCCIÓN PROFESORES
             { path: "admin/liberados", element: <UnderConstruction/> },
@@ -94,7 +95,6 @@ export const router = createBrowserRouter([
             { path: "admin/lesiones", element: <UnderConstruction/> },
             { path: "admin/pagos", element: <UnderConstruction/> },
             { path: "admin/inscripciones", element: <UnderConstruction/> },
-            { path: "profesor/seguros", element: <UnderConstruction/> },
             { path: "admin/viajes", element: <UnderConstruction/> },
             { path: "admin/arbitrajes", element: <UnderConstruction/> },
 

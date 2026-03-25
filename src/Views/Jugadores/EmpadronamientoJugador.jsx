@@ -85,7 +85,7 @@ function EmpadronamientoJugador() {
   }
 
   return (
-    <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
+    <div className="select-none min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')]">
       <div className="px-4 mx-auto max-w-7xl">
 
         <div className="px-2 py-6">
@@ -171,7 +171,7 @@ function TicketTimeline({ ticket, onPay }) {
                 {!isBecado && !isPaid && unlocked && (
                   <button
                     onClick={() => onPay(ticket, cuota)}
-                    className="h-9 px-4 text-gray-100 bg-green-700 rounded-lg hover:bg-green-600"
+                    className="cursor-pointer h-9 px-4 text-gray-100 bg-green-700 rounded-lg hover:bg-green-600"
                   >
                     Pagar
                   </button>

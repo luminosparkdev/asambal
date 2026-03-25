@@ -51,7 +51,7 @@ function AsambalProfile() {
   if (!admin) return null;
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
     <div className="absolute inset-0 bg-black/30" />
 
     <div className="select-none relative z-10 max-w-4xl mx-auto px-4 py-8 mt-8">

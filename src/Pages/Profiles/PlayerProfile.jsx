@@ -187,7 +187,7 @@ function PlayerProfile() {
     "px-3 py-2 rounded-md bg-gray-800/70 border border-white/10 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500";
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl px-4 py-8 mx-auto mt-8">
@@ -317,14 +317,14 @@ function PlayerProfile() {
               <>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                  className="cursor-pointer flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   Guardar cambios
                 </button>
 
                 <button
                   onClick={() => setEditing(false)}
-                  className="flex-1 py-3 text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600"
+                  className="cursor-pointer flex-1 py-3 text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600"
                 >
                   Cancelar
                 </button>
@@ -332,7 +332,7 @@ function PlayerProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                className="cursor-pointer flex-1 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 Editar
               </button>

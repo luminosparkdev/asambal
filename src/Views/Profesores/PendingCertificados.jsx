@@ -76,7 +76,7 @@ function PendingCertificados() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
       
       {/* Overlay corregido */}
       <div className="absolute inset-0 bg-black/20 pointer-events-none z-0" />
@@ -122,7 +122,7 @@ function CertCardProfesor({ cert, aprobar, rechazar, openCertificado }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl"
+      className="select-none p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl"
     >
       <div className="flex items-center justify-between mb-4">
         <div>

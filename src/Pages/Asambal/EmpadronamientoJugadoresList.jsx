@@ -91,7 +91,7 @@ function EmpadronamientoJugadoresList() {
 
       <div className="pb-6 mx-auto max-w-7xl">
 
-        <div className="px-2 py-6">
+        <div className="mx-4 py-6">
           <h2 className="text-2xl font-semibold text-gray-200">
             Empadronamiento de jugadores
           </h2>
@@ -101,7 +101,7 @@ function EmpadronamientoJugadoresList() {
 
           {/* filtros */}
 
-          <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-3">
+          <div className="mx-4 grid grid-cols-1 gap-3 mt-6 md:grid-cols-3">
 
             <input
               type="text"
@@ -133,7 +133,7 @@ function EmpadronamientoJugadoresList() {
 
           <button
             onClick={handleCrearEmpadronamientoJugadores}
-            className="flex items-center gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
+            className="mx-4 cursor-pointer flex items-center gap-2 px-3 py-1 ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
           >
             <PlusIcon className="w-5 h-5" />
             Crear empadronamiento
@@ -143,7 +143,7 @@ function EmpadronamientoJugadoresList() {
 
         {/* tabla */}
 
-        <div className="mt-6 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
+        <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
 
           <table className="min-w-full text-sm select-none">
 
@@ -184,8 +184,8 @@ function EmpadronamientoJugadoresList() {
                   <td className="px-4 py-2">
 
                     <button
-                      onClick={() => navigate(`/asambal/empadronamiento-jugadores/${row.playerId}/${row.year}`)}
-                      className="flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
+                      onClick={() => navigate(`asambal/empadronamiento-jugadores/${row.playerId}/${row.year}`)}
+                      className="cursor-pointer flex items-center gap-1 px-3 py-1 ml-auto text-sm text-gray-200 transition-all bg-blue-600 rounded-md hover:bg-blue-500"
                     >
                       <EyeIcon className="w-4 h-4" />
                       Administrar

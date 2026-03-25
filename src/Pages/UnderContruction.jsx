@@ -6,7 +6,7 @@ function UnderConstruction() {
     const navigate = useNavigate();
 
     return (
-        <div className="relative flex items-center justify-center min-h-screen p-6 bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
+        <div className="select-none relative flex items-center justify-center min-h-screen p-6 bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center">
 
             {/* overlay */}
             <div className="absolute inset-0 bg-black/20" />

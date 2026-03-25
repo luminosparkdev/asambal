@@ -56,7 +56,7 @@ function CoachProfile() {
   if (!coach) return null;
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
@@ -120,13 +120,13 @@ function CoachProfile() {
               <>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                  className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                 >
                   Guardar cambios
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200"
+                  className="cursor-pointer flex-1 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-200"
                 >
                   Cancelar
                 </button>
@@ -134,7 +134,7 @@ function CoachProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="cursor-pointer flex-1 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
                 Editar ENEA
               </button>

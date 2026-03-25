@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 
@@ -8,7 +8,31 @@ function PlayerDetailAsambal() {
 
   const [player, setPlayer] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [categorias, setCategorias] = useState([]);
 
+  // Fetch de categorías
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const res = await api.get("/categories"); // ✅ Endpoint correcto
+        setCategorias(res.data);
+      } catch (err) {
+        console.error("Error fetching categorias:", err);
+      }
+    };
+    fetchCategorias();
+  }, []);
+
+  // Map de id -> nombre categoría
+  const categoriasMap = useMemo(() => {
+    const map = {};
+    categorias.forEach(cat => {
+      map[cat.id] = `${cat.nombre} ${cat.genero}`;
+    });
+    return map;
+  }, [categorias]);
+
+  // Fetch de jugador
   useEffect(() => {
     api.get(`/asambal/players/${id}`)
       .then(res => {
@@ -53,7 +77,8 @@ function PlayerDetailAsambal() {
           clubActivo: activeClub
             ? {
                 nombre: activeClub.nombreClub,
-                categorias: activeClub.categorias || [],
+                categoriaPrincipal: activeClub.categoriaPrincipal,
+                categoriasSecundarias: activeClub.categoriasSecundarias || [],
               }
             : null,
 
@@ -67,6 +92,15 @@ function PlayerDetailAsambal() {
       })
       .catch(() => navigate("/asambal/jugadores"));
   }, [id, navigate]);
+
+  // Función para obtener nombres de categorías
+  const getCategoriasNombre = (club) => {
+    if (!club) return [];
+    return [
+      categoriasMap?.[club.categoriaPrincipal],
+      ...(club.categoriasSecundarias || []).map(id => categoriasMap?.[id])
+    ].filter(Boolean);
+  };
 
   const formatBoolean = (value) =>
     value === true ? "Sí" : value === false ? "No" : "-";
@@ -103,15 +137,15 @@ function PlayerDetailAsambal() {
   );
 
   return (
-    <div className="relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
+    <div className="select-none relative min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         <div
           className={`p-4 rounded-2xl border-l-4 shadow-xl backdrop-blur bg-black/30
           ${player.status === "ACTIVO"
-            ? "border-green-500"
-            : "border-red-500"}`}
+              ? "border-green-500"
+              : "border-red-500"}`}
         >
           {/* HEADER */}
           <div className="flex justify-between items-start mb-8">
@@ -128,18 +162,17 @@ function PlayerDetailAsambal() {
             <span
               className={`px-3 py-1 rounded-full text-sm font-semibold
               ${player.status === "ACTIVO"
-                ? "bg-green-500/20 text-green-300"
-                : "bg-red-500/20 text-red-300"}`}
+                  ? "bg-green-500/20 text-green-300"
+                  : "bg-red-500/20 text-red-300"}`}
             >
               {player.status}
             </span>
             <button
               onClick={() => navigate(`/asambal/jugadores/${id}/becas`)}
-              className="px-3 py-1 ml-auto text-sm text-purple-400 transition-all border rounded-md border-purple-500/40 hover:bg-purple-500/10 hover:text-purple-200"
+              className="cursor-pointer px-3 py-1 ml-auto text-sm text-purple-400 transition-all border rounded-md border-purple-500/40 hover:bg-purple-500/10 hover:text-purple-200"
             >
               Ver historial de becas
             </button>
-
           </div>
 
           {/* SECCIONES */}
@@ -190,7 +223,7 @@ function PlayerDetailAsambal() {
                   <Field label="Club" value={player.clubActivo.nombre} />
                   <Field
                     label="Categorías"
-                    value={player.clubActivo.categorias.join(", ")}
+                    value={getCategoriasNombre(player.clubActivo).join(", ")}
                   />
                 </>
               ) : (
