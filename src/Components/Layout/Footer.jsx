@@ -53,14 +53,14 @@ function Footer() {
               <h4 className="mb-3 text-sm font-semibold tracking-wide text-white uppercase">Institucional</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#quienes-somos" className="hover:text-white">
-                    Quiénes somos
-                  </a>
+                  <Link to="/quienes-somos" className="hover:text-white">
+                    Quiénes Somos
+                  </Link>
                 </li>
                 <li>
-                  <a href="#autoridades" className="hover:text-white">
+                  <Link to="/autoridades" className="hover:text-white">
                     Autoridades
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a href="#contacto" className="hover:text-white">

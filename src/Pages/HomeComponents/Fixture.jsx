@@ -148,7 +148,7 @@ function Card({ fecha, active, isProxima }) {
     const now = Date.now();
 
     const inicio = fecha.fecha?._seconds * 1000;
-    const fin = inicio + 1000 * 60 * 60 * 9;
+    const fin = inicio + 1000 * 60 * 60 * 12;
 
     let estado = "";
 

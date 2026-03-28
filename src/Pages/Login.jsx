@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login, selectRole } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,9 +36,17 @@ function Login() {
       localStorage.setItem("token", data.token);
 
       const userRoles = data.user.roles;
-      const redirectPath = roleRedirectMap[userRoles[0]] || "/perfil";
 
-      navigate(redirectPath);
+      if (userRoles.length === 1) {
+  // auto-login
+  const role = userRoles[0];
+  selectRole(role);
+  navigate(roleRedirectMap[role]);
+} else {
+  // múltiples roles → elegir
+  navigate("/select-role");
+}
+      
     } catch (err) {
       setError(err.response?.data?.message || "Usuario o contraseña incorrectos.");
     } finally {

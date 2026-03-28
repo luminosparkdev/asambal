@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const { isAuthenticated, user, loading } = useAuth();
+  const { isAuthenticated, user, activeRole, loading } = useAuth();
 
   if (loading) {
     return <p>Cargando...</p>;
@@ -12,9 +12,13 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.some(role => user?.roles?.includes(role))) {
+  if (allowedRoles && !allowedRoles.includes(activeRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
+
+  if (!activeRole) {
+  return <Navigate to="/select-role" replace />;
+}
 
   console.log("ProtectedRoute", {
   user,

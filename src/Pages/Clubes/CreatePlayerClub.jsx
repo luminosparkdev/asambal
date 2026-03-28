@@ -52,6 +52,55 @@ function CreatePlayerClub() {
     fetchProfesores();
   }, [clubId]);
 
+    const selectedCoach = coaches.find((c) => c.id === form.coachId);
+
+  // 🔥 Obtener categorías del coach para ESTE club
+  const coachCategorias = selectedCoach?.categorias || [];
+
+  // 🔥 Normalización robusta
+const normalize = (str) =>
+  str
+    ?.toLowerCase()
+    .replace("maculino", "masculino") // parche anti-bug 😂
+    .trim();
+
+useEffect(() => {
+  if (!form.categoriaPrincipal) return;
+
+  const categoriaValida = categorias.some((cat) => {
+    if (cat.id !== form.categoriaPrincipal) return false;
+
+    const genderOk =
+      cat.genero === form.genero || cat.genero === "Mixto";
+
+    if (!selectedCoach) return genderOk;
+
+    const catNameNormalized = normalize(cat.nombre);
+
+    const coachMatch = coachCategorias.some((coachCat) =>
+      normalize(coachCat).includes(catNameNormalized)
+    );
+
+    return genderOk && coachMatch;
+  });
+
+  if (!categoriaValida) {
+    setForm((prev) => ({
+      ...prev,
+      categoriaPrincipal: "",
+      categorias: prev.categorias.filter(
+        (c) => c !== prev.categoriaPrincipal
+      ),
+    }));
+  }
+}, [
+  form.genero,
+  form.coachId,
+  form.categoriaPrincipal,
+  categorias,
+  coachCategorias
+]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -75,18 +124,6 @@ function CreatePlayerClub() {
         : [...prev.categorias, categoriaId],
     }));
   };
-
-  const selectedCoach = coaches.find((c) => c.id === form.coachId);
-
-  // 🔥 Obtener categorías del coach para ESTE club
-  const coachCategorias = selectedCoach?.categorias || [];
-
-  // 🔥 Normalización robusta
-const normalize = (str) =>
-  str
-    ?.toLowerCase()
-    .replace("maculino", "masculino") // parche anti-bug 😂
-    .trim();
 
 const isDisabledCategoria = (cat) => {
   const isPrincipal = cat.id === form.categoriaPrincipal;
@@ -240,7 +277,7 @@ const isDisabledCategoria = (cat) => {
           <div className="flex flex-col gap-1">
             <label className="text-sm text-gray-300">Categoría Principal ⭐</label>
             <select
-              value={form.categoriaPrincipal}
+              value={form.categoriaPrincipal || ""}
               onChange={handleCategoriaPrincipal}
               className="px-3 py-2 text-gray-200 bg-gray-800 border border-gray-500 rounded"
             >

@@ -57,7 +57,10 @@ import ProfeSeguros from "../Pages/Profesores/ProfeSeguros";
 import UnderConstruction from "../Pages/UnderContruction";
 import Certificado from "../Pages/Jugadores/Certificado";
 import PendingCertificados from "../Views/Profesores/PendingCertificados";
-import PlayerDetailClub from "../Pages/Clubes/PlayerDetailsClub"
+import PlayerDetailClub from "../Pages/Clubes/PlayerDetailsClub";
+import QuienesSomos from "../Pages/QuienesSomos";
+import Autoridades from "../Pages/Autoridades";
+import SelectRole from "../Pages/SelectRole"
 
 export const router = createBrowserRouter([
     {
@@ -69,6 +72,9 @@ export const router = createBrowserRouter([
             { path: "login", element: <Login />, },
             { path: "activar-cuenta", element: <ActivateAccount /> },
             { path: "recuperar-clave", element: <RecuperarClave /> },
+            { path: "quienes-somos", element: <QuienesSomos />},
+            { path: "autoridades", element: <Autoridades />},
+            {path: "select-role", element: <SelectRole />},
 
             //EN CONTRUCCIÓN ASAMBAL
             { path: "asambal/cashflow", element: <UnderConstruction/> },
