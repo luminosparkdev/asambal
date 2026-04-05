@@ -7,57 +7,113 @@ const RecuperarClave = () => {
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setSuccess("");
     setError("");
+    setLoading(true);
 
     try {
       await sendPasswordResetEmail(auth, email, {
-        url: "http://localhost:5173/login", // Donde redirigir después del reset
+        url: "https://asambal.com/login",
         handleCodeInApp: false,
       });
-      setSuccess("Si el correo existe, te hemos enviado un enlace para restablecer tu contraseña.");
+      setSuccess(
+        "Si el correo existe, te hemos enviado un enlace para restablecer tu contraseña."
+      );
 
-      // Redirigir automáticamente después de 3 segundos
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
       console.error(err);
       setError("Ocurrió un error. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-sm p-6 bg-white rounded shadow">
-        <h2 className="mb-4 text-xl font-semibold text-center">Recuperar contraseña</h2>
+    <div className="relative flex items-center justify-center min-h-screen px-4 bg-cover bg-[67%_67%] bg-[url('/src/Assets/fondologin.webp')]">
+      <div className="absolute inset-0 bg-black/60" />
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            className="w-full p-2 mb-3 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <div className="relative z-10 w-full max-w-md p-8 border shadow-xl bg-white/10 backdrop-blur-md rounded-2xl border-white/20">
+        <h2 className="mb-6 text-3xl font-bold text-center text-white">
+          Recuperar contraseña
+        </h2>
+
+        {success && (
+          <p className="mb-4 text-sm text-center text-green-400">{success}</p>
+        )}
+        {error && (
+          <p className="mb-4 text-sm text-center text-red-400">{error}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1 text-sm text-gray-200">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+                setSuccess("");
+              }}
+              required
+              placeholder="correo@ejemplo.com"
+              className="w-full px-4 py-2 text-white placeholder-gray-300 border rounded-lg bg-white/10 border-white/20 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            />
+          </div>
 
           <button
             type="submit"
-            className="w-full p-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+            disabled={loading}
+            className={`w-full py-2 mt-4 font-semibold text-white transition-all rounded-lg flex items-center justify-center gap-2
+              ${
+                loading
+                  ? "bg-blue-500 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 hover:scale-[1.01] hover:cursor-pointer"
+              }`}
           >
-            Enviar enlace
+            {loading ? (
+              <svg
+                className="w-4 h-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="white"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="white"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            ) : (
+              "Enviar enlace"
+            )}
           </button>
+
+          <div className="text-center">
+            <Link
+              to="/login"
+              className="text-sm text-blue-300 hover:underline"
+            >
+              Volver al login
+            </Link>
+          </div>
         </form>
-
-        {success && <p className="mt-3 text-sm text-center text-green-600">{success}</p>}
-        {error && <p className="mt-3 text-sm text-center text-red-600">{error}</p>}
-
-        <Link to="/login" className="block mt-4 text-sm text-center text-blue-700 hover:underline">
-          Volver al login
-        </Link>
       </div>
     </div>
   );

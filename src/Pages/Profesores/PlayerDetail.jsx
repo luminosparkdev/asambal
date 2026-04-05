@@ -12,84 +12,86 @@ function PlayerDetails() {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-const [categorias, setCategorias] = useState([]);
-const [rawPlayer, setRawPlayer] = useState(null);
+  const [categorias, setCategorias] = useState([]);
+  const [rawPlayer, setRawPlayer] = useState(null);
 
-useEffect(() => {
-  api.get(`/players/${id}`)
-    .then(res => {
-      setRawPlayer(res.data);
-      setLoading(false);
-    })
-    .catch(() => navigate("/players"));
-}, [id, navigate]);
+  useEffect(() => {
+    api.get(`/players/${id}`)
+      .then(res => {
+        setRawPlayer(res.data);
+        setLoading(false);
+      })
+      .catch(() => navigate("/players"));
+  }, [id, navigate]);
 
-useEffect(() => {
-  api.get("/categories")
-    .then(res => setCategorias(res.data))
-    .catch(err => console.error("Error fetching categorias:", err));
-}, []);
+  useEffect(() => {
+    api.get("/categories")
+      .then(res => setCategorias(res.data))
+      .catch(err => console.error("Error fetching categorias:", err));
+  }, []);
 
-const categoriasMap = useMemo(() => {
-  const map = {};
+  const categoriasMap = useMemo(() => {
+    const map = {};
 
-  categorias.forEach(cat => {
-    map[cat.id] = `${cat.nombre} ${cat.genero}`;
-  });
+    categorias.forEach(cat => {
+      map[cat.id] = `${cat.nombre} ${cat.genero}`;
+    });
 
-  return map;
-}, [categorias]);
+    return map;
+  }, [categorias]);
 
-const getPlayerCategories = (data) =>
-  Array.isArray(data.clubs)
-    ? data.clubs
+  const getPlayerCategories = (data) =>
+    Array.isArray(data.clubs)
+      ? data.clubs
         .map(c => categoriasMap[c.categoriaPrincipal])
         .filter(Boolean)
-    : [];
+      : [];
 
-useEffect(() => {
-  if (!rawPlayer || categorias.length === 0) return;
+  useEffect(() => {
+    if (!rawPlayer || categorias.length === 0) return;
 
-  const data = rawPlayer;
+    const data = rawPlayer;
 
-  const normalized = {
-    id: data.id,
-    nombre: data.nombre,
-    apellido: data.apellido,
-    dni: data.dni,
-    fechaNacimiento: data.fechanacimiento,
-    edad: data.edad,
-    sexo: data.sexo,
-    domicilio: data.domicilio,
-    email: data.email,
-    telefono: data.telefono,
-    instagram: data.instagram,
+    const normalized = {
+      id: data.id,
+      nombre: data.nombre,
+      apellido: data.apellido,
+      dni: data.dni,
+      fechaNacimiento: data.fechanacimiento,
+      edad: data.edad,
+      sexo: data.sexo,
+      domicilio: data.domicilio,
+      email: data.email,
+      telefono: data.telefono,
+      instagram: data.instagram,
 
-    // ✅ ACA FUNCIONA BIEN
-    categoria: getPlayerCategories(data),
+      // ✅ ACA FUNCIONA BIEN
+      categoria: getPlayerCategories(data),
 
-    fechaAlta: data.fechaAlta,
-    nivel: data.nivel,
-    escuela: data.escuela,
-    turno: data.turno,
-    año: data.año,
-    peso: data.peso,
-    estatura: data.estatura,
-    domiciliocobro: data.domiciliocobro,
-    horariocobro: data.horariocobro,
-    manohabil: data.manohabil,
-    posicion: data.posicion,
-    usoimagen: data.imageAuthorization ?? false,
-    autorizacion: data.isAuthorized ?? false,
-    reglasclub: data.reglasclub ?? false,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
-    status: data.status,
-  };
+      fechaAlta: data.fechaAlta,
+      nivel: data.nivel,
+      escuela: data.escuela,
+      turno: data.turno,
+      año: data.año,
+      peso: data.peso,
+      estatura: data.estatura,
+      domiciliocobro: data.domiciliocobro,
+      horariocobro: data.horariocobro,
+      manohabil: data.manohabil,
+      posicion: data.posicion,
+      usoimagen: data.imageAuthorization ?? false,
+      autorizacion: data.isAuthorized ?? false,
+      reglasclub: data.reglasclub ?? false,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      status: data.status,
+      habilitadoAsambal: data.habilitadoAsambal ?? false,
+      certificadoMedico: data.certificadoMedico ?? false,
+    };
 
-  setPlayer(normalized);
-  setForm(normalized);
-}, [rawPlayer, categoriasMap]);
+    setPlayer(normalized);
+    setForm(normalized);
+  }, [rawPlayer, categoriasMap]);
 
   const formatBoolean = (value) => {
     if (value === true) return "Sí";
@@ -180,6 +182,9 @@ useEffect(() => {
   if (error) return <div>Error: {error.message}</div>;
   if (!player) return null;
 
+  const formatHabilitado = (value) => (value ? "Sí" : "No");
+  const formatCertificado = (value) => (value ? "CARGADO" : "PENDIENTE");
+
   return (
     <div className="select-none relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
@@ -208,6 +213,18 @@ useEffect(() => {
             >
               {player.status}
             </span>
+          </div>
+
+          <div className="select-none border-l-4 border-yellow-400 rounded-xl bg-gray-800 mb-10 flex gap-x-10 items-center p-6">
+            <div className="flex gap-4">
+              <span className="font-semibold text-md uppercase text-gray-400">Habilitado Asambal</span>
+              <div className="font-semibold px-4 bg-yellow-400 rounded-xl text-md uppercase text-gray-800">{formatHabilitado(player.habilitadoAsambal)}</div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="font-semibold text-md uppercase text-gray-400">Certificado Médico</span>
+              <div className="font-semibold px-4 bg-yellow-400 rounded-xl text-md uppercase text-gray-800">{formatCertificado(player.certificadoMedico)}</div>
+            </div>
           </div>
 
           {/* BODY */}

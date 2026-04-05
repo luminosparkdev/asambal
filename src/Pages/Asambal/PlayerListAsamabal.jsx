@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 import Swal from "sweetalert2";
 import { EyeIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function PlayerListAsambal() {
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ function PlayerListAsambal() {
   const [filterType, setFilterType] = useState("none");
   const [filterValue, setFilterValue] = useState("");
   const [categorias, setCategorias] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 20;
 
   const getPlayerClubs = (player) =>
     Array.isArray(player.clubs)
@@ -19,26 +23,26 @@ function PlayerListAsambal() {
       : [];
 
   const fetchCategorias = async () => {
-  try {
-    const res = await api.get("/categories");
-    setCategorias(res.data);
-  } catch (err) {
-    console.error("Error fetching categorias:", err);
-  }
-};
+    try {
+      const res = await api.get("/categories");
+      setCategorias(res.data);
+    } catch (err) {
+      console.error("Error fetching categorias:", err);
+    }
+  };
 
-const categoriasMap = useMemo(() => {
-  const map = {};
-  categorias.forEach(cat => {
-    map[cat.id] = `${cat.nombre} ${cat.genero}`;
-  });
-  return map;
-}, [categorias]);
+  const categoriasMap = useMemo(() => {
+    const map = {};
+    categorias.forEach(cat => {
+      map[cat.id] = `${cat.nombre} ${cat.genero}`;
+    });
+    return map;
+  }, [categorias]);
 
-const getPlayerCategories = (player) =>
-  Array.isArray(player.clubs)
-    ? player.clubs.map(c => categoriasMap[c.categoriaPrincipal]).filter(Boolean)
-    : [];
+  const getPlayerCategories = (player) =>
+    Array.isArray(player.clubs)
+      ? player.clubs.map(c => categoriasMap[c.categoriaPrincipal]).filter(Boolean)
+      : [];
 
   const unique = (arr) => [...new Set(arr.filter(Boolean))];
 
@@ -131,42 +135,47 @@ const getPlayerCategories = (player) =>
     }
   };
 
-  const filteredPlayers = players.filter((player) => {
-    const matchSearch = `${player.nombre} ${player.apellido}`
-      .toLowerCase()
-      .includes(search.toLowerCase());
+  const filteredPlayers = players
+    .filter((player) => {
+      const matchSearch =
+        player.nombre?.toLowerCase().includes(search.toLowerCase()) ||
+        player.apellido?.toLowerCase().includes(search.toLowerCase());
 
-    let matchFilter = true;
+      let matchFilter = true;
 
-    if (filterValue !== "") {
-      if (filterType === "estado")
-        matchFilter = player.status === filterValue;
+      if (filterValue !== "") {
+        if (filterType === "estado")
+          matchFilter = player.status === filterValue;
 
-      if (filterType === "habilitadoAsambal")
-        matchFilter = player.habilitadoAsambal === (filterValue === "true");
+        if (filterType === "habilitadoAsambal")
+          matchFilter = player.habilitadoAsambal === (filterValue === "true");
 
-      if (filterType === "club")
-        matchFilter = player.clubs?.some(
-          c => c.nombreClub === filterValue
-        );
+        if (filterType === "club")
+          matchFilter = player.clubs?.some(
+            (c) => c.nombreClub === filterValue
+          );
 
-      if (filterType === "categoria")
-        matchFilter = player.clubs?.some(
-          c => (c.categoriaPrincipal || []).includes(filterValue)
-        );
+        if (filterType === "categoria")
+          matchFilter = player.clubs?.some(
+            (c) => (c.categoriaPrincipal || []).includes(filterValue)
+          );
 
-      if (filterType === "sexo")
-        matchFilter = player.sexo === filterValue;
+        if (filterType === "sexo") matchFilter = player.sexo === filterValue;
 
-      if (filterType === "posicion")
-        matchFilter = player.posicion === filterValue;
+        if (filterType === "posicion")
+          matchFilter = player.posicion === filterValue;
 
-      if (filterType === "manoHabil")
-        matchFilter = player.manohabil === filterValue;
-    }
+        if (filterType === "manoHabil") matchFilter = player.manohabil === filterValue;
+      }
 
-    return matchSearch && matchFilter;
-  });
+      return matchSearch && matchFilter;
+    })
+    // Ordenamos por apellido ascendente al render
+    .sort((a, b) => {
+      const aApellido = a.apellido?.toUpperCase() || "";
+      const bApellido = b.apellido?.toUpperCase() || "";
+      return aApellido.localeCompare(bApellido);
+    });
 
   const filterOptionsMap = {
     estado: availableEstados,
@@ -180,6 +189,69 @@ const getPlayerCategories = (player) =>
 
   const selectClasses =
     "cursor-pointer h-10 px-3 py-2 text-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent focus:outline-none focus:ring-1 focus:ring-gray-200";
+
+  // Ordenamos filteredPlayers directamente por apellido (en mayúsculas para consistencia)
+  const sortedPlayers = [...filteredPlayers].sort((a, b) =>
+    (a.apellido?.toUpperCase() || "").localeCompare(b.apellido?.toUpperCase() || "")
+  );
+
+  // Paginación sigue igual
+  const totalPages = Math.ceil(sortedPlayers.length / rowsPerPage);
+
+  const paginatedPlayers = sortedPlayers.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  // Para Nombres (primera letra mayúscula de cada palabra)
+  const capitalize = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
+  // Para Apellidos (todo en mayúsculas)
+  const capitalizeUpper = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .filter(Boolean)
+      .map(word => word.toUpperCase())
+      .join(" ");
+  };
+
+  const normalizeDNI = (dni) => {
+    if (!dni) return "";
+    return dni.toString().replace(/\D/g, ""); // elimina todo lo que no sea número
+  };
+
+  const exportToExcel = () => {
+    const dataToExport = sortedPlayers.map(player => ({
+      Apellido: capitalizeUpper(player.apellido),
+      Nombre: capitalize(player.nombre),
+      DNI: normalizeDNI(player.dni),
+      Club: getPlayerClubs(player).join(", ") || "-",
+      Categoría: getPlayerCategories(player).join(", ") || "-",
+      Estado: estadoLabels[player.status] || player.status,
+      Habilitado: player.habilitadoAsambal ? "Sí" : "No",
+      Beca: player.becado
+        ? "Becado"
+        : !player.habilitadoAsambal
+          ? "Becar"
+          : "No requerido",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Jugadores");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "Jugadores_Asambal.xlsx");
+  };
 
   return (
     <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
@@ -196,7 +268,7 @@ const getPlayerCategories = (player) =>
           <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-4 ">
             <input
               type="text"
-              placeholder="Buscar por nombre..."
+              placeholder="Buscar"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 px-3 text-gray-200 placeholder-gray-200 border border-gray-500 rounded-lg bg-gradient-to-r from-gray-800/80 to-transparent"
@@ -220,21 +292,35 @@ const getPlayerCategories = (player) =>
               <option className="text-gray-100 bg-gray-800 hover:bg-gray-700" value="manoHabil">Mano hábil</option>
             </select>
           </div>
-          {filterType !== "none" && (
-            <select
-              value={filterValue}
-              onChange={(e) => setFilterValue(e.target.value)}
-              className={selectClasses}
-            >
-              <option value="">Todos</option>
 
-              {(filterOptionsMap[filterType] || []).map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt === "true" ? "Sí" : opt === "false" ? "No" : opt}
-                </option>
-              ))}
-            </select>
-          )}
+          <button
+            onClick={exportToExcel}
+            className="w-44 h-10 px-3 py-2 cursor-pointer ml-auto text-sm text-green-400 transition-all border rounded-md border-green-500/40 hover:bg-green-500/10 hover:text-green-200"
+          >
+            Exportar a Excel
+          </button>
+
+          <select
+            value={filterValue}
+            onChange={(e) => setFilterValue(e.target.value)}
+            disabled={filterType === "none"}
+            className={`w-44 ${selectClasses} ${filterType === "none" ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+          >
+            <option className="text-gray-100 bg-gray-800" value="">
+              Todos
+            </option>
+
+            {(filterOptionsMap[filterType] || []).map((opt) => (
+              <option
+                key={opt}
+                value={opt}
+                className="text-gray-100 bg-gray-800"
+              >
+                {opt === "true" ? "Sí" : opt === "false" ? "No" : opt}
+              </option>
+            ))}
+          </select>
         </div>
 
 
@@ -243,8 +329,8 @@ const getPlayerCategories = (player) =>
           <table className="min-w-full text-sm">
             <thead className="text-gray-100 bg-gray-800">
               <tr>
-                <th className="px-4 py-3 text-center">Nombre</th>
-                <th className="px-4 py-3 text-center">Apellido</th>
+                <th className="px-4 py-3 text-center select-none">Apellido</th>
+                <th className="px-4 py-3 text-center select-none">Nombre</th>
                 <th className="px-4 py-3 text-center">DNI</th>
                 <th className="px-4 py-3 text-center">Club</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
@@ -256,11 +342,11 @@ const getPlayerCategories = (player) =>
             </thead>
 
             <tbody className="divide-y divide-gray-300">
-              {filteredPlayers.map((player) => (
+              {paginatedPlayers.map((player) => (
                 <tr key={player.id}>
-                  <td className="px-4 py-2 text-center">{player.nombre}</td>
-                  <td className="px-4 py-2 text-center">{player.apellido}</td>
-                  <td className="px-4 py-2 text-center">{player.dni}</td>
+                  <td className="px-4 py-2 text-center">{capitalizeUpper(player.apellido)}</td>
+                  <td className="px-4 py-2 text-center">{capitalize(player.nombre)}</td>
+                  <td className="px-4 py-2 text-center">{normalizeDNI(player.dni)}</td>
 
                   <td className="px-4 py-2 text-center max-w-40">
                     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -298,8 +384,8 @@ const getPlayerCategories = (player) =>
                       </button>
                     ) : (
                       <span
-              className={"px-3 py-1 rounded-full text-sm font-semibold bg-green-800 text-green-400"}
-            >No requerido</span>
+                        className={"px-3 py-1 rounded-full text-sm font-semibold bg-green-800 text-green-400"}
+                      >No requerido</span>
                     )}
                   </td>
 
@@ -319,9 +405,34 @@ const getPlayerCategories = (player) =>
             </tbody>
 
           </table>
+          
+          <div className="w-full h-px bg-gray-300"></div>
+
+          <div className="flex justify-center items-center gap-4 py-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className="cursor-pointer px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            <span className="text-gray-700">
+              Página {currentPage} de {totalPages}
+            </span>
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className="cursor-pointer px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

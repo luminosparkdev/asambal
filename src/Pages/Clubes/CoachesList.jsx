@@ -271,27 +271,6 @@ function CoachesList() {
     Ver
   </button>
 
-  {/* Botón Activar / Desactivar */}
-  <button
-    onClick={() => toggleCoach(p)}
-    className={`cursor-pointer w-40 flex justify-center items-center gap-1 px-3 py-1 text-sm text-white rounded w-24 ${
-      p.status === "ACTIVO"
-        ? "bg-red-700/95 hover:bg-red-500"
-        : "bg-green-700/95 hover:bg-green-500"
-    }`}
-  >
-    {p.status === "ACTIVO" ? (
-      <>
-        <XCircleIcon className="w-4 h-4" />
-        Desactivar
-      </>
-    ) : (
-      <>
-        <CheckCircleIcon className="w-4 h-4" />
-        Activar
-      </>
-    )}
-  </button>
 </td>
                 </tr>
 

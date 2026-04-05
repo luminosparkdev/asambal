@@ -45,6 +45,8 @@ function PlayerDetailsClub() {
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
           status: data.status,
+          habilitadoAsambal: data.habilitadoAsambal ?? false,
+          certificadoMedico: data.certificadoMedico ?? false,
         };
 
         setPlayer(normalized);
@@ -146,6 +148,9 @@ function PlayerDetailsClub() {
   if (loading) return <p>Cargando...</p>;
   if (!player) return null;
 
+  const formatHabilitado = (value) => (value ? "Sí" : "No");
+  const formatCertificado = (value) => (value ? "CARGADO" : "PENDIENTE");
+
   return (
     <div className="relative min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover">
       <div className="absolute inset-0 bg-black/30" />
@@ -173,6 +178,17 @@ function PlayerDetailsClub() {
             </span>
           </div>
 
+          <div className="select-none border-l-4 border-yellow-400 rounded-xl bg-gray-800 mb-10 flex gap-x-10 items-center p-6">
+            <div className="flex gap-4">
+              <span className="font-semibold text-md uppercase text-gray-400">Habilitado Asambal</span>
+              <div className="font-semibold px-4 bg-yellow-400 rounded-xl text-md uppercase text-gray-800">{formatHabilitado(player.habilitadoAsambal)}</div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="font-semibold text-md uppercase text-gray-400">Certificado Médico</span>
+              <div className="font-semibold px-4 bg-yellow-400 rounded-xl text-md uppercase text-gray-800">{formatCertificado(player.certificadoMedico)}</div>
+            </div>
+          </div>
           {/* BODY */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-gray-200">
             {[
@@ -254,8 +270,8 @@ function PlayerDetailsClub() {
                   onClick={handleToggle}
                   className={`flex-1 py-3 rounded-lg text-white font-semibold
                   ${player.status === "ACTIVO"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-green-600 hover:bg-green-700"}`}
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"}`}
                 >
                   {player.status === "ACTIVO" ? "Desactivar" : "Activar"}
                 </button>
