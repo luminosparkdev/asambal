@@ -15,7 +15,21 @@ function PlayerListAsambal() {
   const [filterValue, setFilterValue] = useState("");
   const [categorias, setCategorias] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [stats, setStats] = useState(null);
   const rowsPerPage = 20;
+
+  const fetchStats = async () => {
+  try {
+    const res = await api.get("/asambal/players/stats");
+    setStats(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+useEffect(() => {
+  fetchStats();
+}, []);
 
   const getPlayerClubs = (player) =>
     Array.isArray(player.clubs)
@@ -101,6 +115,7 @@ function PlayerListAsambal() {
 
   useEffect(() => {
     fetchPlayers();
+    fetchStats();
     fetchCategorias();
   }, []);
 
@@ -263,6 +278,18 @@ function PlayerListAsambal() {
           </h2>
         </div>
 
+        {stats && (
+  <div className="grid gap-4 md:grid-cols-5 mt-4">
+
+    <StatCard label="Registrados" value={stats.total} />
+    <StatCard label="Incompletos" value={stats.incompletos} />
+    <StatCard label="Pendientes" value={stats.pendientes} />
+    <StatCard label="Activos" value={stats.activos} />
+    <StatCard label="Habilitados" value={stats.habilitados} />
+
+  </div>
+)}
+
         <div className="mx-4 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           {/* Filtros */}
           <div className="grid grid-cols-1 gap-3 mt-6 md:grid-cols-4 ">
@@ -325,6 +352,9 @@ function PlayerListAsambal() {
 
 
         {/* Tabla */}
+        <p className="text-sm text-gray-300 mt-2">
+  Mostrando {filteredPlayers.length} de {stats?.total || players.length} jugadores
+</p>
         <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
           <table className="min-w-full text-sm">
             <thead className="text-gray-100 bg-gray-800">
@@ -433,6 +463,57 @@ function PlayerListAsambal() {
         </div>
       </div>
     </div >
+  );
+}
+
+import {
+  UsersIcon,
+  ExclamationTriangleIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
+
+const config = {
+  Registrados: {
+    icon: UsersIcon,
+    color: "text-blue-400 border-blue-500/30 hover:bg-blue-500/10",
+  },
+  Incompletos: {
+    icon: ExclamationTriangleIcon,
+    color: "text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/10",
+  },
+  Pendientes: {
+    icon: ClockIcon,
+    color: "text-orange-400 border-orange-500/30 hover:bg-orange-500/10",
+  },
+  Activos: {
+    icon: CheckCircleIcon,
+    color: "text-green-400 border-green-500/30 hover:bg-green-500/10",
+  },
+  Habilitados: {
+    icon: ShieldCheckIcon,
+    color: "text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10",
+  },
+};
+
+function StatCard({ label, value, onClick }) {
+  const cfg = config[label] || {};
+  const Icon = cfg.icon;
+
+  return (
+    <div
+      onClick={onClick}
+      className={`p-5 border rounded-xl bg-gray-800/60 backdrop-blur transition-all duration-200 cursor-pointer
+      hover:scale-[1.02] hover:shadow-lg ${cfg.color || "border-gray-500/30"}`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm text-gray-300">{label}</p>
+        {Icon && <Icon className="w-5 h-5" />}
+      </div>
+
+      <p className="text-2xl font-bold text-white">{value}</p>
+    </div>
   );
 }
 

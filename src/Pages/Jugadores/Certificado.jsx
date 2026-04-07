@@ -9,7 +9,12 @@ import {
 } from "@heroicons/react/24/solid";
 import api from "../../Api/Api";
 
-const allowedTypes = ["application/pdf", "image/jpeg", "image/jpg"];
+const allowedTypes = [
+  "application/pdf",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+];
 
 function Certificado() {
   const [certificados, setCertificados] = useState([]);
@@ -33,19 +38,33 @@ function Certificado() {
   };
 
   const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
+  const file = acceptedFiles[0];
 
-    if (!allowedTypes.includes(file.type)) {
-      Swal.fire({
-        icon: "error",
-        title: "Formato no permitido",
-        text: "Solo se permiten archivos PDF, JPG o JPEG.",
-      });
-      return;
-    }
+  if (!file) return;
 
-    setUploadFile(file);
-  }, []);
+  const ext = file.name.split(".").pop().toLowerCase();
+
+  const validExt = ["pdf", "jpg", "jpeg", "png"];
+  const validMime = allowedTypes.includes(file.type);
+
+  if (!validExt.includes(ext) && !validMime) {
+    Swal.fire({
+      icon: "error",
+      title: "Formato no permitido",
+      html: `
+        Solo se permiten:<br/>
+        <b>PDF, JPG, JPEG o PNG</b><br/><br/>
+        📱 Si usás iPhone:<br/>
+        - Sacá la foto<br/>
+        - Compartir → "Guardar en Archivos"<br/>
+        - Subí ese archivo
+      `,
+    });
+    return;
+  }
+
+  setUploadFile(file);
+}, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -161,11 +180,15 @@ function Certificado() {
               ${isDragActive ? "border-yellow-500 bg-yellow-50" : "border-gray-300"}`}
             >
               <input {...getInputProps()} />
-              <p className="text-gray-600">
-                {uploadFile
-                  ? uploadFile.name
-                  : "Arrastrá tu certificado o hacé click para subirlo"}
-              </p>
+              <p className="text-gray-600 text-sm">
+  {uploadFile
+    ? uploadFile.name
+    : "Arrastrá o hacé click para subir (PDF, JPG, PNG)"}
+</p>
+
+<p className="text-xs text-gray-500 mt-2">
+  📱 iPhone: guardá la foto en "Archivos" antes de subirla
+</p>
             </div>
 
             {uploadFile && (
