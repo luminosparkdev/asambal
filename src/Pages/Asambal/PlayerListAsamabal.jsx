@@ -250,6 +250,7 @@ useEffect(() => {
       DNI: normalizeDNI(player.dni),
       Club: getPlayerClubs(player).join(", ") || "-",
       Categoría: getPlayerCategories(player).join(", ") || "-",
+      "Fecha de Nacimiento": formatDate(player.fechanacimiento),
       Estado: estadoLabels[player.status] || player.status,
       Habilitado: player.habilitadoAsambal ? "Sí" : "No",
       Beca: player.becado
@@ -268,6 +269,17 @@ useEffect(() => {
     saveAs(blob, "Jugadores_Asambal.xlsx");
   };
 
+  const formatDate = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
       <div className="pb-6 mx-auto max-w-7xl">
@@ -279,7 +291,7 @@ useEffect(() => {
         </div>
 
         {stats && (
-  <div className="grid gap-4 md:grid-cols-5 mt-4">
+  <div className="grid gap-4 md:grid-cols-5 m-4">
 
     <StatCard label="Registrados" value={stats.total} />
     <StatCard label="Incompletos" value={stats.incompletos} />
@@ -352,7 +364,7 @@ useEffect(() => {
 
 
         {/* Tabla */}
-        <p className="text-sm text-gray-300 mt-2">
+        <p className="text-sm text-gray-300 m-4">
   Mostrando {filteredPlayers.length} de {stats?.total || players.length} jugadores
 </p>
         <div className="m-4 overflow-x-auto shadow-xl rounded-2xl bg-white/90 backdrop-blur">
@@ -364,6 +376,7 @@ useEffect(() => {
                 <th className="px-4 py-3 text-center">DNI</th>
                 <th className="px-4 py-3 text-center">Club</th>
                 <th className="px-4 py-3 text-center">Categoría</th>
+                <th className="px-4 py-3 text-center">Fecha de Nacimiento</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Habilitado</th>
                 <th className="px-4 py-3 text-center">Beca</th>
@@ -388,6 +401,10 @@ useEffect(() => {
                     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                       {getPlayerCategories(player).join(", ") || "-"}
                     </div>
+                  </td>
+
+                  <td className="px-4 py-2 text-center">
+                    {formatDate(player.fechanacimiento)}
                   </td>
 
                   <td className="px-4 py-2 text-center">
