@@ -136,7 +136,7 @@ function CertCardProfesor({ cert, aprobar, rechazar, openCertificado }) {
         Documento cargado:
       </p>
       <p className="mb-4 text-sm text-gray-600">
-        {cert.fileName?.split("/").pop()}
+        {cert.nombre} {cert.apellido}
       </p>
 
       <div className="flex justify-center mb-6">
