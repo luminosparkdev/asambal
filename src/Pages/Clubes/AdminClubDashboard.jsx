@@ -42,7 +42,7 @@ const sections = [
     title: "Administración y Finanzas",
     color: "border-green-500",
     links: [
-      { name: "Cuotas y pagos", path: "/fees", icon: "💳" },
+      { name: "Cuotas", path: "/clubs/fees", icon: "💳" },
       { name: "Balance", path: "/balance", icon: "📊" },
       { name: "Membresía ASAMBAL", path: "/club/membresia", icon: "🥇" },
     ],
