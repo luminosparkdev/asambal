@@ -82,11 +82,19 @@ export default function CreateCuota() {
     fechaVencimiento: form.tieneVencimiento
       ? new Date(form.fechaVencimiento)
       : null,
+
+    categoriasDetalle: categoriasDisponibles
+    .filter((cat) => form.categorias.includes(cat.id))
+    .map((cat) => ({
+      id: cat.id,
+      nombre: cat.nombre,
+      genero: cat.genero,
+    })),
   };
 
   try {
     // 🔮 PREVIEW
-    const previewRes = await api.post("/clubs/cuotas/crear", {
+    const previewRes = await api.post("/cuotas/crear", {
       ...payload,
       preview: true,
     });
@@ -126,7 +134,7 @@ export default function CreateCuota() {
     // 🚀 CREATE REAL
     setLoading(true);
 
-    const res = await api.post("/clubs/cuotas/crear", payload);
+    const res = await api.post("/cuotas/crear", payload);
 
     const { message } = res.data || {};
 

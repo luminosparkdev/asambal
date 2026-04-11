@@ -65,6 +65,7 @@ import { PagoExitoso } from "../Pages/PagoResultado";
 import { PagoPendiente } from "../Pages/PagoResultado";
 import { PagoFallido } from "../Pages/PagoResultado";
 import CreateCuota from "../Pages/Clubes/CreateCuota";
+import CuotasList from "../Pages/Clubes/CuotasList"
 
 export const router = createBrowserRouter([
     {
@@ -96,7 +97,8 @@ export const router = createBrowserRouter([
             //EN CONTRUCCIÓN CLUBES
             { path: "/categories", element: <UnderConstruction/> },
             { path: "/injuries", element: <UnderConstruction/> },
-            { path: "/clubs/fees", element: <CreateCuota/> },
+            { path: "/clubs/fees", element: <CuotasList/> },
+            { path: "/clubs/fees/create", element: <CreateCuota/>},
             { path: "/balance", element: <UnderConstruction/> },
             { path: "asambal/sponsors", element: <UnderConstruction/> },
             { path: "/club/profile", element: <UnderConstruction/> },
