@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://asambal-api-303270276070.southamerica-east1.run.app/api",
-  withCredentials: true,
+  baseURL: "http://localhost:3000/api",
+  withCredentials: false,
 });
 
 // AGREGAMOS EL TOKEN A LA PETICION

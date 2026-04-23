@@ -35,7 +35,7 @@ const sections = [
     links: [
       { name: "Alta médica", path: "/players/alta-medica", icon: "🏢" },
       { name: "Inscripciones", path: "/players/me/inscripciones", icon: "📝" },
-      { name: "Cuotas", path: "/players/me/cuotas", icon: "💰" },
+      { name: "Cuotas", path: "/players/fees", icon: "💰" },
       { name: "Viajes", path: "/players/me/viajes", icon: "✈️" },
     ],
   },

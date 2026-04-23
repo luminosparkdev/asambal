@@ -80,7 +80,7 @@ export default function CreateCuota() {
     clubId: activeClubId, 
     monto: Number(form.monto),
     fechaVencimiento: form.tieneVencimiento
-      ? new Date(form.fechaVencimiento)
+      ? form.fechaVencimiento
       : null,
 
     categoriasDetalle: categoriasDisponibles
