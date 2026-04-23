@@ -65,7 +65,9 @@ import { PagoExitoso } from "../Pages/PagoResultado";
 import { PagoPendiente } from "../Pages/PagoResultado";
 import { PagoFallido } from "../Pages/PagoResultado";
 import CreateCuota from "../Pages/Clubes/CreateCuota";
-import CuotasList from "../Pages/Clubes/CuotasList"
+import CuotasList from "../Pages/Clubes/CuotasList";
+import CuotasDetail from "../Pages/Clubes/CuotasDetail";
+import PlayerCuotasView from "../Pages/Jugadores/PlayerCuotasView"
 
 export const router = createBrowserRouter([
     {
@@ -97,7 +99,6 @@ export const router = createBrowserRouter([
             //EN CONTRUCCIÓN CLUBES
             { path: "/categories", element: <UnderConstruction/> },
             { path: "/injuries", element: <UnderConstruction/> },
-            { path: "/clubs/fees", element: <CuotasList/> },
             { path: "/clubs/fees/create", element: <CreateCuota/>},
             { path: "/balance", element: <UnderConstruction/> },
             { path: "asambal/sponsors", element: <UnderConstruction/> },
@@ -115,7 +116,7 @@ export const router = createBrowserRouter([
 
             //EN CONTRUCCIÓN JUGADORES
             { path: "players/me/inscripciones", element: <UnderConstruction/> },
-            { path: "players/me/cuotas", element: <UnderConstruction/> },
+            { path: "players/fees", element: <PlayerCuotasView/> },
             { path: "players/me/viajes", element: <UnderConstruction/> },
             { path: "players/me/lesiones", element: <UnderConstruction/> },
             { path: "players/me/tutor", element: <UnderConstruction/> },
@@ -338,7 +339,6 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-
             {
                 path: "coaches/nuevo",
                 element: (
@@ -347,7 +347,6 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-
             {
                 path: "coaches/:id",
                 element: (
@@ -396,6 +395,9 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+            
+            { path: "/clubs/fees", element: <CuotasList/> },
+            { path: "clubs/fees/:id", element: <CuotasDetail/>},
             //PROFESOR
             {
                 path: "profesor",

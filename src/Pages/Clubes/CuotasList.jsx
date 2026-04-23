@@ -32,43 +32,53 @@ export default function CuotasList() {
   }, []);
 
   const fetchCuotas = async (reset = false) => {
-    if (!activeClubId) return;
+  if (!activeClubId) return;
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const params = {
-        clubId: activeClubId,
-        ...filtros,
-        limit: 12,
-        lastDoc: reset ? null : lastDoc,
-      };
+    const params = {
+      clubId: activeClubId,
+      ...filtros,
+      limit: 12,
+      lastDocId: reset ? null : lastDoc, // ✅ FIX
+    };
 
-      const res = await api.get("/cuotas", { params });
+    const res = await api.get("/cuotas", { params });
 
-      if (reset) {
-        setCuotas(res.data.data);
-      } else {
-        setCuotas((prev) => [...prev, ...res.data.data]);
-      }
+    const nuevas = res.data.data;
 
-      setLastDoc(res.data.lastDoc);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (reset) {
+      setCuotas(nuevas);
+    } else {
+      // 🧠 evitar duplicados
+      setCuotas((prev) => {
+        const ids = new Set(prev.map((c) => c.id));
+        const filtradas = nuevas.filter((c) => !ids.has(c.id));
+        return [...prev, ...filtradas];
+      });
     }
-  };
+
+    setLastDoc(res.data.lastDoc);
+
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
+    setLastDoc(null);
     fetchCuotas(true);
-  }, [filtros]);
+  }, [filtros, activeClubId]);
 
   // 🔥 RESUMEN
   const resumen = {
     total: cuotas.length,
     totalJugadores: cuotas.reduce((acc, c) => acc + (c.totalJugadores || 0), 0),
     totalPagados: cuotas.reduce((acc, c) => acc + (c.totalPagados || 0), 0),
+    totalPendientes: cuotas.reduce((acc, c) => acc + (c.totalPendientes || 0), 0),
     totalAdeudados: cuotas.reduce((acc, c) => acc + (c.totalAdeudados || 0), 0),
   };
 
@@ -85,7 +95,12 @@ export default function CuotasList() {
     if (!fecha) return { label: "Sin venc.", color: "text-green-400" };
 
     const hoy = new Date();
-    const venc = new Date(fecha);
+    const venc =
+    fecha instanceof Date
+      ? fecha
+      : fecha?.seconds
+      ? new Date(fecha.seconds * 1000)
+      : new Date(fecha);
 
     if (venc < hoy) return { label: "Vencida", color: "text-red-400" };
 
@@ -117,20 +132,25 @@ export default function CuotasList() {
         </div>
 
         {/* 🔥 RESUMEN */}
-        <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-5">
           <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
             <p className="text-xs text-gray-300">Cuotas</p>
             <p className="text-xl font-bold text-white">{resumen.total}</p>
           </div>
 
           <div className="p-4 bg-white/10 backdrop-blur rounded-xl">
-            <p className="text-xs text-gray-300">Jugadores</p>
+            <p className="text-xs text-gray-300">Cuotas generadas</p>
             <p className="text-xl font-bold text-white">{resumen.totalJugadores}</p>
           </div>
 
           <div className="p-4 bg-green-900/30 rounded-xl">
             <p className="text-xs text-green-300">Pagados</p>
             <p className="text-xl font-bold text-green-400">{resumen.totalPagados}</p>
+          </div>
+
+          <div className="p-4 bg-yellow-900/30 rounded-xl">
+            <p className="text-xs text-yellow-300">Pendientes</p>
+            <p className="text-xl font-bold text-yellow-400">{resumen.totalPendientes}</p>
           </div>
 
           <div className="p-4 bg-red-900/30 rounded-xl">
@@ -229,13 +249,18 @@ export default function CuotasList() {
                     {cuota.totalPagados} pagos
                   </span>
                   <span>•</span>
+                  <span className="text-yellow-400">
+                    {cuota.totalPendientes || 0} pendientes
+                  </span>
+                  <span>•</span>
                   <span className="text-red-400">
                     {cuota.totalAdeudados} deuda
                   </span>
+                
                 </div>
 
                 <button
-                  onClick={() => navigate(`/cuotas/${cuota.id}`)}
+                  onClick={() => navigate(`/clubs/fees/${cuota.id}`)}
                   className="w-full px-3 py-2 mt-4 text-sm text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   Ver detalle
