@@ -148,7 +148,11 @@ export default function CuotasList() {
             <p className="text-xl font-bold text-green-400">{resumen.totalPagados}</p>
           </div>
 
-          <div className="p-4 bg-yellow-900/30 rounded-xl">
+          <div className={`p-4 rounded-xl ${
+            resumen.totalPendientes > 0
+            ? "bg-yellow-900/30"
+            : "bg-yellow-900/10"
+            }`}>
             <p className="text-xs text-yellow-300">Pendientes</p>
             <p className="text-xl font-bold text-yellow-400">{resumen.totalPendientes}</p>
           </div>
@@ -158,6 +162,12 @@ export default function CuotasList() {
             <p className="text-xl font-bold text-red-400">{resumen.totalAdeudados}</p>
           </div>
         </div>
+
+        {resumen.totalPendientes > 0 && (
+  <div className="p-4 mb-4 text-yellow-300 bg-yellow-900/30 rounded-xl border border-yellow-500/30">
+    ⚠️ Tenés pagos pendientes de validación. Revisá el detalle de las cuotas.
+  </div>
+)}
 
         {/* FILTROS */}
         <div className="flex flex-wrap gap-3 mb-6">

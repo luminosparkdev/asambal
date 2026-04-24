@@ -106,7 +106,7 @@ export default function CuotaDetalle() {
 
   const getEstadoColor = (estado) => {
     switch (estado) {
-      case "PAGADO":
+      case "ACREDITADO":
         return "text-green-400";
       case "PENDIENTE":
         return "text-yellow-400";
@@ -127,11 +127,69 @@ export default function CuotaDetalle() {
   // 📊 stats
   const stats = {
     total: jugadores.length,
-    pagados: jugadores.filter((j) => j.estado === "PAGADO").length,
+    acreditados: jugadores.filter((j) => j.estado === "ACREDITADO").length,
     pendientes: jugadores.filter((j) => j.estado === "PENDIENTE").length,
     adeudados: jugadores.filter((j) => j.estado === "ADEUDADO").length,
     vencidos: jugadores.filter((j) => j.estado === "VENCIDO").length,
   };
+
+  const verComprobante = (url) => {
+  Swal.fire({
+    title: "Comprobante",
+    imageUrl: url,
+    imageAlt: "Comprobante de pago",
+    showCloseButton: true,
+    background: "#0f172a",
+    color: "#e5e7eb",
+  });
+};
+
+const handleValidar = async (jugadorId) => {
+  const confirm = await Swal.fire({
+    title: "¿Aprobar pago?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, aprobar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  await api.patch(`/cuotas/validar/${cuota.id}/${jugadorId}`, {
+    clubId: activeClubId,
+  });
+
+  setJugadores(prev =>
+    prev.map(j =>
+      j.id === jugadorId
+        ? { ...j, estado: "ACREDITADO" }
+        : j
+    )
+  );
+};
+
+const handleRechazar = async (jugadorId) => {
+  const { value: motivo } = await Swal.fire({
+    title: "Motivo de rechazo",
+    input: "text",
+    showCancelButton: true,
+  });
+
+  if (!motivo) return;
+
+  await api.patch(`/cuotas/rechazar/${cuota.id}/${jugadorId}`, {
+    clubId: activeClubId,
+    motivo,
+  });
+
+  setJugadores(prev =>
+    prev.map(j =>
+      j.id === jugadorId
+        ? { ...j, estado: "RECHAZADO" }
+        : j
+    )
+  );
+};
 
   return (
     <div className="min-h-screen bg-[url('/src/Assets/Asambal/fondodashboard.webp')] bg-cover bg-center relative">
@@ -165,11 +223,11 @@ export default function CuotaDetalle() {
           />
 
           <CardStat
-            label="Pagados"
-            value={stats.pagados}
+            label="Acreditados"
+            value={stats.acreditados}
             color="green"
-            active={filtroEstado === "PAGADO"}
-            onClick={() => setFiltroEstado("PAGADO")}
+            active={filtroEstado === "ACREDITADO"}
+            onClick={() => setFiltroEstado("ACREDITADO")}
           />
 
           <CardStat
@@ -178,6 +236,7 @@ export default function CuotaDetalle() {
             color="yellow"
             active={filtroEstado === "PENDIENTE"}
             onClick={() => setFiltroEstado("PENDIENTE")}
+            className={stats.pendientes > 0 ? "animate-pulse" : ""}
           />
 
           <CardStat
@@ -240,6 +299,32 @@ export default function CuotaDetalle() {
                           : "Prórroga"}
                       </button>
                     )}
+                    {j.estado === "PENDIENTE" && (
+  <div className="flex justify-end gap-2">
+
+    <button
+      onClick={() => verComprobante(j.comprobanteUrl)}
+      className="px-2 py-1 text-xs text-blue-400 border border-blue-400 rounded"
+    >
+      Ver
+    </button>
+
+    <button
+      onClick={() => handleValidar(j.id)}
+      className="px-2 py-1 text-xs text-white bg-green-600 rounded"
+    >
+      Aprobar
+    </button>
+
+    <button
+      onClick={() => handleRechazar(j.id)}
+      className="px-2 py-1 text-xs text-white bg-red-600 rounded"
+    >
+      Rechazar
+    </button>
+
+  </div>
+)}
                   </td>
                 </motion.tr>
               ))}
@@ -259,7 +344,7 @@ export default function CuotaDetalle() {
   );
 }
 
-function CardStat({ label, value, onClick, color = "gray", active }) {
+function CardStat({ label, value, onClick, color = "gray", active, className  }) {
   const colors = {
     gray: "bg-white/10 text-white",
     green: "bg-green-900/30 text-green-400",
@@ -273,7 +358,8 @@ function CardStat({ label, value, onClick, color = "gray", active }) {
       onClick={onClick}
       className={`p-4 rounded-xl cursor-pointer transition border ${
         active ? "border-white" : "border-transparent"
-      } ${colors[color]} hover:scale-[1.02]`}
+      } ${colors[color]} 
+      ${className || ""} hover:scale-[1.02]`}
     >
       <p className="text-xs">{label}</p>
       <p className="text-xl font-bold">{value}</p>
