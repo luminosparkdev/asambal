@@ -71,14 +71,17 @@ useEffect(() => {
   );
 
   const availableCategories = useMemo(
-    () =>
-      unique(
-        players.flatMap(p =>
-          (p.clubs || []).flatMap(c => c.categorias || [])
-        )
-      ).sort(),
-    [players]
-  );
+  () =>
+    unique(
+      players.flatMap(p =>
+        (p.clubs || []).flatMap(c => [
+          c.categoriaPrincipal,
+          ...(c.categoriasSecundarias || [])
+        ])
+      )
+    ).sort(),
+  [players]
+);
 
   const availableEstados = useMemo(
     () => unique(players.map(p => p.status)).sort(),
@@ -100,10 +103,7 @@ useEffect(() => {
     [players]
   );
 
-  const availableHabilitado = useMemo(
-    () => unique(players.map(p => p.habilitadoAsambal)),
-    [players]
-  );
+  const availableHabilitado = ["true", "false"];
 
   const estadoLabels = {
     INCOMPLETO: "Incompleto",
@@ -170,10 +170,12 @@ useEffect(() => {
             (c) => c.nombreClub === filterValue
           );
 
-        if (filterType === "categoria")
-          matchFilter = player.clubs?.some(
-            (c) => (c.categoriaPrincipal || []).includes(filterValue)
-          );
+        if (filterType === "categoria") {
+  matchFilter = player.clubs?.some(c =>
+    c.categoriaPrincipal === filterValue ||
+    (c.categoriasSecundarias || []).includes(filterValue)
+  );
+}
 
         if (filterType === "sexo") matchFilter = player.sexo === filterValue;
 
@@ -270,15 +272,14 @@ useEffect(() => {
   };
 
   const formatDate = (date) => {
-    if (!date) return "";
-    const d = new Date(date);
+  if (!date) return "-";
 
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
+  const d = new Date(date);
 
-    return `${day}/${month}/${year}`;
-  };
+  if (isNaN(d.getTime())) return "-";
+
+  return d.toLocaleDateString("es-AR");
+};
 
   return (
     <div className="select-none min-h-screen bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
@@ -351,14 +352,16 @@ useEffect(() => {
             </option>
 
             {(filterOptionsMap[filterType] || []).map((opt) => (
-              <option
-                key={opt}
-                value={opt}
-                className="text-gray-100 bg-gray-800"
-              >
-                {opt === "true" ? "Sí" : opt === "false" ? "No" : opt}
-              </option>
-            ))}
+  <option key={opt} value={opt} className="bg-gray-800 text-gray-200">
+    {filterType === "categoria"
+      ? categoriasMap[opt] || opt
+      : opt === "true"
+      ? "Sí"
+      : opt === "false"
+      ? "No"
+      : opt}
+  </option>
+))}
           </select>
         </div>
 
@@ -379,6 +382,8 @@ useEffect(() => {
                 <th className="px-4 py-3 text-center">Fecha de Nacimiento</th>
                 <th className="px-4 py-3 text-center">Estado</th>
                 <th className="px-4 py-3 text-center">Habilitado</th>
+                <th className="px-4 py-3 text-center">Fecha habilitación</th>
+                <th className="px-4 py-3 text-center">Género</th>
                 <th className="px-4 py-3 text-center">Beca</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
               </tr>
@@ -414,6 +419,16 @@ useEffect(() => {
                   <td className="px-4 py-2 text-center">
                     {player.habilitadoAsambal ? "Sí" : "No"}
                   </td>
+
+                  <td className="px-4 py-2 text-center">
+  {player.fechaHabilitacion
+    ? formatDate(player.fechaHabilitacion)
+    : "-"}
+</td>
+
+                  <td className="px-4 py-2 text-center">
+  {player.sexo || "-"}
+</td>
 
                   {/* COLUMNA BECA */}
                   <td className="px-4 py-2 text-center">

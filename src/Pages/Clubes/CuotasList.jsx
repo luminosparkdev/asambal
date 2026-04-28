@@ -77,7 +77,7 @@ export default function CuotasList() {
   const resumen = {
     total: cuotas.length,
     totalJugadores: cuotas.reduce((acc, c) => acc + (c.totalJugadores || 0), 0),
-    totalPagados: cuotas.reduce((acc, c) => acc + (c.totalPagados || 0), 0),
+    totalAcreditados: cuotas.reduce((acc, c) => acc + (c.totalAcreditados || 0), 0),
     totalPendientes: cuotas.reduce((acc, c) => acc + (c.totalPendientes || 0), 0),
     totalAdeudados: cuotas.reduce((acc, c) => acc + (c.totalAdeudados || 0), 0),
   };
@@ -144,8 +144,8 @@ export default function CuotasList() {
           </div>
 
           <div className="p-4 bg-green-900/30 rounded-xl">
-            <p className="text-xs text-green-300">Pagados</p>
-            <p className="text-xl font-bold text-green-400">{resumen.totalPagados}</p>
+            <p className="text-xs text-green-300">Acreditados</p>
+            <p className="text-xl font-bold text-green-400">{resumen.totalAcreditados}</p>
           </div>
 
           <div className={`p-4 rounded-xl ${
@@ -256,7 +256,7 @@ export default function CuotasList() {
                   <span>👥 {cuota.totalJugadores}</span>
                   <span>•</span>
                   <span className="text-green-400">
-                    {cuota.totalPagados} pagos
+                    {cuota.totalAcreditados} pagos
                   </span>
                   <span>•</span>
                   <span className="text-yellow-400">
