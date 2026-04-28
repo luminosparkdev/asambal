@@ -22,7 +22,7 @@ function PlayerDetailsClub() {
           nombre: data.nombre,
           apellido: data.apellido,
           dni: data.dni,
-          fechaNacimiento: data.fechanacimiento,
+          fechanacimiento: data.fechanacimiento,
           edad: data.edad,
           sexo: data.sexo,
           domicilio: data.domicilio,
@@ -194,7 +194,7 @@ function PlayerDetailsClub() {
             {[
               { label: "Nombre", name: "nombre" },
               { label: "Apellido", name: "apellido" },
-              { label: "Fecha de nacimiento", name: "fechaNacimiento" },
+              { label: "Fecha de nacimiento", name: "fechanacimiento" },
               { label: "Edad", name: "edad" },
               { label: "Género", name: "sexo" },
               { label: "DNI", name: "dni" },
