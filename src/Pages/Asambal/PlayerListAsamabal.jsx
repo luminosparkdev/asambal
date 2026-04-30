@@ -255,6 +255,8 @@ useEffect(() => {
       "Fecha de Nacimiento": formatDate(player.fechanacimiento),
       Estado: estadoLabels[player.status] || player.status,
       Habilitado: player.habilitadoAsambal ? "Sí" : "No",
+      FechaHabilitado: player.fechaHabilitacion,
+      Genero: player.sexo,
       Beca: player.becado
         ? "Becado"
         : !player.habilitadoAsambal

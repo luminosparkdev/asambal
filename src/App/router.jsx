@@ -99,7 +99,7 @@ export const router = createBrowserRouter([
             //EN CONTRUCCIÓN CLUBES
             { path: "/categories", element: <UnderConstruction/> },
             { path: "/injuries", element: <UnderConstruction/> },
-            { path: "/clubs/fees/create", element: <UnderConstruction/>},
+            { path: "/clubs/fees/create", element: <CreateCuota/>},
             { path: "/balance", element: <UnderConstruction/> },
             { path: "asambal/sponsors", element: <UnderConstruction/> },
             { path: "/club/profile", element: <UnderConstruction/> },
@@ -116,7 +116,7 @@ export const router = createBrowserRouter([
 
             //EN CONTRUCCIÓN JUGADORES
             { path: "players/me/inscripciones", element: <UnderConstruction/> },
-            { path: "players/fees", element: <UnderConstruction/> },
+            { path: "players/fees", element: <PlayersCuotasView/> },
             { path: "players/me/viajes", element: <UnderConstruction/> },
             { path: "players/me/lesiones", element: <UnderConstruction/> },
             { path: "players/me/tutor", element: <UnderConstruction/> },
