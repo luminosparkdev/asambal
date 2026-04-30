@@ -116,7 +116,7 @@ export const router = createBrowserRouter([
 
             //EN CONTRUCCIÓN JUGADORES
             { path: "players/me/inscripciones", element: <UnderConstruction/> },
-            { path: "players/fees", element: <PlayersCuotasView/> },
+            { path: "players/fees", element: <PlayerCuotasView/> },
             { path: "players/me/viajes", element: <UnderConstruction/> },
             { path: "players/me/lesiones", element: <UnderConstruction/> },
             { path: "players/me/tutor", element: <UnderConstruction/> },
