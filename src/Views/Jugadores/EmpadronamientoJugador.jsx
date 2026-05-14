@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/Api";
 import Swal from "sweetalert2";
+import { useAuth } from "../../Auth/AuthContext";
 
 const formatMoney = (value) => {
   if (value === undefined || value === null) return "$0";
@@ -23,9 +24,20 @@ const isUnlocked = (activationDate) => {
   return new Date() >= date;
 };
 
+// TEMPORAL:
+// categorías Mini/Infantil no pagan cuota 2
+const categoriasSinCuota2 = [
+  "tlyVYF6leyMi9A4Gadhb", // Mini Masculino
+  "1o47uf4O71olPASHUteD", // Mini Femenino
+  "fRQ7ZFe2xLJC2BDNN0dJ", // Infantil Masculino
+  "FmTSKs6LsO30B0VePEkL", // Infantil Femenino
+];
+
 function EmpadronamientoJugador() {
   const [loading, setLoading] = useState(true);
   const [tickets, setTickets] = useState([]);
+
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchTickets();
@@ -61,7 +73,7 @@ function EmpadronamientoJugador() {
       const res = await api.post("/pagos/crear-preferencia", {
         tipo: "empadronamiento",
         ticketId: ticket.ticketId,
-        cuotaNumero: cuota.number
+        cuotaNumero: cuota.number,
       });
 
       if (!res.data?.init_point) {
@@ -100,6 +112,7 @@ function EmpadronamientoJugador() {
               key={ticket.ticketId}
               ticket={ticket}
               onPay={pagarCuota}
+              user={user}
             />
           ))}
         </div>
@@ -109,9 +122,25 @@ function EmpadronamientoJugador() {
   );
 }
 
-function TicketTimeline({ ticket, onPay }) {
+function TicketTimeline({ ticket, onPay, user }) {
 
-  const cuotas = [...ticket.cuotas].sort((a, b) => a.number - b.number);
+  const categoriaPrincipal =
+    user?.clubs?.[0]?.categoriaPrincipal;
+
+  const cuotas = [...ticket.cuotas]
+    .filter((cuota) => {
+
+      const noDebeVerCuota2 =
+        categoriasSinCuota2.includes(categoriaPrincipal);
+
+      // ocultar SOLO cuota 2
+      if (noDebeVerCuota2 && cuota.number === 2) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => a.number - b.number);
 
   return (
     <div className="p-6 shadow-xl bg-white/90 backdrop-blur rounded-2xl">

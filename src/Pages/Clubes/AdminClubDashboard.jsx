@@ -35,6 +35,14 @@ const sections = [
       { name: "Categorías", path: "/categories", icon: "🏷️" },
       { name: "Profesores", path: "/coaches", icon: "👨‍🏫" },
       { name: "Jugadores", path: "/clubs/players", icon: "🏃" },
+    ],
+  },
+  {
+    title: "Gestiones Operativas",
+    color: "border-orange-400",
+    links: [
+      { name: "Viajes", path: "/clubs/viajes", icon: "✈️" },
+      { name: "Arbitrajes", path: "/clubs/arbitrajes", icon: "🏐" },
       { name: "Lesiones", path: "/injuries", icon: "🤕" },
     ],
   },

@@ -36,7 +36,7 @@ const sections = [
       { name: "Alta médica", path: "/players/alta-medica", icon: "🏢" },
       { name: "Inscripciones", path: "/players/me/inscripciones", icon: "📝" },
       { name: "Cuotas", path: "/players/fees", icon: "💰" },
-      { name: "Viajes", path: "/players/me/viajes", icon: "✈️" },
+      { name: "Viajes", path: "/players/viajes", icon: "✈️" },
     ],
   },
   {

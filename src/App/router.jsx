@@ -68,6 +68,9 @@ import CreateCuota from "../Pages/Clubes/CreateCuota";
 import CuotasList from "../Pages/Clubes/CuotasList";
 import CuotasDetail from "../Pages/Clubes/CuotasDetail";
 import PlayerCuotasView from "../Pages/Jugadores/PlayerCuotasView"
+import Viajes from "../Pages/Clubes/Viajes";
+import CreateTrip from "../Pages/Clubes/CreateTrip";
+import PlayerViajes from "../Pages/Jugadores/PlayerViajes";
 
 export const router = createBrowserRouter([
     {
@@ -79,48 +82,48 @@ export const router = createBrowserRouter([
             { path: "login", element: <Login />, },
             { path: "activar-cuenta", element: <ActivateAccount /> },
             { path: "recuperar-clave", element: <RecuperarClave /> },
-            { path: "quienes-somos", element: <QuienesSomos />},
-            { path: "autoridades", element: <Autoridades />},
-            { path: "select-role", element: <SelectRole />},
-            { path: "pago-exitoso", element: <PagoExitoso />},
-            { path: "pago-pendiente", element: <PagoPendiente/>},
-            { path: "pago-fallido", element: <PagoFallido />},
+            { path: "quienes-somos", element: <QuienesSomos /> },
+            { path: "autoridades", element: <Autoridades /> },
+            { path: "select-role", element: <SelectRole /> },
+            { path: "pago-exitoso", element: <PagoExitoso /> },
+            { path: "pago-pendiente", element: <PagoPendiente /> },
+            { path: "pago-fallido", element: <PagoFallido /> },
 
             //EN CONTRUCCIÓN ASAMBAL
-            { path: "asambal/cashflow", element: <UnderConstruction/> },
-            { path: "asambal/reportes", element: <UnderConstruction/> },
-            { path: "asambal/ingresos", element: <UnderConstruction/> },
-            { path: "asambal/gastos", element: <UnderConstruction/> },
-            { path: "asambal/novedades", element: <UnderConstruction/> },
-            { path: "asambal/sponsors", element: <UnderConstruction/> },
-            { path: "asambal/auditoria", element: <UnderConstruction/> },
-            { path: "asambal/configuracion", element: <UnderConstruction/> },
+            { path: "asambal/cashflow", element: <UnderConstruction /> },
+            { path: "asambal/reportes", element: <UnderConstruction /> },
+            { path: "asambal/ingresos", element: <UnderConstruction /> },
+            { path: "asambal/gastos", element: <UnderConstruction /> },
+            { path: "asambal/novedades", element: <UnderConstruction /> },
+            { path: "asambal/sponsors", element: <UnderConstruction /> },
+            { path: "asambal/auditoria", element: <UnderConstruction /> },
+            { path: "asambal/configuracion", element: <UnderConstruction /> },
 
             //EN CONTRUCCIÓN CLUBES
-            { path: "/categories", element: <UnderConstruction/> },
-            { path: "/injuries", element: <UnderConstruction/> },
-            { path: "/clubs/fees/create", element: <CreateCuota/>},
-            { path: "/balance", element: <UnderConstruction/> },
-            { path: "asambal/sponsors", element: <UnderConstruction/> },
-            { path: "/club/profile", element: <UnderConstruction/> },
-            { path: "/club/contact", element: <UnderConstruction/> },
+            { path: "/categories", element: <UnderConstruction /> },
+            { path: "/injuries", element: <UnderConstruction /> },
+            { path: "/clubs/fees/create", element: <CreateCuota /> },
+            { path: "/balance", element: <UnderConstruction /> },
+            { path: "asambal/sponsors", element: <UnderConstruction /> },
+            { path: "/club/profile", element: <UnderConstruction /> },
+            { path: "/club/contact", element: <UnderConstruction /> },
 
             //EN CONTRUCCIÓN PROFESORES
-            { path: "admin/liberados", element: <UnderConstruction/> },
-            { path: "admin/categorias", element: <UnderConstruction/> },
-            { path: "admin/lesiones", element: <UnderConstruction/> },
-            { path: "admin/pagos", element: <UnderConstruction/> },
-            { path: "admin/inscripciones", element: <UnderConstruction/> },
-            { path: "admin/viajes", element: <UnderConstruction/> },
-            { path: "admin/arbitrajes", element: <UnderConstruction/> },
+            { path: "admin/liberados", element: <UnderConstruction /> },
+            { path: "admin/categorias", element: <UnderConstruction /> },
+            { path: "admin/lesiones", element: <UnderConstruction /> },
+            { path: "admin/pagos", element: <UnderConstruction /> },
+            { path: "admin/inscripciones", element: <UnderConstruction /> },
+            { path: "admin/viajes", element: <UnderConstruction /> },
+            { path: "admin/arbitrajes", element: <UnderConstruction /> },
 
             //EN CONTRUCCIÓN JUGADORES
-            { path: "players/me/inscripciones", element: <UnderConstruction/> },
-            { path: "players/fees", element: <PlayerCuotasView/> },
-            { path: "players/me/viajes", element: <UnderConstruction/> },
-            { path: "players/me/lesiones", element: <UnderConstruction/> },
-            { path: "players/me/tutor", element: <UnderConstruction/> },
-            { path: "players/me/configuracion", element: <UnderConstruction/> },
+            { path: "players/me/inscripciones", element: <UnderConstruction /> },
+            { path: "players/fees", element: <PlayerCuotasView /> },
+            { path: "players/me/viajes", element: <UnderConstruction /> },
+            { path: "players/me/lesiones", element: <UnderConstruction /> },
+            { path: "players/me/tutor", element: <UnderConstruction /> },
+            { path: "players/me/configuracion", element: <UnderConstruction /> },
 
             { path: "*", element: <NotFound /> },
 
@@ -305,6 +308,24 @@ export const router = createBrowserRouter([
                 ),
             },
 
+            {
+                path: "clubs/viajes",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <Viajes />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "clubs/viajes/crear",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CreateTrip />
+                    </ProtectedRoute>
+                ),
+            },
+
             // RUTA PARA FORMULARIO DE CREACION DE JUGADOR DESDE ADMIN CLUB
             {
                 path: "clubs/jugadores/create",
@@ -326,9 +347,9 @@ export const router = createBrowserRouter([
             {
                 path: "clubs/pending-players",
                 element: (
-                   <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <PendingPlayersClub />
-                    </ProtectedRoute> 
+                    </ProtectedRoute>
                 )
             },
             {
@@ -395,9 +416,9 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-            
-            { path: "/clubs/fees", element: <CuotasList/> },
-            { path: "clubs/fees/:id", element: <CuotasDetail/>},
+
+            { path: "/clubs/fees", element: <CuotasList /> },
+            { path: "clubs/fees/:id", element: <CuotasDetail /> },
             //PROFESOR
             {
                 path: "profesor",
@@ -458,12 +479,12 @@ export const router = createBrowserRouter([
             {
                 path: "profesor/empadronamientos",
                 element: (
-                <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
-                    <ProfeSeguros />
-                </ProtectedRoute>
+                    <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
+                        <ProfeSeguros />
+                    </ProtectedRoute>
                 ),
             },
-                        {
+            {
                 path: "/profesor/alta-medica",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.PROFESOR]}>
@@ -501,6 +522,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
                         <EmpadronamientoJugador />
+                    </ProtectedRoute>
+                ),
+            },
+                        {
+                path: "/players/viajes",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+                        <PlayerViajes />
                     </ProtectedRoute>
                 ),
             },
