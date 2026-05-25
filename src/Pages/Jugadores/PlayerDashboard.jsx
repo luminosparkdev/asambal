@@ -46,6 +46,7 @@ const sections = [
       { name: "Empadronamientos", path: "/players/empadronamientos", icon: "💰" },
       { name: "Pases", path: "/players/transfers", icon: "🔁" },
       { name: "Lesiones", path: "/players/me/lesiones", icon: "🩹" },
+      { name: "Arbitrajes", path: "/players/arbitrajes", icon: "🏐" },
     ],
   },
   {

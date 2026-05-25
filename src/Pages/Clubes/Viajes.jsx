@@ -150,44 +150,129 @@ function Viajes() {
         }
     };
 
-    const verJugadores = async (viajeId) => {
-        try {
-            const token = localStorage.getItem("token");
-            const clubId = localStorage.getItem("clubId");
+const verJugadores = async (viajeId) => {
+    try {
+        const token = localStorage.getItem("token");
+        const clubId = localStorage.getItem("clubId");
 
-            const res = await api.get(`/viajes/${viajeId}/jugadores`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "X-club-id": clubId,
-                },
-            });
+        const res = await api.get(`/viajes/${viajeId}/jugadores`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "X-club-id": clubId,
+            },
+        });
 
-            const jugadores = res.data;
+        const jugadores = res.data || [];
 
-            let jugadoresHtml = "";
-            jugadores.forEach(jugador => {
-                jugadoresHtml += `
-          <div>
-            <strong>${jugador.nombre}</strong> ${jugador.apellido} - ${jugador.estado}
-          </div>
-        `;
-            });
+        // PRIORIDAD:
+        // CONFIRMADO > EN ESPERA > INVITADO
 
-            await Swal.fire({
-                title: 'Jugadores del Viaje',
-                html: jugadoresHtml,
-                showCloseButton: true,
-                customClass: {
-                    popup: 'bg-gray-800 rounded-lg shadow-xl p-6',
-                    title: 'text-gray-200',
-                    htmlContainer: 'text-gray-200',
-                },
-            });
-        } catch (error) {
-            console.error("Error obteniendo jugadores:", error);
-            Swal.fire('Error', 'No se pudieron obtener los jugadores', 'error');
-        }
-    };
+        const prioridadEstado = {
+            INVITADO: 1,
+            "EN ESPERA": 2,
+            CONFIRMADO: 3,
+        };
+
+const jugadoresMap = new Map();
+
+jugadores.forEach((jugador) => {
+
+    const key = `
+        ${(jugador.nombre || "").trim().toLowerCase()}
+        ${(jugador.apellido || "").trim().toLowerCase()}
+    `;
+
+    const existente = jugadoresMap.get(key);
+
+    if (!existente) {
+
+        jugadoresMap.set(key, jugador);
+
+        return;
+    }
+
+    const prioridadNueva =
+        prioridadEstado[jugador.estado] || 0;
+
+    const prioridadExistente =
+        prioridadEstado[existente.estado] || 0;
+
+    // reemplaza solo si el nuevo estado es más importante
+    if (prioridadNueva > prioridadExistente) {
+
+        jugadoresMap.set(key, jugador);
+    }
+});
+
+        const jugadoresUnicos =
+            Array.from(jugadoresMap.values());
+
+        let jugadoresHtml = "";
+
+        jugadoresUnicos.forEach((jugador) => {
+
+            let colorEstado = "#3b82f6";
+
+            if (jugador.estado === "CONFIRMADO") {
+                colorEstado = "#22c55e";
+            }
+
+            if (jugador.estado === "EN ESPERA") {
+                colorEstado = "#f59e0b";
+            }
+
+            jugadoresHtml += `
+                <div class="flex items-center justify-between bg-gray-700 rounded-lg p-3 mb-2">
+                    
+                    <div>
+                        <strong class="text-white">
+                            ${jugador.nombre} ${jugador.apellido}
+                        </strong>
+                    </div>
+
+                    <span
+                        style="
+                            background:${colorEstado};
+                            padding:4px 10px;
+                            border-radius:999px;
+                            color:white;
+                            font-size:12px;
+                            font-weight:bold;
+                        "
+                    >
+                        ${jugador.estado}
+                    </span>
+
+                </div>
+            `;
+        });
+
+        await Swal.fire({
+            title: 'Jugadores del Viaje',
+            html: jugadoresHtml,
+            width: 700,
+            showCloseButton: true,
+            customClass: {
+                popup: 'bg-gray-800 rounded-lg shadow-xl p-6',
+                title: 'text-gray-200',
+                htmlContainer: 'text-gray-200',
+            },
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error obteniendo jugadores:",
+            error
+        );
+
+        Swal.fire(
+            'Error',
+            'No se pudieron obtener los jugadores',
+            'error'
+        );
+    }
+};
 
     const formatCurrency = (value) => {
         if (!value) return "$0";
@@ -267,7 +352,7 @@ function Viajes() {
                         onClick={irACrearViaje}
                         className="h-10 px-6 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
                     >
-                        Crear Viaje
+                        Crear
                     </button>
                 </div>
 

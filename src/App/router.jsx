@@ -71,6 +71,9 @@ import PlayerCuotasView from "../Pages/Jugadores/PlayerCuotasView"
 import Viajes from "../Pages/Clubes/Viajes";
 import CreateTrip from "../Pages/Clubes/CreateTrip";
 import PlayerViajes from "../Pages/Jugadores/PlayerViajes";
+import Arbitrajes from "../Pages/Clubes/Arbitrajes";
+import PlayerArbitrajes from "../Pages/Jugadores/PlayerArbitrajes";
+import CreateArbitraje from "../Pages/Clubes/CreateArbitraje";
 
 export const router = createBrowserRouter([
     {
@@ -120,7 +123,6 @@ export const router = createBrowserRouter([
             //EN CONTRUCCIÓN JUGADORES
             { path: "players/me/inscripciones", element: <UnderConstruction /> },
             { path: "players/fees", element: <PlayerCuotasView /> },
-            { path: "players/me/viajes", element: <UnderConstruction /> },
             { path: "players/me/lesiones", element: <UnderConstruction /> },
             { path: "players/me/tutor", element: <UnderConstruction /> },
             { path: "players/me/configuracion", element: <UnderConstruction /> },
@@ -317,11 +319,29 @@ export const router = createBrowserRouter([
                 ),
             },
 
+{
+    path: "clubs/arbitrajes",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+            <Arbitrajes />
+        </ProtectedRoute>
+    ),
+},
+
             {
                 path: "clubs/viajes/crear",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
                         <CreateTrip />
+                    </ProtectedRoute>
+                ),
+            },
+
+            {
+                path: "clubs/arbitrajes/crear",
+                element: (
+                    <ProtectedRoute allowedRoles={[ROLES.ADMIN_CLUB]}>
+                        <CreateArbitraje />
                     </ProtectedRoute>
                 ),
             },
@@ -525,7 +545,7 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
-                        {
+            {
                 path: "/players/viajes",
                 element: (
                     <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
@@ -533,6 +553,15 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+
+            {
+    path: "/players/arbitrajes",
+    element: (
+        <ProtectedRoute allowedRoles={[ROLES.JUGADOR]}>
+            <PlayerArbitrajes />
+        </ProtectedRoute>
+    ),
+},
         ],
     },
 ]);
