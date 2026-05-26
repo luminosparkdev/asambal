@@ -165,7 +165,7 @@ export default function CreateArbitraje() {
                 // PREVIEW
                 const previewRes =
                     await api.post(
-                        "/arbitrajes",
+                        "/arbitrajes/crear",
                         {
                             ...payload,
                             preview: true,
@@ -231,7 +231,7 @@ export default function CreateArbitraje() {
 
                 const res =
                     await api.post(
-                        "/arbitrajes",
+                        "/arbitrajes/crear",
                         payload
                     );
 

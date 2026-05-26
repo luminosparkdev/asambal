@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
-import { FaMapMarkerAlt, FaClock, FaMoneyBillAlt } from "react-icons/fa";
+import {
+    FaMapMarkerAlt,
+    FaClock,
+    FaMoneyBillAlt
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/Api";
 
@@ -9,7 +13,6 @@ export default function PlayerViajes() {
 
     const [viajes, setViajes] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showPaymentButton, setShowPaymentButton] = useState(null);
 
     const navigate = useNavigate();
 
@@ -77,7 +80,9 @@ export default function PlayerViajes() {
 
             await api.patch(
                 `/viajes/${viajeId}/responder`,
-                { estado },
+                {
+                    estado,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -88,8 +93,8 @@ export default function PlayerViajes() {
             Swal.fire({
                 icon: "success",
                 title:
-                    estado === "CONFIRMADO"
-                        ? "Viaje confirmado"
+                    estado === "ACEPTADO"
+                        ? "Viaje aceptado"
                         : "Viaje rechazado",
                 timer: 1800,
                 showConfirmButton: false,
@@ -106,9 +111,68 @@ export default function PlayerViajes() {
                 )
             );
 
-            if (estado === "CONFIRMADO") {
-                setShowPaymentButton(viajeId);
-            }
+        } catch (error) {
+
+            console.error(error);
+
+            Swal.fire(
+                "Error",
+                error?.response?.data?.message ||
+                "No se pudo responder el viaje",
+                "error"
+            );
+        }
+    };
+
+    const handleNotificarPago = async (viajeId) => {
+
+        try {
+
+            const token = localStorage.getItem("token");
+
+            const { value: file } = await Swal.fire({
+                title: "Adjuntar comprobante",
+                input: "file",
+                inputAttributes: {
+                    accept: "image/*,application/pdf",
+                },
+                showCancelButton: true,
+            });
+
+            if (!file) return;
+
+            const formData = new FormData();
+
+            formData.append("comprobante", file);
+
+            await api.patch(
+                `/viajes/${viajeId}/notificarPago`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            setViajes((prev) =>
+                prev.map((viaje) =>
+                    viaje.viajeId === viajeId
+                        ? {
+                            ...viaje,
+                            pagoNotificado: true,
+                            estado: "PENDIENTE",
+                        }
+                        : viaje
+                )
+            );
+
+            Swal.fire(
+                "Éxito",
+                "Comprobante enviado correctamente",
+                "success"
+            );
 
         } catch (error) {
 
@@ -116,69 +180,12 @@ export default function PlayerViajes() {
 
             Swal.fire(
                 "Error",
-                "No se pudo responder el viaje",
+                error?.response?.data?.message ||
+                "No se pudo enviar el comprobante",
                 "error"
             );
         }
     };
-
-const handleNotificarPago = async (viajeId) => {
-
-    try {
-
-        const { value: file } = await Swal.fire({
-            title: "Adjuntar comprobante",
-            input: "file",
-            inputAttributes: {
-                accept: "image/*,application/pdf",
-            },
-            showCancelButton: true,
-        });
-
-        if (!file) return;
-
-        const formData = new FormData();
-
-        formData.append("comprobante", file);
-
-        await api.patch(
-            `/viajes/${viajeId}/notificarPago`,
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            }
-        );
-
-        setViajes((prev) =>
-            prev.map((viaje) =>
-                viaje.viajeId === viajeId
-                    ? {
-                        ...viaje,
-                        pagoNotificado: true,
-                    }
-                    : viaje
-            )
-        );
-
-        Swal.fire(
-            "Éxito",
-            "Comprobante enviado correctamente",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        Swal.fire(
-            "Error",
-            "No se pudo enviar el comprobante",
-            "error"
-        );
-    }
-};
 
     const formatCurrency = (value) => {
 
@@ -194,12 +201,17 @@ const handleNotificarPago = async (viajeId) => {
 
     const formatDate = (date) => {
 
+        if (!date) return "-";
+
         return new Date(date).toLocaleDateString("es-AR");
     };
 
     const getEstadoColor = (estado) => {
 
         switch (estado) {
+
+            case "ACEPTADO":
+                return "bg-green-600";
 
             case "CONFIRMADO":
                 return "bg-green-600";
@@ -209,6 +221,9 @@ const handleNotificarPago = async (viajeId) => {
 
             case "EN ESPERA":
                 return "bg-yellow-500";
+
+            case "PENDIENTE":
+                return "bg-orange-500";
 
             default:
                 return "bg-blue-600";
@@ -221,6 +236,7 @@ const handleNotificarPago = async (viajeId) => {
             <div className="flex items-center justify-center min-h-screen bg-slate-900">
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+
                     <p className="text-gray-300">
                         Cargando viajes...
                     </p>
@@ -233,9 +249,19 @@ const handleNotificarPago = async (viajeId) => {
         <div className="select-none relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
 
             <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.3 }}
+                initial={{
+                    opacity: 0,
+                    y: 20,
+                    scale: 0.97
+                }}
+                animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1
+                }}
+                transition={{
+                    duration: 0.3
+                }}
                 className="w-full max-w-5xl p-6 bg-transparent border border-gray-500 shadow-xl backdrop-blur rounded-2xl"
             >
 
@@ -285,6 +311,7 @@ const handleNotificarPago = async (viajeId) => {
 
                                                 <div className="flex items-center gap-2">
                                                     <FaMapMarkerAlt />
+
                                                     <span>
                                                         {viaje.destino}
                                                     </span>
@@ -292,6 +319,7 @@ const handleNotificarPago = async (viajeId) => {
 
                                                 <div className="flex items-center gap-2">
                                                     <FaClock />
+
                                                     <span>
                                                         {viaje.horaSalida}
                                                     </span>
@@ -299,6 +327,7 @@ const handleNotificarPago = async (viajeId) => {
 
                                                 <div className="flex items-center gap-2">
                                                     <FaMoneyBillAlt />
+
                                                     <span>
                                                         {formatCurrency(viaje.monto)}
                                                     </span>
@@ -315,7 +344,7 @@ const handleNotificarPago = async (viajeId) => {
                                                             onClick={() =>
                                                                 responderViaje(
                                                                     viaje.viajeId,
-                                                                    "CONFIRMADO"
+                                                                    "ACEPTADO"
                                                                 )
                                                             }
                                                             className="flex-1 px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
@@ -339,40 +368,40 @@ const handleNotificarPago = async (viajeId) => {
                                                 )
                                             }
 
-{
-    viaje.estado === "CONFIRMADO" && (
+                                            {
+                                                viaje.estado === "ACEPTADO" && (
 
-        <div className="mt-6">
+                                                    <div className="mt-6">
 
-            {
-                viaje.pagoNotificado ? (
+                                                        {
+                                                            viaje.pagoNotificado ? (
 
-                    <button
-                        disabled
-                        className="w-full px-4 py-2 font-semibold text-white bg-gray-600 cursor-not-allowed rounded-lg"
-                    >
-                        Comprobante enviado
-                    </button>
+                                                                <button
+                                                                    disabled
+                                                                    className="w-full px-4 py-2 font-semibold text-white bg-gray-600 cursor-not-allowed rounded-lg"
+                                                                >
+                                                                    Comprobante enviado
+                                                                </button>
 
-                ) : (
+                                                            ) : (
 
-                    <button
-                        onClick={() =>
-                            handleNotificarPago(
-                                viaje.viajeId
-                            )
-                        }
-                        className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                    >
-                        Notificar Pago
-                    </button>
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleNotificarPago(
+                                                                            viaje.viajeId
+                                                                        )
+                                                                    }
+                                                                    className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                                                                >
+                                                                    Notificar Pago
+                                                                </button>
 
-                )
-            }
+                                                            )
+                                                        }
 
-        </div>
-    )
-}
+                                                    </div>
+                                                )
+                                            }
 
                                         </div>
                                     ))

@@ -16,20 +16,49 @@ import api from "../../Api/Api";
 
 function Arbitrajes() {
 
+    const today = new Date();
+
+    const currentMonth =
+        today.getMonth() + 1;
+
+    const currentYear =
+        today.getFullYear();
+
     const [loading, setLoading] =
         useState(true);
 
     const [arbitrajes, setArbitrajes] =
         useState([]);
 
+    const [filter, setFilter] =
+        useState({
+            mes: currentMonth,
+            anio: currentYear,
+        });
+
     const navigate =
         useNavigate();
+
+    const months = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ];
 
     useEffect(() => {
 
         fetchArbitrajes();
 
-    }, []);
+    }, [filter]);
 
     const fetchArbitrajes = async () => {
 
@@ -43,6 +72,20 @@ function Arbitrajes() {
             const clubId =
                 localStorage.getItem("clubId");
 
+            const fechaInicio =
+                new Date(
+                    filter.anio,
+                    filter.mes - 1,
+                    1
+                );
+
+            const fechaFin =
+                new Date(
+                    filter.anio,
+                    filter.mes,
+                    0
+                );
+
             const res = await api.get(
                 "/arbitrajes/club",
                 {
@@ -51,12 +94,14 @@ function Arbitrajes() {
                             `Bearer ${token}`,
                         "X-club-id": clubId,
                     },
-                }
-            );
 
-            console.log(
-                "ARBITRAJES RAW:",
-                res.data
+                    params: {
+                        fechaInicio:
+                            fechaInicio.toISOString(),
+                        fechaFin:
+                            fechaFin.toISOString(),
+                    },
+                }
             );
 
             const data =
@@ -75,11 +120,6 @@ function Arbitrajes() {
                                 a.titulo
                         )
                     : [];
-
-            console.log(
-                "ARBITRAJES LIMPIOS:",
-                data
-            );
 
             setArbitrajes(
                 [...data]
@@ -104,6 +144,18 @@ function Arbitrajes() {
         }
     };
 
+    const handleFilterChange =
+        (e) => {
+
+        const { name, value } =
+            e.target;
+
+        setFilter((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     const irACrearArbitraje = () => {
 
         navigate(
@@ -123,64 +175,63 @@ function Arbitrajes() {
                 "Editar Arbitraje",
 
             html: `
-                <div class="space-y-4 w-full">
+<div class="space-y-4 w-full">
 
-                    <label
-                        for="titulo"
-                        class="block text-sm font-medium text-gray-200"
-                    >
-                        Título
-                    </label>
+<label
+for="titulo"
+class="block text-sm font-medium text-gray-200"
+>
+Título
+</label>
 
-                    <input
-                        id="titulo"
-                        class="w-full px-4 py-2 text-gray-700 border border-gray-500 rounded-md"
-                        type="text"
-                        placeholder="Título"
-                        value="${arbitraje.titulo || ""}"
-                    >
+<input
+id="titulo"
+class="w-full px-4 py-2 text-gray-700 border border-gray-500 rounded-md"
+type="text"
+placeholder="Título"
+value="${arbitraje.titulo || ""}"
+>
 
-                    <label
-                        for="descripcion"
-                        class="block text-sm font-medium text-gray-200"
-                    >
-                        Descripción
-                    </label>
+<label
+for="descripcion"
+class="block text-sm font-medium text-gray-200"
+>
+Descripción
+</label>
 
-                    <textarea
-                        id="descripcion"
-                        class="w-full px-4 py-2 text-gray-700 border border-gray-500 rounded-md"
-                        placeholder="Descripción"
-                    >${arbitraje.descripcion || ""}</textarea>
+<textarea
+id="descripcion"
+class="w-full px-4 py-2 text-gray-700 border border-gray-500 rounded-md"
+placeholder="Descripción"
+>${arbitraje.descripcion || ""}</textarea>
 
-                    <label
-                        for="monto"
-                        class="block text-sm font-medium text-gray-200"
-                    >
-                        Monto
-                    </label>
+<label
+for="monto"
+class="block text-sm font-medium text-gray-200"
+>
+Monto
+</label>
 
-                    <div class="relative">
+<div class="relative">
 
-                        <span
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                        >
-                            $
-                        </span>
+<span
+class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+>
+$
+</span>
 
-                        <input
-                            id="monto"
-                            class="w-full pl-8 pr-4 py-2 text-gray-700 border border-gray-500 rounded-md"
-                            type="text"
-                            placeholder="Monto"
-                            value="${arbitraje.monto?.toLocaleString("es-AR") || 0}"
-                        />
+<input
+id="monto"
+class="w-full pl-8 pr-4 py-2 text-gray-700 border border-gray-500 rounded-md"
+type="text"
+placeholder="Monto"
+value="${arbitraje.monto?.toLocaleString("es-AR") || 0}"
+/>
 
-                    </div>
+</div>
 
-                </div>
-            `,
-
+</div>
+`,
             focusConfirm: false,
 
             preConfirm: () => {
@@ -211,20 +262,6 @@ function Arbitrajes() {
                     Swal.fire(
                         "Error",
                         "Completa todos los campos",
-                        "error"
-                    );
-
-                    return false;
-                }
-
-                if (
-                    isNaN(monto) ||
-                    parseFloat(monto) <= 0
-                ) {
-
-                    Swal.fire(
-                        "Error",
-                        "Monto inválido",
                         "error"
                     );
 
@@ -346,57 +383,297 @@ function Arbitrajes() {
                     ? res.data
                     : [];
 
-            let jugadoresHtml = "";
+            let jugadoresHtml = `
+<div class="overflow-x-auto">
+
+<table class="w-full text-sm text-left text-gray-900 border-collapse">
+
+<thead class="bg-gray-700 text-gray-100">
+
+<tr>
+
+<th class="p-3">Jugador</th>
+
+<th class="p-3">Comprobante</th>
+
+<th class="p-3">Estado</th>
+
+<th class="p-3 text-center">Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+`;
 
             jugadores.forEach(
                 (jugador) => {
 
-                    const pagado =
-                        jugador.estado ===
-                        "PAGADO";
+                    let estadoColor =
+                        "bg-yellow-500";
 
-                    const color =
-                        pagado
-                            ? "#22c55e"
-                            : "#f59e0b";
+                    if (
+                        jugador.estado ===
+                        "PAGADO"
+                    ) {
+
+                        estadoColor =
+                            "bg-green-500";
+                    }
+
+                    if (
+                        jugador.estado ===
+                        "RECHAZADO"
+                    ) {
+
+                        estadoColor =
+                            "bg-red-500";
+                    }
+
+                    if (
+                        jugador.estado ===
+                        "PAGO_PENDIENTE"
+                    ) {
+
+                        estadoColor =
+                            "bg-blue-500";
+                    }
 
                     jugadoresHtml += `
-                        <div class="flex items-center justify-between bg-gray-700 rounded-lg p-3 mb-2">
+<tr class="border-b border-gray-700">
 
-                            <div>
+<td class="p-3">
+${jugador.nombre || ""}
+${jugador.apellido || ""}
+</td>
 
-                                <strong class="text-white">
+<td class="p-3">
 
-                                    ${jugador.nombre}
-                                    ${jugador.apellido}
+${
+    jugador.comprobanteUrl
+        ? `
+<a
+href="${jugador.comprobanteUrl}"
+target="_blank"
+class="
+px-3 py-1
+bg-blue-600
+rounded-md
+text-white
+text-xs
+"
+>
+Ver archivo
+</a>
+`
+        : "-"
+}
 
-                                </strong>
+</td>
 
-                            </div>
+<td class="p-3">
 
-                            <span
-                                style="
-                                    background:${color};
-                                    padding:4px 10px;
-                                    border-radius:999px;
-                                    color:white;
-                                    font-size:12px;
-                                    font-weight:bold;
-                                "
-                            >
+<span class="
+px-3 py-1
+rounded-full
+text-white
+text-xs
+font-bold
+${estadoColor}
+">
+${jugador.estado}
+</span>
 
-                                ${
-                                    pagado
-                                        ? "PAGADO"
-                                        : "PENDIENTE"
-                                }
+</td>
 
-                            </span>
+<td class="p-3">
 
-                        </div>
-                    `;
+${
+    jugador.estado ===
+    "PAGO_PENDIENTE"
+        ? `
+<div class="
+flex
+justify-center
+gap-2
+">
+
+<button
+onclick="window.aprobarPago('${arbitrajeId}','${jugador.id}')"
+class="
+px-3 py-1
+bg-green-600
+rounded-md
+text-white
+text-xs
+"
+>
+✓
+</button>
+
+<button
+onclick="window.rechazarPago('${arbitrajeId}','${jugador.id}')"
+class="
+px-3 py-1
+bg-red-600
+rounded-md
+text-white
+text-xs
+"
+>
+X
+</button>
+
+</div>
+`
+        : jugador.estado ===
+          "PAGADO"
+        ? `
+<div class="
+flex justify-center
+">
+<span class="
+px-3 py-1
+bg-green-600
+rounded-full
+text-white
+text-xs
+font-bold
+">
+✓ Aprobado
+</span>
+</div>
+`
+        : jugador.estado ===
+          "RECHAZADO"
+        ? `
+<div class="
+flex justify-center
+">
+<span class="
+px-3 py-1
+bg-red-600
+rounded-full
+text-white
+text-xs
+font-bold
+">
+✕ Rechazado
+</span>
+</div>
+`
+        : "-"
+}
+
+</td>
+
+</tr>
+`;
                 }
             );
+
+            jugadoresHtml += `
+</tbody>
+</table>
+</div>
+`;
+
+            window.aprobarPago =
+                async (
+                    arbitrajeId,
+                    jugadorId
+                ) => {
+
+                try {
+
+                    await api.patch(
+                        `/arbitrajes/${arbitrajeId}/validar/${jugadorId}`,
+                        {
+                            estado:
+                                "PAGADO",
+                        },
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`,
+                                "X-club-id":
+                                    clubId,
+                            },
+                        }
+                    );
+
+                    Swal.fire(
+                        "OK",
+                        "Pago aprobado",
+                        "success"
+                    );
+
+                    verJugadores(
+                        arbitrajeId
+                    );
+
+                    fetchArbitrajes();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    Swal.fire(
+                        "Error",
+                        "No se pudo aprobar",
+                        "error"
+                    );
+                }
+            };
+
+            window.rechazarPago =
+                async (
+                    arbitrajeId,
+                    jugadorId
+                ) => {
+
+                try {
+
+                    await api.patch(
+                        `/arbitrajes/${arbitrajeId}/validar/${jugadorId}`,
+                        {
+                            estado:
+                                "RECHAZADO",
+                        },
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`,
+                                "X-club-id":
+                                    clubId,
+                            },
+                        }
+                    );
+
+                    Swal.fire(
+                        "OK",
+                        "Pago rechazado",
+                        "success"
+                    );
+
+                    verJugadores(
+                        arbitrajeId
+                    );
+
+                    fetchArbitrajes();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    Swal.fire(
+                        "Error",
+                        "No se pudo rechazar",
+                        "error"
+                    );
+                }
+            };
 
             await Swal.fire({
 
@@ -406,7 +683,7 @@ function Arbitrajes() {
                 html:
                     jugadoresHtml,
 
-                width: 700,
+                width: 1100,
 
                 showCloseButton: true,
 
@@ -473,6 +750,7 @@ function Arbitrajes() {
     }
 
     return (
+
         <div className="select-none relative flex items-center justify-center min-h-[80vh] px-4 bg-[url('/src/assets/Asambal/fondodashboard.webp')]">
 
             <motion.div
@@ -498,15 +776,75 @@ function Arbitrajes() {
 
                 <div className="flex items-center justify-between mb-6">
 
-                    <div>
+                    <div className="flex gap-4">
 
-                        <h1 className="mb-1 text-2xl font-bold text-gray-200">
-                            Arbitrajes del Club
-                        </h1>
+                        <select
+                            name="mes"
+                            value={filter.mes}
+                            onChange={
+                                handleFilterChange
+                            }
+                            className="
+                            h-10 px-4 py-2
+                            bg-gray-800
+                            border border-gray-500
+                            rounded-md
+                            text-gray-200
+                            "
+                        >
 
-                        <p className="text-sm text-gray-300">
-                            Gestiona los arbitrajes de tus jugadores
-                        </p>
+                            {months.map(
+                                (
+                                    month,
+                                    idx
+                                ) => (
+
+                                    <option
+                                        key={
+                                            idx + 1
+                                        }
+                                        value={
+                                            idx + 1
+                                        }
+                                    >
+                                        {month}
+                                    </option>
+                                )
+                            )}
+
+                        </select>
+
+                        <select
+                            name="anio"
+                            value={filter.anio}
+                            onChange={
+                                handleFilterChange
+                            }
+                            className="
+                            h-10 px-4 py-2
+                            bg-gray-800
+                            border border-gray-500
+                            rounded-md
+                            text-gray-200
+                            "
+                        >
+
+                            {[
+                                currentYear,
+                                currentYear + 1,
+                            ].map(
+                                (year) => (
+
+                                    <option
+                                        key={year}
+                                        value={year}
+                                    >
+                                        {year}
+                                    </option>
+                                )
+                            )}
+
+                        </select>
 
                     </div>
 
@@ -633,7 +971,7 @@ function Arbitrajes() {
                                             onClick={() =>
                                                 editarArbitraje(a)
                                             }
-                                            className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
+                                            className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
                                         >
                                             Editar
                                         </button>
@@ -642,7 +980,7 @@ function Arbitrajes() {
                                             onClick={() =>
                                                 verJugadores(a.id)
                                             }
-                                            className="px-4 py-2 text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-yellow-300 text-sm"
+                                            className="px-4 py-2 text-white bg-yellow-600 rounded-md hover:bg-yellow-700"
                                         >
                                             Listado
                                         </button>

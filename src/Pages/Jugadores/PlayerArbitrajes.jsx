@@ -4,9 +4,24 @@ import { motion } from "framer-motion";
 
 import Swal from "sweetalert2";
 
+import {
+    FaMoneyBillAlt,
+    FaClock,
+    FaCheck,
+} from "react-icons/fa";
+
 import api from "../../Api/Api";
 
 function ArbitrajesJugador() {
+
+    const today =
+        new Date();
+
+    const currentMonth =
+        today.getMonth() + 1;
+
+    const currentYear =
+        today.getFullYear();
 
     const [loading, setLoading] =
         useState(true);
@@ -14,11 +29,32 @@ function ArbitrajesJugador() {
     const [arbitrajes, setArbitrajes] =
         useState([]);
 
+    const [filter, setFilter] =
+        useState({
+            mes: currentMonth,
+            anio: currentYear,
+        });
+
+    const months = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ];
+
     useEffect(() => {
 
         fetchArbitrajes();
 
-    }, []);
+    }, [filter]);
 
     const fetchArbitrajes = async () => {
 
@@ -27,7 +63,9 @@ function ArbitrajesJugador() {
             setLoading(true);
 
             const token =
-                localStorage.getItem("token");
+                localStorage.getItem(
+                    "token"
+                );
 
             const res = await api.get(
                 "/arbitrajes/jugador/mis-arbitrajes",
@@ -39,13 +77,42 @@ function ArbitrajesJugador() {
                 }
             );
 
+            let data =
+                res.data || [];
+
+            data =
+                data.filter(
+                    (a) => {
+
+                        if (
+                            !a.createdAt
+                        ) return true;
+
+                        const fecha =
+                            new Date(
+                                a.createdAt._seconds
+                                    ? a.createdAt._seconds * 1000
+                                    : a.createdAt
+                            );
+
+                        return (
+                            fecha.getMonth() + 1 ===
+                                Number(filter.mes) &&
+                            fecha.getFullYear() ===
+                                Number(filter.anio)
+                        );
+                    }
+                );
+
             setArbitrajes(
-                res.data || []
+                data
             );
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
 
             Swal.fire(
                 "Error",
@@ -59,229 +126,512 @@ function ArbitrajesJugador() {
         }
     };
 
-    const notificarPago = async (
-        arbitrajeId
-    ) => {
+    const notificarPago =
+        async (
+            arbitrajeId
+        ) => {
 
-        const { value: file } =
-            await Swal.fire({
-                title:
-                    "Subir comprobante",
-                input: "file",
-                inputAttributes: {
-                    accept:
-                        "image/*,.pdf",
-                },
-                showCancelButton: true,
-            });
-
-        if (!file) return;
-
-        try {
-
-            const token =
-                localStorage.getItem("token");
-
-            const formData =
-                new FormData();
-
-            formData.append(
-                "comprobante",
-                file
-            );
-
-            await api.patch(
-                `/arbitrajes/${arbitrajeId}/notificarPago`,
-                formData,
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`,
-                        "Content-Type":
-                            "multipart/form-data",
+            const { value: file } =
+                await Swal.fire({
+                    title:
+                        "Subir comprobante",
+                    input: "file",
+                    inputAttributes: {
+                        accept:
+                            "image/*,.pdf",
                     },
-                }
-            );
+                    showCancelButton: true,
+                });
 
-            Swal.fire(
-                "Éxito",
-                "Pago notificado correctamente",
-                "success"
-            );
+            if (!file) return;
 
-            fetchArbitrajes();
+            try {
 
-        } catch (error) {
+                const token =
+                    localStorage.getItem(
+                        "token"
+                    );
 
-            console.error(error);
+                const formData =
+                    new FormData();
 
-            Swal.fire(
-                "Error",
-                "No se pudo notificar el pago",
-                "error"
-            );
-        }
-    };
+                formData.append(
+                    "comprobante",
+                    file
+                );
 
-    const formatCurrency = (
-        value
-    ) => {
+                await api.patch(
+                    `/arbitrajes/${arbitrajeId}/notificarPago`,
+                    formData,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            "Content-Type":
+                                "multipart/form-data",
+                        },
+                    }
+                );
 
-        return new Intl.NumberFormat(
-            "es-AR",
-            {
-                style: "currency",
-                currency: "ARS",
-                minimumFractionDigits: 0,
+                Swal.fire(
+                    "Éxito",
+                    "Pago notificado correctamente",
+                    "success"
+                );
+
+                fetchArbitrajes();
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+                Swal.fire(
+                    "Error",
+                    "No se pudo notificar el pago",
+                    "error"
+                );
             }
-        ).format(value || 0);
-    };
+        };
 
-    const getEstadoColor = (
-        estado
-    ) => {
+    const formatCurrency =
+        (
+            value
+        ) => {
 
-        switch (estado) {
+            return new Intl.NumberFormat(
+                "es-AR",
+                {
+                    style:
+                        "currency",
+                    currency:
+                        "ARS",
+                    minimumFractionDigits: 0,
+                }
+            ).format(
+                value || 0
+            );
+        };
 
-            case "PAGADO":
-                return "bg-green-500";
+    const getEstadoConfig =
+        (
+            estado
+        ) => {
 
-            case "PENDIENTE":
-                return "bg-yellow-500";
+            switch (
+                estado
+            ) {
 
-            default:
-                return "bg-blue-500";
-        }
-    };
+                case "PAGADO":
+
+                    return {
+                        color:
+                            "bg-green-500",
+                        text:
+                            "APROBADO",
+                        icon:
+                            <FaCheck />,
+                    };
+
+                case "REVISION":
+
+                    return {
+                        color:
+                            "bg-blue-500",
+                        text:
+                            "EN REVISIÓN",
+                        icon:
+                            <FaClock />,
+                    };
+
+                case "RECHAZADO":
+
+                    return {
+                        color:
+                            "bg-red-500",
+                        text:
+                            "RECHAZADO",
+                        icon:
+                            "✕",
+                    };
+
+                default:
+
+                    return {
+                        color:
+                            "bg-yellow-500",
+                        text:
+                            "PENDIENTE",
+                        icon:
+                            <FaClock />,
+                    };
+            }
+        };
+
+    const handleFilterChange =
+        (
+            e
+        ) => {
+
+            const {
+                name,
+                value,
+            } = e.target;
+
+            setFilter(
+                (
+                    prev
+                ) => ({
+                    ...prev,
+                    [name]:
+                        value,
+                })
+            );
+        };
 
     if (loading) {
 
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-900">
+            <div className="
+            flex items-center
+            justify-center
+            min-h-screen
+            bg-slate-900
+            ">
 
-                <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="
+                flex flex-col
+                items-center gap-3
+                ">
+
+                    <div className="
+                    w-10 h-10 border-4
+                    border-green-500
+                    border-t-transparent
+                    rounded-full
+                    animate-spin
+                    " />
+
+                    <p className="
+                    text-gray-300
+                    ">
+                        Cargando arbitrajes...
+                    </p>
+
+                </div>
 
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen p-6 bg-slate-900">
+
+        <div className="
+        select-none relative
+        flex items-center
+        justify-center
+        min-h-[80vh]
+        px-4
+        bg-[url('/src/assets/Asambal/fondodashboard.webp')]
+        ">
 
             <motion.div
+
                 initial={{
                     opacity: 0,
                     y: 20,
+                    scale: 0.97,
                 }}
+
                 animate={{
                     opacity: 1,
                     y: 0,
+                    scale: 1,
                 }}
-                className="max-w-5xl mx-auto"
+
+                transition={{
+                    duration: 0.3,
+                }}
+
+                className="
+                w-full max-w-5xl
+                p-6 bg-transparent
+                border border-gray-500
+                shadow-xl backdrop-blur
+                rounded-2xl
+                "
             >
 
-                <h1 className="mb-2 text-3xl font-bold text-white">
+                <h1 className="
+                mb-1 text-2xl
+                font-bold text-gray-200
+                ">
                     Mis Arbitrajes
                 </h1>
 
-                <p className="mb-8 text-gray-400">
-                    Aquí puedes gestionar tus arbitrajes
+                <p className="
+                mb-6 text-sm text-gray-300
+                ">
+                    Gestiona tus arbitrajes
                 </p>
+
+                <div className="
+                mb-6 flex gap-4
+                ">
+
+                    <select
+                        name="mes"
+                        value={filter.mes}
+                        onChange={
+                            handleFilterChange
+                        }
+                        className="
+                        h-10 px-4 py-2
+                        bg-gray-800
+                        border border-gray-500
+                        rounded-md
+                        text-gray-200
+                        "
+                    >
+
+                        {months.map(
+                            (
+                                month,
+                                idx
+                            ) => (
+
+                                <option
+                                    key={
+                                        idx + 1
+                                    }
+                                    value={
+                                        idx + 1
+                                    }
+                                >
+                                    {month}
+                                </option>
+                            )
+                        )}
+
+                    </select>
+
+                    <select
+                        name="anio"
+                        value={filter.anio}
+                        onChange={
+                            handleFilterChange
+                        }
+                        className="
+                        h-10 px-4 py-2
+                        bg-gray-800
+                        border border-gray-500
+                        rounded-md
+                        text-gray-200
+                        "
+                    >
+
+                        {[
+                            currentYear,
+                            currentYear + 1,
+                        ].map(
+                            (
+                                year
+                            ) => (
+
+                                <option
+                                    key={
+                                        year
+                                    }
+                                    value={
+                                        year
+                                    }
+                                >
+                                    {year}
+                                </option>
+                            )
+                        )}
+
+                    </select>
+
+                </div>
 
                 {
                     arbitrajes.length === 0
                         ? (
-                            <div className="p-10 text-center text-gray-400 bg-gray-800 rounded-2xl">
 
-                                No tienes arbitrajes disponibles
+                            <p className="
+                            mt-10 text-center
+                            text-gray-300
+                            ">
+                                No tienes arbitrajes.
+                            </p>
 
-                            </div>
                         )
                         : (
-                            <div className="grid gap-6 md:grid-cols-2">
+
+                            <div className="
+                            grid gap-6
+                            md:grid-cols-2
+                            ">
 
                                 {
                                     arbitrajes.map(
                                         (
                                             arbitraje
-                                        ) => (
+                                        ) => {
 
-                                            <div
-                                                key={
-                                                    arbitraje.id
-                                                }
-                                                className="p-6 bg-gray-800 shadow-xl rounded-2xl"
-                                            >
+                                            const estado =
+                                                getEstadoConfig(
+                                                    arbitraje.estado
+                                                );
 
-                                                <div className="flex items-center justify-between mb-4">
+                                            return (
 
-                                                    <span className="text-sm text-gray-400">
-                                                        Arbitraje
-                                                    </span>
+                                                <div
+                                                    key={
+                                                        arbitraje.id
+                                                    }
+                                                    className="
+                                                    p-6 shadow-xl
+                                                    bg-gray-800
+                                                    backdrop-blur
+                                                    rounded-2xl
+                                                    text-gray-200
+                                                    "
+                                                >
 
-                                                    <span className={`px-3 py-1 text-xs text-white rounded-full ${getEstadoColor(arbitraje.estado)}`}>
+                                                    <div className="
+                                                    mb-4 flex
+                                                    items-center
+                                                    justify-between
+                                                    ">
+
+                                                        <span className={`
+                                                        px-4 py-1
+                                                        text-white
+                                                        rounded-full
+                                                        text-xs
+                                                        flex items-center
+                                                        gap-2
+                                                        ${estado.color}
+                                                        `}>
+
+                                                            {
+                                                                estado.icon
+                                                            }
+
+                                                            {
+                                                                estado.text
+                                                            }
+
+                                                        </span>
+
+                                                    </div>
+
+                                                    <h2 className="
+                                                    text-xl font-bold
+                                                    text-white mb-2
+                                                    ">
 
                                                         {
-                                                            arbitraje.estado
+                                                            arbitraje.titulo
                                                         }
 
-                                                    </span>
+                                                    </h2>
 
-                                                </div>
+                                                    <p className="
+                                                    text-gray-400
+                                                    min-h-[50px]
+                                                    ">
 
-                                                <h2 className="mb-2 text-2xl font-bold text-white">
-
-                                                    {
-                                                        arbitraje.titulo
-                                                    }
-
-                                                </h2>
-
-                                                <div className="space-y-2 text-gray-300">
-
-                                                    <p>
                                                         {
                                                             arbitraje.descripcion ||
                                                             "Sin descripción"
                                                         }
+
                                                     </p>
 
-                                                    <p>
-                                                        Monto:
-                                                        {" "}
-                                                        {
-                                                            formatCurrency(
-                                                                arbitraje.monto
-                                                            )
-                                                        }
-                                                    </p>
+                                                    <div className="
+                                                    flex justify-center
+                                                    items-center mt-6
+                                                    text-2xl font-bold
+                                                    text-gray-100
+                                                    ">
+
+                                                        <FaMoneyBillAlt
+                                                            className="
+                                                            mr-2
+                                                            "
+                                                        />
+
+                                                        <span>
+
+                                                            {
+                                                                formatCurrency(
+                                                                    arbitraje.monto
+                                                                )
+                                                            }
+
+                                                        </span>
+
+                                                    </div>
+
+                                                    {
+                                                        arbitraje.estado !== "PAGADO" &&
+                                                        arbitraje.estado !== "REVISION" && (
+
+                                                            <div className="
+                                                            flex gap-4 mt-6
+                                                            ">
+
+                                                                <button
+                                                                    onClick={() =>
+                                                                        notificarPago(
+                                                                            arbitraje.id
+                                                                        )
+                                                                    }
+                                                                    className="
+                                                                    flex-1 px-4 py-2
+                                                                    font-semibold
+                                                                    text-white
+                                                                    bg-blue-600
+                                                                    rounded-lg
+                                                                    hover:bg-blue-700
+                                                                    "
+                                                                >
+
+                                                                    Notificar Pago
+
+                                                                </button>
+
+                                                            </div>
+                                                        )
+                                                    }
+
+                                                    {
+                                                        arbitraje.estado === "REVISION" && (
+
+                                                            <div className="
+                                                            mt-6 p-3
+                                                            bg-blue-500/20
+                                                            border border-blue-500
+                                                            rounded-lg
+                                                            text-blue-300
+                                                            text-sm text-center
+                                                            ">
+
+                                                                Tu comprobante
+                                                                está siendo revisado
+                                                                por el club
+
+                                                            </div>
+                                                        )
+                                                    }
 
                                                 </div>
-
-                                                {
-                                                    arbitraje.estado !== "PAGADO" && (
-
-                                                        <div className="flex gap-4 mt-6">
-
-                                                            <button
-                                                                onClick={() =>
-                                                                    notificarPago(
-                                                                        arbitraje.id
-                                                                    )
-                                                                }
-                                                                className="flex-1 px-4 py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                                                            >
-
-                                                                Notificar Pago
-
-                                                            </button>
-
-                                                        </div>
-                                                    )
-                                                }
-
-                                            </div>
-                                        )
+                                            );
+                                        }
                                     )
                                 }
 
