@@ -4,18 +4,24 @@ import api from "../../Api/Api";
 import { useAuth } from "../../Auth/AuthContext";
 import CuotaCard from "./CuotaCard";
 
+const CLUB_INDEPENDIENTE_ID = "kq1RrHLJ0Sz8xYLYn2Ey";
+const CLUB_INDEPENDIENTE_SOCIOS_URL = "https://socioscaichivilcoy.com.ar/";
+
 export default function PlayerCuotasView() {
-  const { user } = useAuth();
+  const { user, activeClubId } = useAuth();
 
   const [cuotas, setCuotas] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const esJugadorIndependiente =
+    activeClubId === CLUB_INDEPENDIENTE_ID;
 
   useEffect(() => {
     console.log("USER:", user);
     if (user?.id) {
       fetchCuotas();
     }
-  }, [ user]);
+  }, [user]);
 
   const fetchCuotas = async () => {
     try {
@@ -51,6 +57,25 @@ export default function PlayerCuotasView() {
         <h1 className="mb-6 text-2xl font-bold text-gray-200">
           Mis cuotas
         </h1>
+
+        {esJugadorIndependiente && (
+          <div className="mb-6 rounded-xl bg-gray-100/10 p-5 text-gray-200">
+            <p className="mb-4 text-base leading-relaxed">
+              A partir del mes de octubre, los jugadores del Club
+              Independiente deberán abonar su cuota de socio directamente al
+              Club Independiente a través de la aplicación de socios del club.
+            </p>
+
+            <a
+              href={CLUB_INDEPENDIENTE_SOCIOS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-lg bg-white/20 px-4 py-2 font-semibold text-white transition hover:bg-white/30"
+            >
+              Ingresar a la aplicación de socios
+            </a>
+          </div>
+        )}
 
         {loading ? (
           <p className="text-gray-300">Cargando cuotas…</p>
